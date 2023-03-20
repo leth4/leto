@@ -8,7 +8,8 @@ await register('CmdOrControl+S', () => {saveSelectedFile()})
 await register('CmdOrControl+O', () => {openFile()})
 await register('CmdOrControl+]', () => {changeFontSize(3)})
 await register('CmdOrControl+[', () => {changeFontSize(-3)})
-//await register('CmdOrControl+Q', () => {toggleSpellcheck()})
+
+const editor = document.getElementById("text-editor");
 
 document.addEventListener('keydown', function(event) {
     if(event.key == 'Escape') { closewindow(); }
@@ -22,9 +23,12 @@ window.onkeydown = (e) => {
   }
 }
 
-//document.getElementById("text-editor").addEventListener('input', saveSelectedFile(), false);
+ document.getElementById("select-directory-button").onclick=async ()=>{selectDirectory()};
+
+//editor.addEventListener('input', saveSelectedFile(), false);
 
 var selectedFile;
+var selectedDirectory;
 
 async function closewindow() { await appWindow.close(); }
 
@@ -34,35 +38,60 @@ async function openFile() {
         multiple: false,
         filters: [{name: "", extensions: ['txt', 'md'] }]
     });
+    if (selectedFile == null) return;
     openSelectedFile();
 }
 
-// async function readSelectedDir() {
-// await readDir(selected[0], {recursive: true }).then(function showFiles(entries) {
-// entries.forEach(element => {
-//         console.log(element);
-//     });
-// });
-// }
+async function selectDirectory() {
+    var selected = await open({ directory: true});
+    await readDir(selected, {recursive: true }).then(function(entries) {selectDirectory = entries});
+    showDirectory(selectDirectory);
+}
+
+function showDirectory(directory, parentElement = document.getElementById("file-tree")) {
+    console.log(directory);
+    if (!Array.isArray(directory)) {
+        if (directory.children == null) return;
+        directory.children.forEach(child => {
+            showDirectory(child)
+        })
+        return;
+    }
+    directory.forEach(element => {
+        var fileButton = document.createElement('button');
+        fileButton.className = 'file-button';
+        fileButton.setAttribute("data-path", element.path);
+        fileButton.innerHTML = element.name;
+        fileButton.onclick = async () => {await openSpecificFile(fileButton.getAttribute("data-path"))};
+        var liElement = document.createElement('li');
+        liElement.appendChild(fileButton);
+        parentElement.appendChild(liElement);
+
+        if (element.children == null) return;
+        element.children.forEach(child => {
+            showDirectory(child)
+        })
+    });
+}
+
+async function openSpecificFile(path) {
+    editor.value = await readTextFile(path);
+}
 
 async function openSelectedFile() {
-    document.getElementById('text-editor').value = await readTextFile(selectedFile);
+    editor.value = await readTextFile(selectedFile);
 }
 
 async function saveSelectedFile() {
     if (selectedFile == null) return;
-    await writeTextFile(selectedFile, document.getElementById('text-editor').value);
+    await writeTextFile(selectedFile, editor.value);
 }
-
-
-
 
 function setTheme(theme) {
     document.getElementById("theme-link").setAttribute("href", `themes/${theme}.css`);
 }
 
 function toggleSpellcheck() {
-    var editor = document.getElementById("text-editor");
     var newValue = editor.getAttribute("spellcheck") == "true" ? "false" : "true";
     editor.setAttribute("spellcheck", newValue);
 }

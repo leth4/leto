@@ -11,11 +11,13 @@
 
     <body>
         <div class="main">
-            <div class="filesystem" data-tauri-drag-region>
-                <p id="filename">file1</p>
-                <p>file2</p>
+            <div class="sidebar" id="sidebar" data-tauri-drag-region>
+                <ul id="file-tree">
+                    
+                </ul>
+                <button id="select-directory-button">Select directory</button>
             </div>
-            <textarea class="text-editor" id="text-editor" spellcheck="true" autofocus></textarea>
+            <textarea class="text-editor" id="text-editor" spellcheck="false" autofocus></textarea>
         </div>
         <script type="module" src="index.js"></script>
     </body>

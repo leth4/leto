@@ -18,7 +18,7 @@ body {
     border-radius: var(--border-radius);
 }
 
-.filesystem {
+.sidebar {
     flex: 1;
     background-color: var(--sidebar-background-color);
     color: var(--sidebar-text-color);
@@ -28,8 +28,8 @@ body {
     border-radius: var(--border-radius) 0 0 var(--border-radius);
 }
 
-p {
-    padding-left: 20px;
+li {
+    list-style-type: none;
 }
 
 .text-editor {
@@ -47,6 +47,12 @@ p {
     font-size: var(--font-size);
     font-family: Arial, Helvetica, sans-serif;
     color: var(--editor-text-color);
+}
+
+.file-button {
+    background: none;
+    border: none;
+    color: var(--sidebar-text-color);
 }
 
 ::selection {
