@@ -1,0 +1,10 @@
+:root {
+    --editor-background-color: #3f3f3ff7;
+    --editor-text-color: #db5b5b;
+    --selection-background-color: #181818;
+
+    --sidebar-background-color: #3f3f3ff7;
+    --sidebar-text-color: #db5b5b;
+
+    --sidebar-divider-color:  #db5b5b;
+}
