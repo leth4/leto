@@ -3,13 +3,13 @@ import {selectLine, cutLine, moveLineUp} from '/textactions.js'
 
 const {appWindow} = window.__TAURI__.window;
 const {register} = window.__TAURI__.globalShortcut;
-const {writeTextFile, readTextFile, readDir} = window.__TAURI__.fs;
+const {exists, writeTextFile, readTextFile, readDir} = window.__TAURI__.fs;
 const {open, save} = window.__TAURI__.dialog;
 const {appConfigDir} = window.__TAURI__.path;
 
 await register('CmdOrControl+S', () => {saveSelectedFile()})
 await register('CmdOrControl+O', () => {openFile()})
-await register('CmdOrControl+T', () => {setNextTheme()})
+
 await register('CmdOrControl+Shift+O', () => {selectDirectory()})
 await register('CmdOrControl+]', () => {changeFontSize(3)})
 await register('CmdOrControl+[', () => {changeFontSize(-3)})
@@ -27,24 +27,25 @@ editor.addEventListener('input', () => handleEditorInput(), false);
 editor.addEventListener('scroll', () => handleEditorScroll(), false);
 
 window.onkeydown = (e) => {
-    if (e.ctrlKey && (e.code === 'KeyQ')) {
+  if (e.ctrlKey && (e.code === 'KeyQ')) {
       e.preventDefault();
       toggleSpellcheck();
-      return;
   }
-  if (e.ctrlKey && (e.code === 'KeyX')) {
+  else if (e.ctrlKey && (e.code === 'KeyX')) {
       if (editor.selectionStart != editor.selectionEnd) return;
       e.preventDefault();
       cutLine(editor);
       handleEditorInput();
-      return;
   }
-  if (e.altKey && (e.code === 'ArrowUp')) {
+  else if (e.altKey && (e.code === 'ArrowUp')) {
       if (editor.selectionStart != editor.selectionEnd) return;
       e.preventDefault();
       moveLineUp(editor);
       handleEditorInput();
-      return;
+  }
+  else if (e.ctrlKey && e.code === 'KeyT') {
+    e.preventDefault();
+    setNextTheme();
   }
 }
 
@@ -60,6 +61,13 @@ async function handleEditorInput() {
     setPreviewText();
 }
 
+ await appWindow.onFocusChanged(({ payload: focused }) => {
+    if (focused) {
+       openSelectedDirectory();
+       openSelectedFile();
+    }
+});
+
 function setPreviewText() {
     var editorText = editor.value + ((editor.value.slice(-1) == "\n") ? " " : "");
     preview.innerHTML = editorText.replace(/^#{1,4}\s.*/gm, "<mark class='header'>$&</mark>");
@@ -71,7 +79,6 @@ async function handleEditorScroll() {
 
 async function saveConfig() {
     const configPath = await appConfigDir();
-    console.log(selectedDirectory);
     var configObject = {
         selectedFile : selectedFile,
         selectedDirectory : selectedDirectory,
@@ -111,8 +118,9 @@ async function selectDirectory() {
 }
 
 async function openSelectedDirectory() {
+    if (selectedDirectory == null) return;
     await readDir(selectedDirectory, {recursive: true }).then(function(entries) {
-        showFileTree(entries);
+        showFileTree(entries, selectedDirectory);
     });
 }
 
@@ -123,6 +131,12 @@ export function selectFile(path) {
 } 
 
 async function openSelectedFile() {
+    if (selectedFile == null) return;
+    var pathExists;
+    await exists(selectedFile).then(function(exists) { pathExists = exists });
+    if (!pathExists) return;
+
+    document.getElementById("file-name").value = selectedFile.split("\\").slice(-1);
     editor.value = await readTextFile(selectedFile);
     setPreviewText();
 }

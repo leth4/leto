@@ -1,7 +1,14 @@
 import {selectFile} from "/index.js"
 
-export function showFileTree(directoryElements) {
+export function showFileTree(directoryElements, path) {
+    var directoryName = path.split("\\").slice(-1);
+
+    var titleLi = document.createElement('li');
+    titleLi.innerHTML = directoryName;
+    titleLi.className = "path-title";
     document.getElementById("file-tree").innerHTML = '';
+    document.getElementById("file-tree").appendChild(titleLi)
+
     directoryElements.forEach(child => {
         if (child.children != null) {showDirectory(child, document.getElementById("file-tree"));}
     })
@@ -31,7 +38,7 @@ function showDirectory(directory, parentElement) {
     var liElement = document.createElement('li');
     parentElement.appendChild(liElement);
 
-    var groupToggle = document.createElement('span');
+    var groupToggle = document.createElement('image');
     groupToggle.className="group-toggle";
 
     var folderTitle = document.createElement('span');
