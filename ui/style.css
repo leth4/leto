@@ -11,6 +11,11 @@ body {
     user-select: none;
 }
 
+.directory-label {
+    color: var(--sidebar-text-color);
+    font-weight: 600;
+}
+
 .main {
     display: flex;
     height: 100vh;

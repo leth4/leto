@@ -3,10 +3,12 @@ import {showFileTree} from '/treeview.js'
 const {appWindow} = window.__TAURI__.window;
 const {register} = window.__TAURI__.globalShortcut;
 const {writeTextFile, readTextFile, readDir} = window.__TAURI__.fs;
-const {open} = window.__TAURI__.dialog;
+const {open, save} = window.__TAURI__.dialog;
+const {appDir} = window.__TAURI__.path;
 
 await register('CmdOrControl+S', () => {saveSelectedFile()})
 await register('CmdOrControl+O', () => {openFile()})
+await register('CmdOrControl+T', () => {setTheme()})
 await register('CmdOrControl+Shift+O', () => {selectDirectory()})
 await register('CmdOrControl+]', () => {changeFontSize(3)})
 await register('CmdOrControl+[', () => {changeFontSize(-3)})
@@ -18,7 +20,7 @@ document.addEventListener('keydown', function(event) {
 });
 
 document.addEventListener('contextmenu', event => event.preventDefault());
-editor.addEventListener('input', () => saveSelectedFile(), false);
+//editor.addEventListener('input', () => saveSelectedFile(), false);
 
 window.onkeydown = (e) => {
   if (e.ctrlKey && (e.code === 'KeyQ')) {
@@ -31,6 +33,7 @@ window.onkeydown = (e) => {
 
 var selectedFile;
 var selectedDirectory;
+var currentTheme = 0;
 
 async function closewindow() { await appWindow.close(); }
 
@@ -56,13 +59,23 @@ export async function selectFile(path) {
 } 
 
 async function saveSelectedFile() {
-    console.log("saved");
-    if (selectedFile == null) return;
-    await writeTextFile(selectedFile, editor.value);
+    if (selectedFile != null) {
+        await writeTextFile(selectedFile, editor.value);
+    }
+    else {
+        await save({
+            filters: [{name: "*", extensions: ['txt', 'md']}]
+        }).then(function(path) {
+            writeTextFile(path, editor.value);
+        });
+    }
 }
 
-function setTheme(theme) {
-    document.getElementById("theme-link").setAttribute("href", `themes/${theme}.css`);
+const themes = ["black", "gray", "light", "slick"];
+function setTheme() {
+    currentTheme++;
+    if (currentTheme == themes.length) currentTheme = 0;
+    document.getElementById("theme-link").setAttribute("href", `themes/${themes[currentTheme]}.css`);
 }
 
 function toggleSpellcheck() {

@@ -35,6 +35,7 @@ function showDirectory(directory, parentElement) {
     groupToggle.className="group-toggle";
 
     var folderTitle = document.createElement('span');
+    folderTitle.className="directory-label";
     folderTitle.innerHTML = directory.name;
     
     var folderButton = document.createElement('button');
