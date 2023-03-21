@@ -1,22 +1,21 @@
 import {showFileTree} from '/treeview.js'
-import {selectLine, cutLine, moveLineUp} from '/textactions.js'
+import {selectLine, cutLine, moveLineUp, createCheckbox} from '/textactions.js'
 
 const {appWindow} = window.__TAURI__.window;
 const {register} = window.__TAURI__.globalShortcut;
-const {exists, writeTextFile, readTextFile, readDir} = window.__TAURI__.fs;
+const {exists, writeTextFile, readTextFile, readDir, renameFile} = window.__TAURI__.fs;
 const {open, save} = window.__TAURI__.dialog;
 const {appConfigDir} = window.__TAURI__.path;
 
-await register('CmdOrControl+S', () => {saveSelectedFile()})
-await register('CmdOrControl+O', () => {openFile()})
-
+// await register('CmdOrControl+S', () => {saveSelectedFile()})
+// await register('CmdOrControl+O', () => {openFile()})
 await register('CmdOrControl+Shift+O', () => {selectDirectory()})
 await register('CmdOrControl+]', () => {changeFontSize(3)})
 await register('CmdOrControl+[', () => {changeFontSize(-3)})
-await register('CmdOrControl+L', () => {selectLine(editor)})
 
 const editor = document.getElementById("text-editor");
 const preview = document.getElementById("text-preview");
+const title = document.getElementById("file-name");
 
 document.addEventListener('keydown', function(event) {
     if(event.key == 'Escape') { closewindow(); }
@@ -25,50 +24,65 @@ document.addEventListener('keydown', function(event) {
 document.addEventListener('contextmenu', event => event.preventDefault());
 editor.addEventListener('input', () => handleEditorInput(), false);
 editor.addEventListener('scroll', () => handleEditorScroll(), false);
+title.addEventListener('input', () => renameSelectedFile(), false);
 
-window.onkeydown = (e) => {
-  if (e.ctrlKey && (e.code === 'KeyQ')) {
-      e.preventDefault();
-      toggleSpellcheck();
-  }
-  else if (e.ctrlKey && (e.code === 'KeyX')) {
-      if (editor.selectionStart != editor.selectionEnd) return;
-      e.preventDefault();
-      cutLine(editor);
-      handleEditorInput();
-  }
-  else if (e.altKey && (e.code === 'ArrowUp')) {
-      if (editor.selectionStart != editor.selectionEnd) return;
-      e.preventDefault();
-      moveLineUp(editor);
-      handleEditorInput();
-  }
-  else if (e.ctrlKey && e.code === 'KeyT') {
-    e.preventDefault();
-    setNextTheme();
-  }
-}
-
+var focused = true;
 var selectedFile;
 var selectedDirectory;
 var currentTheme = 0;
 const themes = ["black", "gray", "light", "slick"];
 
+window.onkeydown = (e) => {
+    if (!focused) return;
+    if (e.ctrlKey && (e.code === 'KeyQ')) {
+        e.preventDefault();
+        toggleSpellcheck();
+    }
+    else if (e.ctrlKey && (e.code === 'KeyX')) {
+        if (editor.selectionStart != editor.selectionEnd) return;
+        e.preventDefault();
+        cutLine(editor);
+        handleEditorInput();
+    }
+    else if (e.altKey && (e.code === 'ArrowUp')) {
+        if (editor.selectionStart != editor.selectionEnd) return;
+        e.preventDefault();
+        moveLineUp(editor);
+        handleEditorInput();
+    }
+    else if (e.ctrlKey && e.code === 'KeyT') {
+        e.preventDefault();
+        setNextTheme();
+    }
+    else if (e.ctrlKey && e.code === "Enter") {
+        e.preventDefault();
+        createCheckbox(editor);
+    }
+    else if (e.ctrlKey && e.code === 'KeyL') {
+        e.preventDefault();
+        selectLine(editor);
+    }
+}
+
+
+
 await loadUserData();
+
 
 async function handleEditorInput() {
     saveSelectedFile();
     setPreviewText();
 }
 
- await appWindow.onFocusChanged(({ payload: focused }) => {
+await appWindow.onFocusChanged(({ payload: focused }) => {
+    this.focused = focused;
     if (focused) {
        openSelectedDirectory();
        openSelectedFile();
     }
 });
 
-function setPreviewText() {
+async function setPreviewText() {
     var editorText = editor.value + ((editor.value.slice(-1) == "\n") ? " " : "");
     preview.innerHTML = editorText.replace(/^#{1,4}\s.*/gm, "<mark class='header'>$&</mark>");
 }
@@ -136,7 +150,7 @@ async function openSelectedFile() {
     await exists(selectedFile).then(function(exists) { pathExists = exists });
     if (!pathExists) return;
 
-    document.getElementById("file-name").value = selectedFile.split("\\").slice(-1);
+    setFileTitle();
     editor.value = await readTextFile(selectedFile);
     setPreviewText();
 }
@@ -153,6 +167,22 @@ async function saveSelectedFile() {
         });
     }
 }
+
+async function renameSelectedFile() {
+    // if (selectFile == null) return;
+    // var nameStart = selectedFile.lastIndexOf("\\");
+    // var nameEnd = selectedFile.lastIndexOf(".");
+    // await renameFile(selectedFile, selectedFile.substring(0, nameStart) + title.value + selectedFile.substring(nameEnd));
+    // selectedFile = selectedFile.substring(0, nameStart) + title.value + selectedFile.substring(nameEnd);
+    // openSelectedDirectory();
+    // openSelectedFile();
+}
+
+function setFileTitle() {
+    title.value = selectedFile.split("\\").slice(-1);
+    title.value = title.value.replace(/\.[^/.]+$/, "");
+}
+
 
 function setNextTheme() {
     currentTheme++;

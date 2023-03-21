@@ -25,6 +25,11 @@
     background: var(--selection-background-color);
 }
 
+.file-button:focus {
+    outline: none;
+    background: var(--selection-background-color);
+}
+
 .folder-button {
     background: none;
     border: none;
@@ -35,6 +40,11 @@
 }
 
 .folder-button:hover {
+    background: var(--selection-background-color);
+}
+
+.folder-button:focus {
+    outline: none;
     background: var(--selection-background-color);
 }
 

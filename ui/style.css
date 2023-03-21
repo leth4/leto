@@ -3,7 +3,7 @@
     --border-radius: 4px;
     --title-font-size: 20px;
     --sidebar-font-size: 15px;
-    --font-family:Arial, Helvetica, sans-serif;
+    --font-family: 'arial';
 }
 
 body {
@@ -32,8 +32,8 @@ mark.header {
     position: relative;
     overflow: hidden;
     
-    /* border-left: 1px solid var(--sidebar-divider-color); */
-    box-shadow: 0 0 20px var(--sidebar-divider-color);
+    border-left: 1px solid var(--sidebar-divider-color);
+    /* box-shadow: 0 0 20px var(--sidebar-divider-color); */
 }
 
 .text-preview {
@@ -47,6 +47,8 @@ mark.header {
     color: var(--editor-text-color);
     background-color: var(--editor-background-color);
     white-space: pre-wrap;
+    word-wrap: break-word;
+    content:  var(--preview-text);
 }
 
 .text-editor {
@@ -68,6 +70,7 @@ mark.header {
     background-color: var(--selection-background-color);
     color: var(--editor-text-color);
 }
+
 
 ::-webkit-scrollbar {
     width: 8px;
