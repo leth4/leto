@@ -35,16 +35,37 @@ body {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
-    max-width: 100%;
+    width: 95%;
+    text-align: left;
+    border-radius: 3px;
 }
+
+.file-button:hover {
+    background: var(--selection-background-color);
+}
+
+.folder-button {
+    background: none;
+    border: none;
+    width: 95%;
+    text-align: left;
+    border-radius: 3px;
+}
+
+.folder-button:hover {
+    background: var(--selection-background-color);
+}
+
 
 li {
     list-style-type: none;
+    line-height: 5px;
 }
 
 ul {
     padding-left: 10px;
 }
+
 
 .group-toggle {
     background: none;
@@ -53,7 +74,7 @@ ul {
 }
 
 .group-toggle::before {
-    content: "▶";
+    content: "►";
 }
 
 .unfolded::before {
@@ -61,8 +82,14 @@ ul {
 }
 
 .nested {
-    padding-left: 10px;
+    padding-left: 12px;
     display: none;
+
+}
+
+.nested li {
+    margin: 0;
+    border-left: 1px solid var(--selection-background-color);
 }
 
 .nested.active {
@@ -86,17 +113,21 @@ ul {
     color: var(--editor-text-color);
 }
 
-
-
 ::selection {
     background-color: var(--selection-background-color);
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
+    width: 8px;
+}
+
+.sidebar::-webkit-scrollbar {
+    background: transparent;
+    width: 2px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #525252;
-  border-radius: 2px;
+    background: var(--sidebar-text-color);
+    border-radius: 2px;
 }
+
