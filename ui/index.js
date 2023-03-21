@@ -4,11 +4,11 @@ const {appWindow} = window.__TAURI__.window;
 const {register} = window.__TAURI__.globalShortcut;
 const {writeTextFile, readTextFile, readDir} = window.__TAURI__.fs;
 const {open, save} = window.__TAURI__.dialog;
-const {appDir} = window.__TAURI__.path;
+const {appConfigDir} = window.__TAURI__.path;
 
 await register('CmdOrControl+S', () => {saveSelectedFile()})
 await register('CmdOrControl+O', () => {openFile()})
-await register('CmdOrControl+T', () => {setTheme()})
+await register('CmdOrControl+T', () => {setNextTheme()})
 await register('CmdOrControl+Shift+O', () => {selectDirectory()})
 await register('CmdOrControl+]', () => {changeFontSize(3)})
 await register('CmdOrControl+[', () => {changeFontSize(-3)})
@@ -30,10 +30,35 @@ window.onkeydown = (e) => {
   }
 }
 
-
 var selectedFile;
 var selectedDirectory;
 var currentTheme = 0;
+const themes = ["black", "gray", "light", "slick"];
+
+await loadUserData();
+
+async function saveConfig() {
+    const configPath = await appConfigDir();
+    console.log(selectedDirectory);
+    var configObject = {
+        selectedFile : selectedFile,
+        selectedDirectory : selectedDirectory,
+        currentTheme : currentTheme
+    }
+    await writeTextFile(`${configPath}config.json`, JSON.stringify(configObject))
+}
+
+async function loadUserData() {
+    const configPath = await appConfigDir();
+    var config = await readTextFile(`${configPath}config.json`);
+    var configObject = JSON.parse(config);
+    selectedFile = configObject.selectedFile;
+    openSelectedFile();
+    selectedDirectory = configObject.selectedDirectory;
+    openSelectedDirectory();
+    currentTheme = configObject.currentTheme;
+    setCurrentTheme();
+}
 
 async function closewindow() { await appWindow.close(); }
 
@@ -47,16 +72,27 @@ async function openFile() {
 }
 
 async function selectDirectory() {
-    var selected = await open({ directory: true});
-    if (selected == null) return;
-    await readDir(selected, {recursive: true }).then(function(entries) {selectedDirectory = entries});
-    showFileTree(selectedDirectory);
+    selectedDirectory = await open({ directory: true});
+    if (selectedDirectory == null) return;
+    openSelectedDirectory();
+    saveConfig();
 }
 
-export async function selectFile(path) {
+async function openSelectedDirectory() {
+    await readDir(selectedDirectory, {recursive: true }).then(function(entries) {
+        showFileTree(entries);
+    });
+}
+
+export function selectFile(path) {
     selectedFile = path;
-    editor.value = await readTextFile(path);
+    openSelectedFile();
+    saveConfig();
 } 
+
+async function openSelectedFile() {
+    editor.value = await readTextFile(selectedFile);
+}
 
 async function saveSelectedFile() {
     if (selectedFile != null) {
@@ -71,10 +107,14 @@ async function saveSelectedFile() {
     }
 }
 
-const themes = ["black", "gray", "light", "slick"];
-function setTheme() {
+function setNextTheme() {
     currentTheme++;
     if (currentTheme == themes.length) currentTheme = 0;
+    setCurrentTheme();
+    saveConfig();
+}
+
+function setCurrentTheme() {
     document.getElementById("theme-link").setAttribute("href", `themes/${themes[currentTheme]}.css`);
 }
 
@@ -89,4 +129,3 @@ function changeFontSize(change) {
     var num = parseInt(currentSize.replace(/[^0-9]/g, ''));
     r.style.setProperty('--font-size', `${num + change}px`);
 }
-

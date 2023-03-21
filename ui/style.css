@@ -94,7 +94,7 @@ ul {
 
 .nested li {
     margin: 0;
-    border-left: 1px solid var(--selection-background-color);
+    border-left: 1px solid var(--sidebar-text-color);
 }
 
 .nested.active {
