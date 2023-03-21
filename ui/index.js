@@ -1,4 +1,5 @@
 import {showFileTree} from '/treeview.js'
+import {selectLine, cutLine, moveLineUp} from '/textactions.js'
 
 const {appWindow} = window.__TAURI__.window;
 const {register} = window.__TAURI__.globalShortcut;
@@ -12,20 +13,37 @@ await register('CmdOrControl+T', () => {setNextTheme()})
 await register('CmdOrControl+Shift+O', () => {selectDirectory()})
 await register('CmdOrControl+]', () => {changeFontSize(3)})
 await register('CmdOrControl+[', () => {changeFontSize(-3)})
+await register('CmdOrControl+L', () => {selectLine(editor)})
 
 const editor = document.getElementById("text-editor");
+const preview = document.getElementById("text-preview");
 
 document.addEventListener('keydown', function(event) {
     if(event.key == 'Escape') { closewindow(); }
 });
 
 document.addEventListener('contextmenu', event => event.preventDefault());
-//editor.addEventListener('input', () => saveSelectedFile(), false);
+editor.addEventListener('input', () => handleEditorInput(), false);
+editor.addEventListener('scroll', () => handleEditorScroll(), false);
 
 window.onkeydown = (e) => {
-  if (e.ctrlKey && (e.code === 'KeyQ')) {
+    if (e.ctrlKey && (e.code === 'KeyQ')) {
       e.preventDefault();
       toggleSpellcheck();
+      return;
+  }
+  if (e.ctrlKey && (e.code === 'KeyX')) {
+      if (editor.selectionStart != editor.selectionEnd) return;
+      e.preventDefault();
+      cutLine(editor);
+      handleEditorInput();
+      return;
+  }
+  if (e.altKey && (e.code === 'ArrowUp')) {
+      if (editor.selectionStart != editor.selectionEnd) return;
+      e.preventDefault();
+      moveLineUp(editor);
+      handleEditorInput();
       return;
   }
 }
@@ -36,6 +54,20 @@ var currentTheme = 0;
 const themes = ["black", "gray", "light", "slick"];
 
 await loadUserData();
+
+async function handleEditorInput() {
+    saveSelectedFile();
+    setPreviewText();
+}
+
+function setPreviewText() {
+    var editorText = editor.value + ((editor.value.slice(-1) == "\n") ? " " : "");
+    preview.innerHTML = editorText.replace(/^#{1,4}\s.*/gm, "<mark class='header'>$&</mark>");
+}
+
+async function handleEditorScroll() {
+    preview.scrollTop = editor.scrollTop;
+}
 
 async function saveConfig() {
     const configPath = await appConfigDir();
@@ -92,6 +124,7 @@ export function selectFile(path) {
 
 async function openSelectedFile() {
     editor.value = await readTextFile(selectedFile);
+    setPreviewText();
 }
 
 async function saveSelectedFile() {

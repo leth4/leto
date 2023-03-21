@@ -1,6 +1,7 @@
 :root {
     --font-size: 15px;
     --border-radius: 4px;
+    --title-font-size: 30px;
 }
 
 body {
@@ -45,6 +46,11 @@ body {
     border-radius: 3px;
 }
 
+mark.header {
+    color: rgb(206, 198, 255);
+    background-color: transparent;
+}
+
 .file-button:hover {
     background: var(--selection-background-color);
 }
@@ -59,6 +65,21 @@ body {
 
 .folder-button:hover {
     background: var(--selection-background-color);
+}
+
+.file-name {
+    background-color: var(--editor-background-color);
+    outline: 0px solid transparent;
+    border: 0px solid transparent;
+    resize: none;
+    width: 80%;
+    height: 30px;
+    padding: 20px;
+    overflow: hidden;
+    position: relative;
+    font-size: var(--title-font-size);
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--editor-text-color);
 }
 
 
@@ -101,25 +122,45 @@ ul {
     display: block;
 }
 
-.text-editor {
+.text-div {
     flex: 1;
-    padding: 0 50x;
-    background-color: var(--editor-background-color);
+    display: flex;
     border-radius: 0 var(--border-radius) var(--border-radius) 0;
-
-    outline: 0px solid transparent;
-    border: 0px solid transparent;
-    overflow : auto;
-    resize: none;
-    padding: 20px;
     position: relative;
+    overflow: hidden;
+}
+
+.text-preview {
+    z-index: 1;
+    position: absolute;
+    left: 0; top: 0; right: 0; bottom: 0;
+    overflow : auto;
+    padding: 20px;
     font-size: var(--font-size);
     font-family: Arial, Helvetica, sans-serif;
     color: var(--editor-text-color);
+    background-color: var(--editor-background-color);
+    white-space: pre-wrap;
+}
+
+.text-editor {
+    background: transparent;
+    color: transparent;
+    caret-color: var(--editor-text-color);
+    z-index: 2;
+    flex: 1;
+    outline: 0px solid transparent;
+    border: 0px solid transparent;
+    overflow : auto;
+    resize: none; 
+    padding: 20px;
+    font-size: var(--font-size);
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 ::selection {
     background-color: var(--selection-background-color);
+    color: var(--editor-text-color);
 }
 
 ::-webkit-scrollbar {
