@@ -4,7 +4,7 @@
 }
 
 body {
-    font-size: 18px;
+    font-size: 25px;
     font-family: Arial, Helvetica, sans-serif;
     scroll-behavior: smooth;
     margin: 0px;
@@ -32,6 +32,25 @@ li {
     list-style-type: none;
 }
 
+ul {
+    padding-left: 10px;
+}
+
+.group-toggle {
+    background: none;
+    border: none;
+    color: var(--sidebar-text-color);
+}
+
+.nested {
+    padding-left: 10px;
+    display: none;
+}
+
+.nested.active {
+    display: block;
+}
+
 .text-editor {
     flex: 1;
     padding: 0 50x;
@@ -42,8 +61,8 @@ li {
     border: 0px solid transparent;
     overflow : auto;
     resize: none;
-    position: relative;
     padding: 20px;
+    position: relative;
     font-size: var(--font-size);
     font-family: Arial, Helvetica, sans-serif;
     color: var(--editor-text-color);

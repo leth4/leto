@@ -45,19 +45,15 @@ async function openFile() {
 async function selectDirectory() {
     var selected = await open({ directory: true});
     await readDir(selected, {recursive: true }).then(function(entries) {selectDirectory = entries});
-    showDirectory(selectDirectory);
+    selectDirectory.forEach(element => {
+        showDirectory(element);
+    });
 }
 
+
 function showDirectory(directory, parentElement = document.getElementById("file-tree")) {
-    console.log(directory);
-    if (!Array.isArray(directory)) {
-        if (directory.children == null) return;
-        directory.children.forEach(child => {
-            showDirectory(child)
-        })
-        return;
-    }
-    directory.forEach(element => {
+    if (directory.children == null) {
+        var element = directory;
         var fileButton = document.createElement('button');
         fileButton.className = 'file-button';
         fileButton.setAttribute("data-path", element.path);
@@ -66,12 +62,35 @@ function showDirectory(directory, parentElement = document.getElementById("file-
         var liElement = document.createElement('li');
         liElement.appendChild(fileButton);
         parentElement.appendChild(liElement);
+    }
+    else {
+        var element = directory;
+        var liElement = document.createElement('li');
+        parentElement.appendChild(liElement);
 
-        if (element.children == null) return;
+        var groupToggle =  document.createElement('button');
+        groupToggle.className="group-toggle";
+        groupToggle.innerHTML="▶";
+        groupToggle.onclick = () => {parentElement.querySelector('.nested').classList.toggle("active")};
+        liElement.appendChild(groupToggle);
+        
+        var fileButton = document.createElement('button');
+        fileButton.className = 'file-button';
+        fileButton.setAttribute("data-path", element.path);
+        fileButton.innerHTML = element.name;
+        fileButton.onclick = () => {parentElement.querySelector('.nested').classList.toggle("active")};
+        liElement.appendChild(fileButton);
+
+        var ulElement = document.createElement('ul');
+        ulElement.className = 'nested';
+        parentElement.appendChild(ulElement);
         element.children.forEach(child => {
-            showDirectory(child)
+            if (child.children != null) {console.log(child); showDirectory(child, ulElement);}
         })
-    });
+        element.children.forEach(child => {
+            if (child.children == null) {console.log(child); showDirectory(child, ulElement);}
+        })
+    }
 }
 
 async function openSpecificFile(path) {
