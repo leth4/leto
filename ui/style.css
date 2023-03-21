@@ -24,8 +24,18 @@ body {
     color: var(--sidebar-text-color);
     border-right: 1px solid var(--sidebar-divider-color);
     max-width: 200px;
-    overflow: hidden;
+    overflow: auto;
     border-radius: var(--border-radius) 0 0 var(--border-radius);
+}
+
+.file-button {
+    background: none;
+    border: none;
+    color: var(--sidebar-text-color);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 100%;
 }
 
 li {
@@ -40,6 +50,14 @@ ul {
     background: none;
     border: none;
     color: var(--sidebar-text-color);
+}
+
+.group-toggle::before {
+    content: "▶";
+}
+
+.unfolded::before {
+    content: "▼";
 }
 
 .nested {
@@ -68,11 +86,7 @@ ul {
     color: var(--editor-text-color);
 }
 
-.file-button {
-    background: none;
-    border: none;
-    color: var(--sidebar-text-color);
-}
+
 
 ::selection {
     background-color: var(--selection-background-color);

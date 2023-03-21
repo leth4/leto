@@ -15,6 +15,8 @@ document.addEventListener('keydown', function(event) {
     if(event.key == 'Escape') { closewindow(); }
 });
 
+document.addEventListener('contextmenu', event => event.preventDefault());
+
 window.onkeydown = (e) => {
   if (e.ctrlKey && (e.code === 'KeyQ')) {
       e.preventDefault();
@@ -45,52 +47,63 @@ async function openFile() {
 async function selectDirectory() {
     var selected = await open({ directory: true});
     await readDir(selected, {recursive: true }).then(function(entries) {selectDirectory = entries});
-    selectDirectory.forEach(element => {
-        showDirectory(element);
-    });
+    showFileTree(selectDirectory);
 }
 
+function showFileTree(directoryElements) {
+    directoryElements.forEach(child => {
+        if (child.children != null) {showDirectory(child, document.getElementById("file-tree"));}
+    })
+    directoryElements.forEach(child => {
+        if (child.children == null) {showFile(child, document.getElementById("file-tree"));}
+    })
+}
 
-function showDirectory(directory, parentElement = document.getElementById("file-tree")) {
-    if (directory.children == null) {
-        var element = directory;
-        var fileButton = document.createElement('button');
-        fileButton.className = 'file-button';
-        fileButton.setAttribute("data-path", element.path);
-        fileButton.innerHTML = element.name;
-        fileButton.onclick = async () => {await openSpecificFile(fileButton.getAttribute("data-path"))};
-        var liElement = document.createElement('li');
-        liElement.appendChild(fileButton);
-        parentElement.appendChild(liElement);
-    }
-    else {
-        var element = directory;
-        var liElement = document.createElement('li');
-        parentElement.appendChild(liElement);
+function showFile(file, parentElement) {
+    var extension = /[^.]*$/.exec(file.name)[0];
+    if (extension != "md" && extension != "txt") return;
+    var fileButton = document.createElement('button');
+    fileButton.className = 'file-button';
+    fileButton.setAttribute("data-path", file.path);
+    fileButton.innerHTML = file.name.replace(/\.[^/.]+$/, "");
+    fileButton.onclick = async () => {await openSpecificFile(fileButton.getAttribute("data-path"))};
+    var liElement = document.createElement('li');
+    liElement.appendChild(fileButton);
+    parentElement.appendChild(liElement);
+}
 
-        var groupToggle =  document.createElement('button');
-        groupToggle.className="group-toggle";
-        groupToggle.innerHTML="▶";
-        groupToggle.onclick = () => {parentElement.querySelector('.nested').classList.toggle("active")};
-        liElement.appendChild(groupToggle);
-        
-        var fileButton = document.createElement('button');
-        fileButton.className = 'file-button';
-        fileButton.setAttribute("data-path", element.path);
-        fileButton.innerHTML = element.name;
-        fileButton.onclick = () => {parentElement.querySelector('.nested').classList.toggle("active")};
-        liElement.appendChild(fileButton);
+function showDirectory(directory, parentElement) {
+    var liElement = document.createElement('li');
+    parentElement.appendChild(liElement);
 
-        var ulElement = document.createElement('ul');
-        ulElement.className = 'nested';
-        parentElement.appendChild(ulElement);
-        element.children.forEach(child => {
-            if (child.children != null) {console.log(child); showDirectory(child, ulElement);}
-        })
-        element.children.forEach(child => {
-            if (child.children == null) {console.log(child); showDirectory(child, ulElement);}
-        })
-    }
+    var groupToggle =  document.createElement('button');
+    groupToggle.className="group-toggle";
+    groupToggle.onclick = () => {
+        liElement.querySelector('.nested').classList.toggle("active");
+        groupToggle.classList.toggle("unfolded");
+    };
+    liElement.appendChild(groupToggle);
+    
+    var fileButton = document.createElement('button');
+    fileButton.className = 'file-button';
+    fileButton.setAttribute("data-path", directory.path);
+    fileButton.innerHTML = directory.name;
+    fileButton.onclick = () => {
+        liElement.querySelector('.nested').classList.toggle("active");
+        groupToggle.classList.toggle("unfolded");
+    };
+    liElement.appendChild(fileButton);
+
+    var ulElement = document.createElement('ul');
+    ulElement.className = 'nested';
+    liElement.appendChild(ulElement);
+
+    directory.children.forEach(child => {
+        if (child.children != null) {showDirectory(child, ulElement);}
+    })
+    directory.children.forEach(child => {
+        if (child.children == null) {showFile(child, ulElement);}
+    })
 }
 
 async function openSpecificFile(path) {
