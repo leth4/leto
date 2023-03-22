@@ -16,6 +16,9 @@
       "fs": {
         "all": true,
         "scope":["**"]
+      },
+      "shell": {
+        "open": ".*"
       }
     },
     "bundle": {

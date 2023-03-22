@@ -1,5 +1,11 @@
 import {selectFile} from "/index.js"
 
+const {open} = window.__TAURI__.shell;
+
+export async function openInExplorer(directory) {
+    await open(directory);
+}
+
 export function showFileTree(directoryElements, path) {
     var directoryName = path.split("\\").slice(-1);
 

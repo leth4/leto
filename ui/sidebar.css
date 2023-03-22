@@ -50,7 +50,7 @@
 
 .directory-label {
     color: var(--sidebar-text-color);
-    font-weight: 600;
+    /* font-weight: 600; */
 }
 
 .path-title {

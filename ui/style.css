@@ -3,7 +3,7 @@
     --border-radius: 4px;
     --title-font-size: 20px;
     --sidebar-font-size: 15px;
-    --font-family: 'arial';
+    --font-family: 'consolas';
 }
 
 body {
@@ -18,11 +18,6 @@ body {
     height: 100vh;
     width: 100wh;
     border-radius: var(--border-radius);
-}
-
-mark.header {
-    color: rgb(206, 198, 255);
-    background-color: transparent;
 }
 
 .text-div {
@@ -71,9 +66,8 @@ mark.header {
     color: var(--editor-text-color);
 }
 
-
 ::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
 }
 
 .sidebar::-webkit-scrollbar {
@@ -86,3 +80,12 @@ mark.header {
     border-radius: 2px;
 }
 
+mark.header {
+    color: rgb(206, 198, 255);
+    background-color: transparent;
+}
+
+mark.hashtag {
+    color :rgb(122, 122, 122);
+    background-color: transparent;
+}

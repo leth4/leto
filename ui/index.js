@@ -1,5 +1,5 @@
-import {showFileTree} from '/treeview.js'
-import {selectLine, cutLine, moveLineUp, createCheckbox} from '/textactions.js'
+import {showFileTree, openInExplorer} from '/treeview.js'
+import {selectLine, cutLine, moveLineUp, createCheckbox, deselect} from '/textactions.js'
 
 const {appWindow} = window.__TAURI__.window;
 const {register} = window.__TAURI__.globalShortcut;
@@ -10,16 +10,12 @@ const {appConfigDir} = window.__TAURI__.path;
 // await register('CmdOrControl+S', () => {saveSelectedFile()})
 // await register('CmdOrControl+O', () => {openFile()})
 await register('CmdOrControl+Shift+O', () => {selectDirectory()})
-await register('CmdOrControl+]', () => {changeFontSize(3)})
-await register('CmdOrControl+[', () => {changeFontSize(-3)})
+// await register('CmdOrControl+]', () => {changeFontSize(3)})
+// await register('CmdOrControl+[', () => {changeFontSize(-3)})
 
 const editor = document.getElementById("text-editor");
 const preview = document.getElementById("text-preview");
 const title = document.getElementById("file-name");
-
-document.addEventListener('keydown', function(event) {
-    if(event.key == 'Escape') { closewindow(); }
-});
 
 document.addEventListener('contextmenu', event => event.preventDefault());
 editor.addEventListener('input', () => handleEditorInput(), false);
@@ -30,11 +26,13 @@ var focused = true;
 var selectedFile;
 var selectedDirectory;
 var currentTheme = 0;
+var fontSize = 20;
 const themes = ["black", "gray", "light", "slick"];
 
 window.onkeydown = (e) => {
     if (!focused) return;
-    if (e.ctrlKey && (e.code === 'KeyQ')) {
+
+    if (e.ctrlKey && (e.code === 'KeyR')) {
         e.preventDefault();
         toggleSpellcheck();
     }
@@ -62,21 +60,34 @@ window.onkeydown = (e) => {
         e.preventDefault();
         selectLine(editor);
     }
+    else if (e.ctrlKey && e.code === 'KeyQ') {
+        e.preventDefault();
+        closewindow();
+    }
+    else if (!e.ctrlKey && e.code === 'Escape') {
+        e.preventDefault();
+        deselect(editor);
+    }
+    else if (e.ctrlKey && e.code === 'Equal') {
+        e.preventDefault();
+        applyFontSize(+3);
+    }
+    else if (e.ctrlKey && e.code === 'Minus') {
+        e.preventDefault();
+         applyFontSize(-3);
+    }
 }
 
-
-
-await loadUserData();
-
+await loadConfig();
 
 async function handleEditorInput() {
     saveSelectedFile();
     setPreviewText();
 }
 
-await appWindow.onFocusChanged(({ payload: focused }) => {
-    this.focused = focused;
-    if (focused) {
+await appWindow.onFocusChanged(({ payload: hasFocused }) => {
+    focused = hasFocused;
+    if (hasFocused) {
        openSelectedDirectory();
        openSelectedFile();
     }
@@ -84,7 +95,7 @@ await appWindow.onFocusChanged(({ payload: focused }) => {
 
 async function setPreviewText() {
     var editorText = editor.value + ((editor.value.slice(-1) == "\n") ? " " : "");
-    preview.innerHTML = editorText.replace(/^#{1,4}\s.*/gm, "<mark class='header'>$&</mark>");
+    preview.innerHTML = editorText.replace(/(^#{1,4})( .*)/gm, "<mark class='hashtag'>$1</mark><mark class='header'>$2</mark>");
 }
 
 async function handleEditorScroll() {
@@ -96,12 +107,13 @@ async function saveConfig() {
     var configObject = {
         selectedFile : selectedFile,
         selectedDirectory : selectedDirectory,
-        currentTheme : currentTheme
+        currentTheme : currentTheme,
+        fontSize : fontSize
     }
     await writeTextFile(`${configPath}config.json`, JSON.stringify(configObject))
 }
 
-async function loadUserData() {
+async function loadConfig() {
     const configPath = await appConfigDir();
     var config = await readTextFile(`${configPath}config.json`);
     var configObject = JSON.parse(config);
@@ -111,6 +123,8 @@ async function loadUserData() {
     openSelectedDirectory();
     currentTheme = configObject.currentTheme;
     setCurrentTheme();
+    fontSize = configObject.fontSize;
+    applyFontSize();
 }
 
 async function closewindow() { await appWindow.close(); }
@@ -200,9 +214,10 @@ function toggleSpellcheck() {
     editor.setAttribute("spellcheck", newValue);
 }
 
-function changeFontSize(change) {
-    var r = document.querySelector(':root');
-    var currentSize = getComputedStyle(r).getPropertyValue('--font-size');
-    var num = parseInt(currentSize.replace(/[^0-9]/g, ''));
-    r.style.setProperty('--font-size', `${num + change}px`);
+function applyFontSize(change = 0) {
+    fontSize += change;
+    if (fontSize > 40) fontSize = 40;
+    else if (fontSize < 14) fontSize = 14;
+    document.querySelector(':root').style.setProperty('--font-size', `${fontSize}px`);
+    saveConfig();
 }
