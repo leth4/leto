@@ -1,155 +1,148 @@
-export function selectLine(editor) {
-    var [ selectionStart, selectionEnd ] = getSelectedLineBorders(editor);
-    editor.setSelectionRange(selectionStart, selectionEnd);
+const editor = document.getElementById("text-editor")
+
+export function selectLine() {
+    editor.setSelectionRange(getLineStart(), getLineEnd());
 }
 
-export function deselect(editor) {
+export function deselect() {
     editor.selectionStart = editor.selectionEnd;
 }
 
-export function moveLineDown(editor) {
-    var [ selectionStart, selectionEnd ] = getSelectedLineBorders(editor);
-    if (selectionEnd - 1 == selectionStart) return;
-    var positionAtLine = editor.selectionStart - selectionStart;
-    var lineToMove = editor.value.slice(selectionStart, selectionEnd);
-    if (selectionEnd > editor.value.length) {
-        editor.setSelectionRange(selectionStart, selectionStart);
+export function cutLine() {
+    selectLine();
+    var command = editor.selectionEnd - 1 == editor.selectionStart ? "delete" : "cut";
+    document.execCommand(command);
+}
+
+export function moveDown() {
+    var [ lineStart, lineEnd ] = getLineBorders();
+    if (lineEnd - 1 == lineStart) return;
+
+    var positionAtLine = editor.selectionStart - lineStart;
+    var lineToMove = editor.value.slice(lineStart, lineEnd);
+
+    if (lineEnd > editor.value.length) {
+        editor.setSelectionRange(lineStart, lineStart);
         document.execCommand("insertText", false, "\n");
-        editor.setSelectionRange(selectionStart + positionAtLine + 1, selectionStart + positionAtLine + 1);
+        editor.setSelectionRange(lineStart + positionAtLine + 1, lineStart + positionAtLine + 1);
         return;
     }
-    cutLine(editor);
-    [ selectionStart, selectionEnd ] = getSelectedLineBorders(editor);
-    editor.setSelectionRange(selectionEnd, selectionEnd);
-    if (selectionEnd > editor.value.length)
-        lineToMove = "\n" + lineToMove;
+
+    selectLine();
+    document.execCommand("delete");
+    lineEnd = getLineEnd();
+    if (lineEnd > editor.value.length) lineToMove = "\n" + lineToMove;
+
+    editor.setSelectionRange(lineEnd, lineEnd);
     document.execCommand("insertText", false, lineToMove);
-    editor.setSelectionRange(selectionEnd + positionAtLine, selectionEnd + positionAtLine);
-    editor.blur();
-    editor.focus();
+    setCursorAndFocus(lineEnd + positionAtLine);
 }
 
-export function moveLineUp(editor) {
-    var [ selectionStart, selectionEnd ] = getSelectedLineBorders(editor);
-    if (selectionEnd - 1 == selectionStart) return;
-    if (selectionStart == 0) return;
-    var positionAtLine = editor.selectionStart - selectionStart;
-    var lineToMove = editor.value.slice(selectionStart, selectionEnd);
-    cutLine(editor);
-    editor.setSelectionRange(selectionStart-1, selectionStart-1);
-    [ selectionStart, selectionEnd ] = getSelectedLineBorders(editor);
-    editor.setSelectionRange(selectionStart, selectionStart);
+export function moveUp() {
+    var [ lineStart, lineEnd ] = getLineBorders();
+    if (lineEnd - 1 == lineStart) return;
+    if (lineStart == 0) return;
+
+    var positionAtLine = editor.selectionStart - lineStart;
+    var lineToMove = editor.value.slice(lineStart, lineEnd);
+
+    selectLine();
+    document.execCommand("delete");
+    editor.setSelectionRange(lineStart-1, lineStart-1);
+    lineStart = getLineStart();
+
+    editor.setSelectionRange(lineStart, lineStart);
     document.execCommand("insertText", false, lineToMove);
-    editor.setSelectionRange(selectionStart + positionAtLine, selectionStart + positionAtLine);
-    editor.blur();
-    editor.focus();
+    setCursorAndFocus(lineStart + positionAtLine);
 }
 
-export function copyLineDown(editor) {
-    var [ selectionStart, selectionEnd ] = getSelectedLineBorders(editor);
-    if (selectionEnd - 1 == selectionStart) return;
-    var positionAtLine = editor.selectionStart - selectionStart;
-    var lineToCopy = editor.value.slice(selectionStart, selectionEnd);
-    editor.setSelectionRange(selectionEnd, selectionEnd);
-    if (selectionEnd > editor.value.length)
-        lineToCopy = "\n" + lineToCopy;
+export function copyLineDown() {
+    var [ lineStart, lineEnd ] = getLineBorders();
+    if (lineEnd - 1 == lineStart) return;
+
+    var positionAtLine = editor.selectionStart - lineStart;
+    var lineToCopy = editor.value.slice(lineStart, lineEnd);
+    if (lineEnd > editor.value.length) lineToCopy = "\n" + lineToCopy;
+
+    editor.setSelectionRange(lineEnd, lineEnd);
     document.execCommand("insertText", false, lineToCopy);
-    editor.setSelectionRange(selectionEnd + positionAtLine, selectionEnd + positionAtLine);
-    editor.blur();
-    editor.focus();
+    setCursorAndFocus(lineEnd + positionAtLine);
 }
 
-export function copyLineUp(editor) {
-    var [ selectionStart, selectionEnd ] = getSelectedLineBorders(editor);
-    if (selectionEnd - 1 == selectionStart) return;
-    var positionAtLine = editor.selectionStart - selectionStart;
-    var lineToCopy = editor.value.slice(selectionStart, selectionEnd);
-    if (selectionEnd > editor.value.length)
-        lineToCopy += "\n";
-    editor.setSelectionRange(selectionStart, selectionStart);
+export function copyLineUp() {
+    var [ lineStart, lineEnd ] = getLineBorders();
+    if (lineEnd - 1 == lineStart) return;
+
+    var positionAtLine = editor.selectionStart - lineStart;
+    var lineToCopy = editor.value.slice(lineStart, lineEnd);
+    if (lineEnd > editor.value.length) lineToCopy += "\n";
+
+    editor.setSelectionRange(lineStart, lineStart);
     document.execCommand("insertText", false, lineToCopy);
-    editor.setSelectionRange(selectionStart + positionAtLine, selectionStart + positionAtLine);
-    editor.blur();
-    editor.focus();
+    setCursorAndFocus(lineStart + positionAtLine);
 }
 
-export function createCheckbox(editor) {
-    var [ selectionStart, selectionEnd ] = getSelectedLineBorders(editor);
+export function createCheckbox() {
+    var lineStart = getLineStart();
+    var positionAtLine = editor.selectionStart - lineStart;
 
-    if (editor.value.slice(selectionStart, selectionStart + 6) == "- [x] ") {
-        editor.setSelectionRange(selectionStart + 3, selectionStart + 4);
+    if (editor.value.slice(lineStart, lineStart + 4) == "[x] ") {
+        editor.setSelectionRange(lineStart + 1, lineStart + 2);
         document.execCommand("insertText", false, " ");
-        editor.setSelectionRange(selectionEnd - 1, selectionEnd - 1);
+        setCursorAndFocus(lineStart + positionAtLine);
     }
-    else if (editor.value.slice(selectionStart, selectionStart + 6) == "- [ ] ") {
-        editor.setSelectionRange(selectionStart + 3, selectionStart + 4);
+    else if (editor.value.slice(lineStart, lineStart + 4) == "[ ] ") {
+        editor.setSelectionRange(lineStart + 1, lineStart + 2);
         document.execCommand("insertText", false, "x");
-        editor.setSelectionRange(selectionEnd - 1, selectionEnd - 1);
+        setCursorAndFocus(lineStart + positionAtLine);
     }
     else {
-       editor.setSelectionRange(selectionStart, selectionStart);
-       document.execCommand("insertText", false, "- [ ] ");
-       editor.setSelectionRange(selectionEnd + 5, selectionEnd + 5);
+       editor.setSelectionRange(lineStart, lineStart);
+       document.execCommand("insertText", false, "[ ] ");
+       setCursorAndFocus(lineStart + positionAtLine + 4);
     }
 }
 
-export function jumpUp(editor) {
-    var cursorPosition = editor.selectionStart;
-    var selectionStart = cursorPosition - 1;
-    while (selectionStart >= 0) {
-        if (editor.value[selectionStart] == "\n") break;
-        selectionStart--;
-    }
-    while (selectionStart >= 0) {
-        if (editor.value[selectionStart] == "#") break;
-        selectionStart--;
-    }
-    if (selectionStart < 0) selectionStart = 0;
-    editor.setSelectionRange(selectionStart,selectionStart);
-    var [ selectionStart, selectionEnd ] = getSelectedLineBorders(editor);
-    editor.setSelectionRange(selectionEnd - 1, selectionEnd - 1);
+export function jumpUp() {
+    var position = editor.selectionStart - 1;
+
+    for (; position >= 0 && editor.value[position] != "\n"; position--);
+    for (; position >= 0 && editor.value[position] != "#"; position--);
+
+    position = Math.max(0, position);
+
+    editor.setSelectionRange(position, position);
+    setCursorAndFocus(getLineEnd() - 1);
+}
+
+export function jumpDown() {
+    var position = editor.selectionStart;
+
+    for (; position < editor.value.length && editor.value[position] != "\n"; position++);
+    for (; position < editor.value.length && editor.value[position] != "#"; position++);
+
+    editor.setSelectionRange(position, position);
+    setCursorAndFocus(getLineEnd() - 1);
+}
+
+function setCursorAndFocus(position) {
+    editor.setSelectionRange(position, position);
     editor.blur();
     editor.focus();
 }
 
-export function jumpDown(editor) {
-    var cursorPosition = editor.selectionStart;
-    var selectionStart = cursorPosition;
-    while (selectionStart < editor.value.length) {
-        if (editor.value[selectionStart] == "\n") break;
-        selectionStart++;
-    }
-    while (selectionStart < editor.value.length) {
-        if (editor.value[selectionStart] == "#") break;
-        selectionStart++;
-    }
-    editor.setSelectionRange(selectionStart, selectionStart);
-    var [ selectionStart, selectionEnd ] = getSelectedLineBorders(editor);
-    editor.setSelectionRange(selectionEnd - 1, selectionEnd - 1);
-    editor.blur();
-    editor.focus();
+function getLineBorders() {
+    return [getLineStart(), getLineEnd()];
 }
 
-export function cutLine(editor) {
-    selectLine(editor);
-    console.log(editor.selectionEnd, editor.selectionStart);
-    if (editor.selectionEnd - 1 == editor.selectionStart)
-        document.execCommand("delete");
-    else
-        document.execCommand("cut");
+function getLineStart() {
+    var lineStart = editor.selectionStart - 1;
+    for (; lineStart >= 0 && editor.value[lineStart] != "\n"; lineStart--);
+    return lineStart + 1;
 }
 
-function getSelectedLineBorders(editor) {
-    var cursorPosition = editor.selectionStart;
-    var selectionStart = cursorPosition - 1;
-    while (selectionStart >= 0) {
-        if (editor.value[selectionStart] == "\n") break;
-        selectionStart--;
-    }
-    var selectionEnd = cursorPosition;
-    while (selectionEnd < editor.value.length) {
-        if (editor.value[selectionEnd] == "\n") break;
-        selectionEnd++;
-    }
-    return [selectionStart + 1, selectionEnd + 1];
+function getLineEnd() {
+    var lineEnd = editor.selectionStart;
+    for (; lineEnd < editor.value.length && editor.value[lineEnd] != "\n"; lineEnd++);
+    return lineEnd + 1;
 }

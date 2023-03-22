@@ -1,14 +1,10 @@
 import {showFileTree, openInExplorer} from '../src/tree-view.js'
-import {selectLine, cutLine, moveLineUp, moveLineDown, createCheckbox, deselect, copyLineUp, copyLineDown, jumpUp, jumpDown} from '../src/text-actions.js'
+import {selectLine, cutLine, moveUp, moveDown, createCheckbox, deselect, copyLineUp, copyLineDown, jumpUp, jumpDown} from '../src/text-actions.js'
 
-const {appWindow, WebviewWindow} = window.__TAURI__.window;
+const {appWindow} = window.__TAURI__.window;
 const {exists, writeTextFile, readTextFile, readDir, renameFile} = window.__TAURI__.fs;
 const {open, save} = window.__TAURI__.dialog;
 const {appConfigDir} = window.__TAURI__.path;
-
-// await register('CmdOrControl+S', () => {saveSelectedFile()})
-// await register('CmdOrControl+O', () => {openFile()})
-//await register('CmdOrControl+Shift+O', () => {selectDirectory()})
 
 var focused = true;
 var selectedFile;
@@ -36,89 +32,73 @@ window.onkeydown = (e) => {
     if (!focused) return;
 
     if (e.ctrlKey && (e.code === 'KeyR')) {
-        e.preventDefault();
         toggleSpellcheck();
     }
     else if (e.ctrlKey && (e.code === 'KeyX')) {
         if (editor.selectionStart != editor.selectionEnd) return;
-        e.preventDefault();
-        cutLine(editor);
+        cutLine();
         handleEditorInput();
     }
     else if (e.altKey && e.shiftKey && (e.code === 'ArrowUp')) {
         if (editor.selectionStart != editor.selectionEnd) return;
-        e.preventDefault();
-        copyLineUp(editor);
+        copyLineUp();
         handleEditorInput();
     }
     else if (e.altKey && e.shiftKey && (e.code === 'ArrowDown')) {
         if (editor.selectionStart != editor.selectionEnd) return;
-        e.preventDefault();
-        copyLineDown(editor);
+        copyLineDown();
         handleEditorInput();
     }
     else if (e.altKey && e.code === 'ArrowUp') {
         if (editor.selectionStart != editor.selectionEnd) return;
-        e.preventDefault();
-        moveLineUp(editor);
+        moveUp();
         handleEditorInput();
     }
     else if (e.altKey && e.code === 'ArrowDown') {
         if (editor.selectionStart != editor.selectionEnd) return;
-        e.preventDefault();
-        moveLineDown(editor);
+        moveDown();
         handleEditorInput();
     }
     else if (e.ctrlKey && e.code === 'ArrowUp') {
-        e.preventDefault();
-        jumpUp(editor);
+        jumpUp();
         handleEditorInput();
     }
     else if (e.ctrlKey && e.code === 'ArrowDown') {
-        e.preventDefault();
-        jumpDown(editor);
+        jumpDown();
         handleEditorInput();
     }
     else if (e.ctrlKey && e.code === 'KeyT') {
-        e.preventDefault();
         setNextTheme();
     }
     else if (e.ctrlKey && e.code === "Enter") {
-        e.preventDefault();
-        createCheckbox(editor);
+        createCheckbox();
     }
     else if (e.ctrlKey && e.code === 'KeyL') {
-        e.preventDefault();
-        selectLine(editor);
+        selectLine();
     }
     else if (e.ctrlKey && e.code === 'KeyQ') {
-        e.preventDefault();
         closewindow();
     }
     else if (!e.ctrlKey && e.code === 'Escape') {
-        e.preventDefault();
-        deselect(editor);
+        deselect();
     }
     else if (e.ctrlKey && e.code === 'Equal') {
-        e.preventDefault();
         applyFontSize(+3);
     }
     else if (e.ctrlKey && e.code === 'Minus') {
-        e.preventDefault();
          applyFontSize(-3);
     }
     else if (e.ctrlKey && e.code === 'KeyN') {
-        e.preventDefault();
         createNewFile();
     }
     else if (e.ctrlKey && e.code === 'KeyE') {
-        e.preventDefault();
         openInExplorer(selectedDirectory);
     }
     else if (e.ctrlKey && e.code === 'KeyP') {
-        e.preventDefault();
         togglePrefs();
     }
+    else { return; }
+    e.preventDefault();
 }
 
 function togglePrefs() {
@@ -126,7 +106,7 @@ function togglePrefs() {
     document.getElementById("preferences").style.display = prefsToggled ? "block" : "none";
 }
 
-async function handleEditorInput() {
+export async function handleEditorInput() {
     handleEditorScroll();
     saveSelectedFile();
     setPreviewText();
@@ -185,7 +165,9 @@ async function loadConfig() {
     applyFontSize();
 }
 
-async function closewindow() { await appWindow.close(); }
+async function closewindow() { 
+    await appWindow.close(); 
+}
 
 async function openFile() {
     var file = await open({
