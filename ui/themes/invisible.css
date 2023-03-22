@@ -1,0 +1,15 @@
+:root {
+    --editor-background-color: transparent;
+    --editor-text-color: transparent;
+    --editor-header-color: transparent;
+    --editor-hashtag-color: transparent;
+    --selection-color: transparent;
+    --scrollbar-color: transparent;
+
+    --sidebar-background-color:transparent;
+    --sidebar-text-color: transparent;
+    --sidebar-selection-color: transparent;
+
+    --divider-color: transparent;
+    --shadow: 0px;
+}

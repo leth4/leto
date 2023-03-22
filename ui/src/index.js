@@ -1,33 +1,36 @@
-import {showFileTree, openInExplorer} from '/treeview.js'
-import {selectLine, cutLine, moveLineUp, createCheckbox, deselect} from '/textactions.js'
+import {showFileTree, openInExplorer} from '../src/tree-view.js'
+import {selectLine, cutLine, moveLineUp, moveLineDown, createCheckbox, deselect, copyLineUp, copyLineDown, jumpUp, jumpDown} from '../src/text-actions.js'
 
-const {appWindow} = window.__TAURI__.window;
-const {register} = window.__TAURI__.globalShortcut;
+const {appWindow, WebviewWindow} = window.__TAURI__.window;
 const {exists, writeTextFile, readTextFile, readDir, renameFile} = window.__TAURI__.fs;
 const {open, save} = window.__TAURI__.dialog;
 const {appConfigDir} = window.__TAURI__.path;
 
 // await register('CmdOrControl+S', () => {saveSelectedFile()})
 // await register('CmdOrControl+O', () => {openFile()})
-await register('CmdOrControl+Shift+O', () => {selectDirectory()})
-// await register('CmdOrControl+]', () => {changeFontSize(3)})
-// await register('CmdOrControl+[', () => {changeFontSize(-3)})
-
-const editor = document.getElementById("text-editor");
-const preview = document.getElementById("text-preview");
-const title = document.getElementById("file-name");
-
-document.addEventListener('contextmenu', event => event.preventDefault());
-editor.addEventListener('input', () => handleEditorInput(), false);
-editor.addEventListener('scroll', () => handleEditorScroll(), false);
-title.addEventListener('input', () => renameSelectedFile(), false);
+//await register('CmdOrControl+Shift+O', () => {selectDirectory()})
 
 var focused = true;
 var selectedFile;
 var selectedDirectory;
 var currentTheme = 0;
 var fontSize = 20;
+var prefsToggled = false;
+
 const themes = ["black", "gray", "light", "slick"];
+const fonts = ["arial", "georgia", "consolas"];
+const editor = document.getElementById("text-editor");
+const preview = document.getElementById("text-preview");
+const title = document.getElementById("file-name");
+const themeSelector = document.getElementById("theme-selector");
+
+await loadConfig();
+
+document.addEventListener('contextmenu', event => event.preventDefault());
+editor.addEventListener('input', () => handleEditorInput(), false);
+editor.addEventListener('scroll', () => handleEditorScroll(), false);
+title.addEventListener('input', () => renameSelectedFile(), false);
+themeSelector.addEventListener('change', () => setTheme(themeSelector.value), false);
 
 window.onkeydown = (e) => {
     if (!focused) return;
@@ -42,10 +45,38 @@ window.onkeydown = (e) => {
         cutLine(editor);
         handleEditorInput();
     }
-    else if (e.altKey && (e.code === 'ArrowUp')) {
+    else if (e.altKey && e.shiftKey && (e.code === 'ArrowUp')) {
+        if (editor.selectionStart != editor.selectionEnd) return;
+        e.preventDefault();
+        copyLineUp(editor);
+        handleEditorInput();
+    }
+    else if (e.altKey && e.shiftKey && (e.code === 'ArrowDown')) {
+        if (editor.selectionStart != editor.selectionEnd) return;
+        e.preventDefault();
+        copyLineDown(editor);
+        handleEditorInput();
+    }
+    else if (e.altKey && e.code === 'ArrowUp') {
         if (editor.selectionStart != editor.selectionEnd) return;
         e.preventDefault();
         moveLineUp(editor);
+        handleEditorInput();
+    }
+    else if (e.altKey && e.code === 'ArrowDown') {
+        if (editor.selectionStart != editor.selectionEnd) return;
+        e.preventDefault();
+        moveLineDown(editor);
+        handleEditorInput();
+    }
+    else if (e.ctrlKey && e.code === 'ArrowUp') {
+        e.preventDefault();
+        jumpUp(editor);
+        handleEditorInput();
+    }
+    else if (e.ctrlKey && e.code === 'ArrowDown') {
+        e.preventDefault();
+        jumpDown(editor);
         handleEditorInput();
     }
     else if (e.ctrlKey && e.code === 'KeyT') {
@@ -76,11 +107,27 @@ window.onkeydown = (e) => {
         e.preventDefault();
          applyFontSize(-3);
     }
+    else if (e.ctrlKey && e.code === 'KeyN') {
+        e.preventDefault();
+        createNewFile();
+    }
+    else if (e.ctrlKey && e.code === 'KeyE') {
+        e.preventDefault();
+        openInExplorer(selectedDirectory);
+    }
+    else if (e.ctrlKey && e.code === 'KeyP') {
+        e.preventDefault();
+        togglePrefs();
+    }
 }
 
-await loadConfig();
+function togglePrefs() {
+    prefsToggled = !prefsToggled;
+    document.getElementById("preferences").style.display = prefsToggled ? "block" : "none";
+}
 
 async function handleEditorInput() {
+    handleEditorScroll();
     saveSelectedFile();
     setPreviewText();
 }
@@ -92,6 +139,17 @@ await appWindow.onFocusChanged(({ payload: hasFocused }) => {
        openSelectedFile();
     }
 });
+
+populateThemes();
+function populateThemes() {
+    for (var i = 0; i < themes.length; i++) {
+    var option = document.createElement('option');
+       option.innerHTML = themes[i];
+       option.value = i;
+       themeSelector.appendChild(option); 
+    }
+    themeSelector.value = currentTheme;
+}
 
 async function setPreviewText() {
     var editorText = editor.value + ((editor.value.slice(-1) == "\n") ? " " : "");
@@ -117,12 +175,12 @@ async function loadConfig() {
     const configPath = await appConfigDir();
     var config = await readTextFile(`${configPath}config.json`);
     var configObject = JSON.parse(config);
+    currentTheme = configObject.currentTheme;
+    applyTheme();
     selectedFile = configObject.selectedFile;
     openSelectedFile();
     selectedDirectory = configObject.selectedDirectory;
     openSelectedDirectory();
-    currentTheme = configObject.currentTheme;
-    setCurrentTheme();
     fontSize = configObject.fontSize;
     applyFontSize();
 }
@@ -182,6 +240,20 @@ async function saveSelectedFile() {
     }
 }
 
+async function createNewFile() {
+
+    selectedFile = selectedDirectory + '\\new.txt';
+    for (var i = 0; i < Infinity; i++) {
+        var pathExists = false;
+        await exists(selectedFile).then(function(exists) { pathExists = exists });
+        if (!pathExists) break;
+        selectedFile = selectedDirectory + `\\new ${i + 1}.txt`;
+    }
+    await writeTextFile(selectedFile, " ");
+    openSelectedDirectory();
+    openSelectedFile();
+}
+
 async function renameSelectedFile() {
     // if (selectFile == null) return;
     // var nameStart = selectedFile.lastIndexOf("\\");
@@ -201,12 +273,18 @@ function setFileTitle() {
 function setNextTheme() {
     currentTheme++;
     if (currentTheme == themes.length) currentTheme = 0;
-    setCurrentTheme();
-    saveConfig();
+    themeSelector.value = currentTheme;
+    applyTheme();
 }
 
-function setCurrentTheme() {
+function setTheme(theme) {
+    currentTheme = theme;
+    applyTheme();
+}
+
+function applyTheme() {
     document.getElementById("theme-link").setAttribute("href", `themes/${themes[currentTheme]}.css`);
+    saveConfig();
 }
 
 function toggleSpellcheck() {

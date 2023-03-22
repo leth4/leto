@@ -1,4 +1,4 @@
-import {selectFile} from "/index.js"
+import {selectFile} from "../src/index.js"
 
 const {open} = window.__TAURI__.shell;
 
@@ -11,7 +11,7 @@ export function showFileTree(directoryElements, path) {
 
     var titleLi = document.createElement('li');
     titleLi.innerHTML = directoryName;
-    titleLi.className = "path-title";
+    titleLi.className = "sidebar-header";
     document.getElementById("file-tree").innerHTML = '';
     document.getElementById("file-tree").appendChild(titleLi)
 

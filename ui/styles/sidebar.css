@@ -22,12 +22,12 @@
 }
 
 .file-button:hover {
-    background: var(--selection-background-color);
+    background: var(--sidebar-selection-color);
 }
 
 .file-button:focus {
     outline: none;
-    background: var(--selection-background-color);
+    background: var(--sidebar-selection-color);
 }
 
 .folder-button {
@@ -40,12 +40,12 @@
 }
 
 .folder-button:hover {
-    background: var(--selection-background-color);
+    background: var(--sidebar-selection-color);
 }
 
 .folder-button:focus {
     outline: none;
-    background: var(--selection-background-color);
+    background: var(--sidebar-selection-color);
 }
 
 .directory-label {
@@ -53,7 +53,7 @@
     /* font-weight: 600; */
 }
 
-.path-title {
+.sidebar-header {
     padding-left: 5px;
     padding-bottom: 10px;
     color: var(--sidebar-text-color);
@@ -76,9 +76,6 @@
     color: var(--editor-text-color);
 }
 
-
-
-
 li {
     list-style-type: none;
     line-height: 5px;
@@ -90,7 +87,7 @@ ul {
 
 
 .group-toggle {
-    color: (--sidebar-divider-color);
+    color: (--divider-color);
 }
 
 .group-toggle::before {
@@ -113,4 +110,34 @@ ul {
 
 .nested.active {
     display: block;
+}
+
+
+select{
+    display : inline-block;
+}
+
+.preferences {
+    display: none;
+}
+
+select {
+    background: var(--sidebar-background-color);
+    border-radius: 4px;
+     outline: none;
+    padding-bottom: 0px;
+    color: var(--sidebar-text-color);
+    font-family: var(--font-family);
+    font-size: var(--sidebar-font-size);
+}
+
+select:hover {
+    background: var(--sidebar-selection-color);
+}
+
+option {
+    background-color: var(--sidebar-background-color);
+    color: var(--sidebar-text-color);
+    font-family: var(--font-family);
+    font-size: var(--sidebar-font-size);
 }

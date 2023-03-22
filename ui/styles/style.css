@@ -3,7 +3,7 @@
     --border-radius: 4px;
     --title-font-size: 20px;
     --sidebar-font-size: 15px;
-    --font-family: 'consolas';
+    --font-family: 'arial';
 }
 
 body {
@@ -11,6 +11,7 @@ body {
     scroll-behavior: smooth;
     margin: 0px;
     user-select: none;
+    display: var(--display);
 }
 
 .main {
@@ -26,9 +27,8 @@ body {
     border-radius: 0 var(--border-radius) var(--border-radius) 0;
     position: relative;
     overflow: hidden;
-    
-    border-left: 1px solid var(--sidebar-divider-color);
-    /* box-shadow: 0 0 20px var(--sidebar-divider-color); */
+    border-left: calc(1px - var(--shadow)) solid var(--divider-color);
+    box-shadow:  calc(100px - var(--shadow) * 100) 0 20px var(--divider-color);
 }
 
 .text-preview {
@@ -62,7 +62,7 @@ body {
 }
 
 ::selection {
-    background-color: var(--selection-background-color);
+    background-color: var(--selection-color);
     color: var(--editor-text-color);
 }
 
@@ -76,16 +76,16 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--sidebar-text-color);
+    background: var(--divider-color);
     border-radius: 2px;
 }
 
 mark.header {
-    color: rgb(206, 198, 255);
+    color: var(--editor-header-color);
     background-color: transparent;
 }
 
 mark.hashtag {
-    color :rgb(122, 122, 122);
+    color: var(--editor-hashtag-color);
     background-color: transparent;
 }
