@@ -1,6 +1,7 @@
 .sidebar {
     flex: 1;
-    background-color: var(--sidebar-background-color);
+    background: var(--sidebar-background-color);
+    /* background: transparent; */
     color: var(--sidebar-text-color);
     max-width: 200px;
     overflow: auto;
@@ -50,6 +51,7 @@
 
 .directory-label {
     color: var(--sidebar-text-color);
+    font-size: var(--sidebar-font-size);
     /* font-weight: 600; */
 }
 
@@ -79,6 +81,7 @@
 li {
     list-style-type: none;
     line-height: 5px;
+    font-size: var(--sidebar-font-size);
 }
 
 ul {
@@ -121,10 +124,14 @@ select{
     display: none;
 }
 
+.pref {
+    padding-left: 6px;
+}
+
 select {
     background: var(--sidebar-background-color);
     border-radius: 4px;
-     outline: none;
+    outline: none;
     padding-bottom: 0px;
     color: var(--sidebar-text-color);
     font-family: var(--font-family);

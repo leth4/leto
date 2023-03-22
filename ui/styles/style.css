@@ -8,6 +8,7 @@
 
 body {
     font-family: var(--font-family);
+    /* background: linear-gradient(218deg, rgba(157,157,157,1) 0%, rgba(88,88,88,1) 100%); */
     scroll-behavior: smooth;
     margin: 0px;
     user-select: none;
@@ -40,7 +41,8 @@ body {
     font-size: var(--font-size);
     font-family: var(--font-family);
     color: var(--editor-text-color);
-    background-color: var(--editor-background-color);
+    background: var(--editor-background-color);
+    /* background: transparent; */
     white-space: pre-wrap;
     word-wrap: break-word;
     content:  var(--preview-text);
