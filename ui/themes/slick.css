@@ -1,10 +1,15 @@
 :root {
     --editor-background-color: #212121;
     --editor-text-color: #db5b5b;
-    --selection-background-color: #181818;
+    --editor-header-color: #74b5f9;
+    --editor-hashtag-color: #3a3a3a;
+    --selection-color: #838383;
+    --scrollbar-color: #db5b5b;
 
     --sidebar-background-color: #212121;
     --sidebar-text-color: #db5b5b;
+    --sidebar-selection-color: #181818;
 
-    --sidebar-divider-color:  #db5b5b;
+    --divider-color: #db5b5b;
+    --shadow: 0px;
 }

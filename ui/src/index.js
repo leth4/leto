@@ -12,6 +12,7 @@ var selectedDirectory;
 var currentTheme = 0;
 var fontSize = 20;
 var prefsToggled = false;
+var sidebarToggled = true;
 
 const themes = ["black", "gray", "light", "slick"];
 const fonts = ["arial", "georgia", "consolas"];
@@ -33,6 +34,9 @@ window.onkeydown = (e) => {
 
     if (e.ctrlKey && (e.code === 'KeyR')) {
         toggleSpellcheck();
+    }
+    else if (e.ctrlKey && (e.code === 'KeyB')) {
+        toggleSidebar();
     }
     else if (e.ctrlKey && (e.code === 'KeyX')) {
         if (editor.selectionStart != editor.selectionEnd) return;
@@ -103,7 +107,15 @@ window.onkeydown = (e) => {
 
 function togglePrefs() {
     prefsToggled = !prefsToggled;
-    document.getElementById("preferences").style.display = prefsToggled ? "block" : "none";
+    document.getElementById("preferences").style.display = prefsToggled && sidebarToggled ? "block" : "none";
+}
+
+function toggleSidebar() {
+    sidebarToggled = !sidebarToggled;
+    document.getElementById("sidebar").style.maxWidth = sidebarToggled ? "200px" : "50px";
+    document.getElementById("preferences").style.display = prefsToggled && sidebarToggled ? "block" : "none";
+    document.getElementById("file-tree").style.display = sidebarToggled ? "block" : "none";
+    title.style.display = sidebarToggled ? "block" : "none";
 }
 
 export async function handleEditorInput() {

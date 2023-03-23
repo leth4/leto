@@ -1,7 +1,6 @@
 .sidebar {
     flex: 1;
     background: var(--sidebar-background-color);
-    /* background: transparent; */
     color: var(--sidebar-text-color);
     max-width: 200px;
     overflow: auto;
