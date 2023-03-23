@@ -14,10 +14,12 @@
         <div class="main">
             <div class="sidebar" id="sidebar" data-tauri-drag-region>
                 <div class="sidebar-content" id="sidebar-content">
-                    <ul id="file-tree"> </ul>
-                    <ul class="preferences" id="preferences">
-                        <li class="pref"> font: <select name="font" id="font-selector""> </select></li>
-                        <li class=" pref"> theme: <select name="theme" id="theme-selector"></select></li>
+                    <ul id="file-tree" data-tauri-drag-region> </ul>
+                    <ul class="preferences" id="preferences" data-tauri-drag-region>
+                        <li class="pref" data-tauri-drag-region><textarea id="file-name"> </textarea></li>
+                        <li class=" pref" data-tauri-drag-region><select name="font" id="font-selector""> </select></li>
+                        <li class=" pref" data-tauri-drag-region><select name="theme" id="theme-selector"></select>
+                        </li>
                     </ul>
                 </div>
             </div>

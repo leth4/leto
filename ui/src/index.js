@@ -1,10 +1,10 @@
 import {showFileTree, highlightSelectedFile, showSingleFile, openInExplorer, clearTree} from '../src/file-view.js'
-import {closewindow, minimizeWindow, togglePrefs, toggleSidebar, populateFonts, populateThemes, themes, applyTheme, applyFont} from '../src/window-actions.js'
+import {closewindow, minimizeWindow, togglePrefs, toggleSidebar, populateFonts, populateThemes, themes, applyTheme, applyFont, toggleFullscreen} from '../src/window-actions.js'
 import {selectLine, cutLine, moveUp, moveDown, createCheckbox, deselect, copyLineUp, copyLineDown, jumpUp, jumpDown} from '../src/text-actions.js'
 
 const {appWindow} = window.__TAURI__.window;
 const {exists, writeTextFile, readTextFile, readDir, removeFile, renameFile} = window.__TAURI__.fs;
-const {open, save, confirm} = window.__TAURI__.dialog;
+const {open, save, confirm, message} = window.__TAURI__.dialog;
 const {appConfigDir} = window.__TAURI__.path;
 const {invoke} = window.__TAURI__.tauri;
 
@@ -15,10 +15,13 @@ export var currentTheme = 0;
 export var currentFont = 0;
 var fontSize = 20;
 
+var entriesFound = 0;
+const entriesLimit = 2000;
 var previousEditTime = -1;
 
 const editor = document.getElementById("text-editor");
 const preview = document.getElementById("text-preview");
+const fileName = document.getElementById("file-name");
 const themeSelector = document.getElementById("theme-selector");
 const fontSelector = document.getElementById("font-selector");
 
@@ -31,6 +34,7 @@ editor.addEventListener('input', () => handleEditorInput(), false);
 editor.addEventListener('scroll', () => handleEditorScroll(), false);
 themeSelector.addEventListener('change', () => setTheme(themeSelector.value), false);
 fontSelector.addEventListener('change', () => setFont(fontSelector.value), false);
+fileName.addEventListener('input', () => changeFileName(), false);
 
 window.onkeydown = (e) => {
     if (!focused) return;
@@ -121,7 +125,9 @@ window.onkeydown = (e) => {
         deleteActiveFile();
     }
     else if (e.ctrlKey && e.code === 'KeyU') {}
-    else if (e.ctrlKey && e.code === 'KeyF') {}
+    else if (e.ctrlKey && e.code === 'KeyF') {
+        toggleFullscreen();
+    }
     else if (e.ctrlKey && e.code === 'KeyG') {}
     else { return; }
     e.preventDefault();
@@ -196,8 +202,11 @@ export function setActiveFile(path) {
 } 
 
 async function selectNewDirectory() {
-    activeDirectory = await open({ directory: true});
-    if (activeDirectory == null) return;
+
+    var newDirectory = await open({ directory: true});
+    if (newDirectory == null) return;
+
+    activeDirectory = newDirectory;
     
     previousEditTime = -1;
     displayActiveDirectory();
@@ -226,10 +235,39 @@ async function displayActiveDirectory() {
     if (editTime == previousEditTime) return;
     previousEditTime = editTime;
     
-    await readDir(activeDirectory, {recursive: true }).then(function(entries) {
-        showFileTree(entries);
+    entriesFound = 0;
+    var directories;
+    await readDir(activeDirectory, {recursive: false }).then(function(entries) {
+        directories = entries;
     });
+    await populateChildren(directories)
+
+    console.log(entriesFound);
+    console.log("HELLO");
+
+    if (entriesFound > entriesLimit) {
+        await message(`Selected directory is too big. You can only have ${entriesLimit} files and subfolders in the directory.`, { title: 'leto', type: 'error' });
+        activeDirectory = null;
+        activeFile = null;
+        openActiveFile();
+        return;
+    }
+
+
+    showFileTree(directories);
+    
     if (activeFile != null) highlightSelectedFile(activeFile);
+}
+
+async function populateChildren(entries) {
+    for (var i = 0; i < entries.length; i++) {
+        if (++entriesFound > entriesLimit) return;
+        if (entries[i].children == null) continue;
+        await readDir(entries[i].path, {recursive: false }).then(function(ent) {
+                entries[i].children = ent;
+            });
+        await populateChildren(entries[i].children);
+    }
 }
 
 function closeActiveFile() {
@@ -257,11 +295,10 @@ async function openActiveFile() {
         return;
     }
 
-    console.log(pathExists);
-
     if (activeDirectory != null) highlightSelectedFile(activeFile);
     editor.value = await readTextFile(activeFile);
     editor.disabled = false;
+    showFileName();
     setPreviewText();
 }
 
@@ -292,16 +329,49 @@ async function deleteActiveFile() {
 }
 
 async function createNewFile() {
-    // activeFile = activeDirectory + '\\new.txt';
-    // for (var i = 0; i < Infinity; i++) {
-    //     var pathExists = false;
-    //     await exists(activeFile).then(function(exists) { pathExists = exists });
-    //     if (!pathExists) break;
-    //     activeFile = activeDirectory + `\\new ${i + 1}.txt`;
-    // }
-    // await writeTextFile(activeFile, " ");
-    // displayActiveDirectory();
-    // openActiveFile();
+    if (activeDirectory != null) {
+        for (var i = 0; i < Infinity; i++) {
+            var pathExists = false;
+            await exists(activeFile).then(function(exists) { pathExists = exists });
+            if (!pathExists) break;
+            activeFile = activeDirectory + `\\new ${i + 1}.md`;
+        }   
+        await writeTextFile(activeFile, " ");
+        displayActiveDirectory();
+        openActiveFile();  
+    }
+}
+
+var isRenaming = false;
+async function changeFileName() {
+    if (isRenaming) return;
+    isRenaming = true;
+
+    if (activeFile == null) return;
+    var pathToFile = activeFile.substring(0,activeFile.lastIndexOf("\\")+1);
+    var newFile = pathToFile + fileName.value + ".md";
+    var success = false;
+
+    await exists(newFile).then(function(exists) { success = !exists });
+    if (!success) {
+        isRenaming = false;
+        return;
+    }
+    await renameFile(activeFile, newFile).then(function(){success = true}, function(){success = false});
+    isRenaming = false;
+    if (!success) {
+        fileName.value = activeFile.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, "");
+        return;
+    }
+
+    activeFile = newFile;
+    previousEditTime = -1;
+    displayActiveDirectory(true);
+    openActiveFile();
+}
+
+async function showFileName() {
+    fileName.value = activeFile.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, "");
 }
 
 function setNextTheme() {

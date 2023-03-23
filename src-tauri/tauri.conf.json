@@ -18,6 +18,7 @@
       "dialog" : {
         "open" : true,
         "save" : true,
+        "message": true,
         "confirm" : true
       },
       "path": {

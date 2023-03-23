@@ -30,6 +30,8 @@ export function highlightSelectedFile(path) {
         files[i].classList.remove("selected");
     }
 
+    if (highlightedElement == null) return;
+
     var folders = document.getElementsByClassName("folder-button");
     for (var i = 0; i < folders.length; i++) {
         folders[i].classList.remove("selected");

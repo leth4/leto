@@ -33,7 +33,8 @@
 
 .file-button:focus {
     outline: none;
-    background: var(--sidebar-selection-color);
+    background: none;
+    text-decoration: underline;
 }
 
 .folder-button {
@@ -51,8 +52,6 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
     transform: scale(1, 0.95);
-    /* display: list-item; */
-    /* text-decoration: underline; */
 }
 
 .selected {
@@ -93,7 +92,7 @@ ul {
 }
 
 
-select{
+select {
     display : inline-block;
 }
 
@@ -101,9 +100,9 @@ select{
     display: none;
 }
 
-
 .pref {
     padding-left: 6px;
+    padding-top: 3px;
     white-space: nowrap;
 }
 
@@ -115,6 +114,7 @@ select {
     color: var(--sidebar-text-color);
     font-family: var(--font-family);
     font-size: var(--sidebar-font-size);
+    width: 70%;
 }
 
 select:hover {

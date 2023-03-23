@@ -6,6 +6,7 @@ const fonts = ["arial", "georgia", "cascadia mono", "helvetica neue", "segoe ui"
 
 var prefsToggled = false;
 var sidebarToggled = true;
+var fullscreenToggled = true;
 
 export async function closewindow() { 
     await appWindow.close(); 
@@ -13,6 +14,11 @@ export async function closewindow() {
 
 export async function minimizeWindow() { 
     await appWindow.minimize(); 
+}
+
+export function toggleFullscreen() {
+    fullscreenToggled = !fullscreenToggled;
+    appWindow.setFullscreen(fullscreenToggled);
 }
 
 export function applyFont() {
