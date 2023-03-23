@@ -3,14 +3,20 @@
     background: var(--sidebar-background-color);
     color: var(--sidebar-text-color);
     max-width: 200px;
-    overflow: auto;
-    border-radius: var(--border-radius) 0 0 var(--border-radius);
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-radius: var(--border-radius) 0 0 var(--border-radius);    
+    transition: max-width 0.4s ease-in-out;
+}
+
+.sidebar-content {
+    transition: opacity 0.3s ease-in;
 }
 
 .file-button {
     background: none;
     border: none;
-    color: var(--sidebar-text-color);
+    color: var(--editor-hashtag-color);
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -37,6 +43,20 @@
     text-align: left;
     border-radius: 3px;
     font-family: var(--font-family);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--sidebar-text-color);
+    font-size: var(--sidebar-font-size);
+    overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transform: scale(1, 0.95);
+    /* display: list-item; */
+    /* text-decoration: underline; */
+}
+
+.selected {
+    text-decoration: underline;
 }
 
 .folder-button:hover {
@@ -48,35 +68,6 @@
     background: var(--sidebar-selection-color);
 }
 
-.directory-label {
-    color: var(--sidebar-text-color);
-    font-size: var(--sidebar-font-size);
-    /* font-weight: 600; */
-}
-
-.sidebar-header {
-    padding-left: 5px;
-    padding-bottom: 10px;
-    color: var(--sidebar-text-color);
-    font-weight: 600;
-}
-
-.file-name {
-    background-color: var(--editor-background-color);
-    outline: 0px solid transparent;
-    border: 0px solid transparent;
-    resize: none;
-    width: 80%;
-    height: 30px;
-    padding: 20px;
-    overflow: hidden;
-    position: relative;
-    font-family: var(--font-family);
-    font-weight: 600;
-    font-size: var(--title-font-size);
-    color: var(--editor-text-color);
-}
-
 li {
     list-style-type: none;
     line-height: 5px;
@@ -84,20 +75,7 @@ li {
 }
 
 ul {
-    padding-left: 10px;
-}
-
-
-.group-toggle {
-    color: (--divider-color);
-}
-
-.group-toggle::before {
-    content: "►";
-}
-
-.unfolded::before {
-    content: "▼";
+    padding-left: 20px;
 }
 
 .nested {
@@ -107,7 +85,7 @@ ul {
 
 .nested li {
     margin: 0;
-    border-left: 1px solid var(--sidebar-text-color);
+    border-left: 1px solid var(--editor-hashtag-color);
 }
 
 .nested.active {
@@ -123,8 +101,10 @@ select{
     display: none;
 }
 
+
 .pref {
     padding-left: 6px;
+    white-space: nowrap;
 }
 
 select {

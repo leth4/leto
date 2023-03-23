@@ -1,54 +1,66 @@
-import {showFileTree, openInExplorer} from '../src/tree-view.js'
+import {showFileTree, highlightSelectedFile, showSingleFile, openInExplorer, clearTree} from '../src/file-view.js'
+import {closewindow, minimizeWindow, togglePrefs, toggleSidebar, populateFonts, populateThemes, themes, applyTheme, applyFont} from '../src/window-actions.js'
 import {selectLine, cutLine, moveUp, moveDown, createCheckbox, deselect, copyLineUp, copyLineDown, jumpUp, jumpDown} from '../src/text-actions.js'
 
 const {appWindow} = window.__TAURI__.window;
-const {exists, writeTextFile, readTextFile, readDir, renameFile} = window.__TAURI__.fs;
-const {open, save} = window.__TAURI__.dialog;
+const {exists, writeTextFile, readTextFile, readDir, removeFile, renameFile} = window.__TAURI__.fs;
+const {open, save, confirm} = window.__TAURI__.dialog;
 const {appConfigDir} = window.__TAURI__.path;
+const {invoke} = window.__TAURI__.tauri;
 
 var focused = true;
-var selectedFile;
-var selectedDirectory;
-var currentTheme = 0;
+var activeFile;
+var activeDirectory;
+export var currentTheme = 0;
+export var currentFont = 0;
 var fontSize = 20;
-var prefsToggled = false;
-var sidebarToggled = true;
 
-const themes = ["black", "gray", "light", "slick"];
-const fonts = ["arial", "georgia", "consolas"];
+var previousEditTime = -1;
+
 const editor = document.getElementById("text-editor");
 const preview = document.getElementById("text-preview");
-const title = document.getElementById("file-name");
 const themeSelector = document.getElementById("theme-selector");
+const fontSelector = document.getElementById("font-selector");
 
 await loadConfig();
+populateFonts();
+populateThemes();
 
 document.addEventListener('contextmenu', event => event.preventDefault());
 editor.addEventListener('input', () => handleEditorInput(), false);
 editor.addEventListener('scroll', () => handleEditorScroll(), false);
-title.addEventListener('input', () => renameSelectedFile(), false);
 themeSelector.addEventListener('change', () => setTheme(themeSelector.value), false);
+fontSelector.addEventListener('change', () => setFont(fontSelector.value), false);
 
 window.onkeydown = (e) => {
     if (!focused) return;
 
-    if (e.ctrlKey && (e.code === 'KeyR')) {
+    if (e.ctrlKey && e.shiftKey && e.code === 'KeyO') {
+        selectNewDirectory();
+    }
+    else if (e.ctrlKey && e.code === 'KeyO') {
+        selectNewFile();
+    }
+    else if (e.ctrlKey && e.shiftKey && e.code === 'KeyS') {
+        exportActiveFile();
+    }
+    else if (e.ctrlKey && e.code === 'KeyR') {
         toggleSpellcheck();
     }
-    else if (e.ctrlKey && (e.code === 'KeyB')) {
+    else if (e.ctrlKey && e.code === 'KeyB') {
         toggleSidebar();
     }
-    else if (e.ctrlKey && (e.code === 'KeyX')) {
+    else if (e.ctrlKey && e.code === 'KeyX') {
         if (editor.selectionStart != editor.selectionEnd) return;
         cutLine();
         handleEditorInput();
     }
-    else if (e.altKey && e.shiftKey && (e.code === 'ArrowUp')) {
+    else if (e.altKey && e.shiftKey && e.code === 'ArrowUp') {
         if (editor.selectionStart != editor.selectionEnd) return;
         copyLineUp();
         handleEditorInput();
     }
-    else if (e.altKey && e.shiftKey && (e.code === 'ArrowDown')) {
+    else if (e.altKey && e.shiftKey && e.code === 'ArrowDown') {
         if (editor.selectionStart != editor.selectionEnd) return;
         copyLineDown();
         handleEditorInput();
@@ -83,6 +95,9 @@ window.onkeydown = (e) => {
     else if (e.ctrlKey && e.code === 'KeyQ') {
         closewindow();
     }
+    else if (e.ctrlKey && e.code === 'KeyM') {
+        minimizeWindow();
+    }
     else if (!e.ctrlKey && e.code === 'Escape') {
         deselect();
     }
@@ -96,68 +111,51 @@ window.onkeydown = (e) => {
         createNewFile();
     }
     else if (e.ctrlKey && e.code === 'KeyE') {
-        openInExplorer(selectedDirectory);
+        if (activeDirectory != null)
+            openInExplorer(activeDirectory);
     }
     else if (e.ctrlKey && e.code === 'KeyP') {
         togglePrefs();
     }
+    else if (e.ctrlKey && e.shiftKey && e.code === 'KeyD') {
+        deleteActiveFile();
+    }
+    else if (e.ctrlKey && e.code === 'KeyU') {}
+    else if (e.ctrlKey && e.code === 'KeyF') {}
+    else if (e.ctrlKey && e.code === 'KeyG') {}
     else { return; }
     e.preventDefault();
-}
-
-function togglePrefs() {
-    prefsToggled = !prefsToggled;
-    document.getElementById("preferences").style.display = prefsToggled && sidebarToggled ? "block" : "none";
-}
-
-function toggleSidebar() {
-    sidebarToggled = !sidebarToggled;
-    document.getElementById("sidebar").style.maxWidth = sidebarToggled ? "200px" : "50px";
-    document.getElementById("preferences").style.display = prefsToggled && sidebarToggled ? "block" : "none";
-    document.getElementById("file-tree").style.display = sidebarToggled ? "block" : "none";
-    title.style.display = sidebarToggled ? "block" : "none";
-}
-
-export async function handleEditorInput() {
-    handleEditorScroll();
-    saveSelectedFile();
-    setPreviewText();
 }
 
 await appWindow.onFocusChanged(({ payload: hasFocused }) => {
     focused = hasFocused;
     if (hasFocused) {
-       openSelectedDirectory();
-       openSelectedFile();
+        displayActiveDirectory();
+        openActiveFile();
     }
 });
 
-populateThemes();
-function populateThemes() {
-    for (var i = 0; i < themes.length; i++) {
-    var option = document.createElement('option');
-       option.innerHTML = themes[i];
-       option.value = i;
-       themeSelector.appendChild(option); 
-    }
-    themeSelector.value = currentTheme;
+export async function handleEditorInput() {
+    handleEditorScroll();
+    saveActiveFile();
+    setPreviewText();
 }
 
 async function setPreviewText() {
     var editorText = editor.value + ((editor.value.slice(-1) == "\n") ? " " : "");
+    editorText = editorText.replace("&", "&amp").replace("<", "&lt;");
     preview.innerHTML = editorText.replace(/(^#{1,4})( .*)/gm, "<mark class='hashtag'>$1</mark><mark class='header'>$2</mark>");
 }
 
-async function handleEditorScroll() {
-    preview.scrollTop = editor.scrollTop;
-}
+async function handleEditorScroll() { preview.scrollTop = editor.scrollTop; }
 
-async function saveConfig() {
+export async function saveConfig() {
     const configPath = await appConfigDir();
     var configObject = {
-        selectedFile : selectedFile,
-        selectedDirectory : selectedDirectory,
+        selectedFile : activeFile,
+        selectedDirectory : activeDirectory,
         currentTheme : currentTheme,
+        currentFont : currentFont,
         fontSize : fontSize
     }
     await writeTextFile(`${configPath}config.json`, JSON.stringify(configObject))
@@ -169,100 +167,142 @@ async function loadConfig() {
     var configObject = JSON.parse(config);
     currentTheme = configObject.currentTheme;
     applyTheme();
-    selectedFile = configObject.selectedFile;
-    openSelectedFile();
-    selectedDirectory = configObject.selectedDirectory;
-    openSelectedDirectory();
+    currentFont = configObject.currentFont;
+    applyFont();
+    activeFile = configObject.selectedFile;
+    activeDirectory = configObject.selectedDirectory;
+    await displayActiveDirectory();
+    openActiveFile();
     fontSize = configObject.fontSize;
     applyFontSize();
 }
 
-async function closewindow() { 
-    await appWindow.close(); 
-}
-
-async function openFile() {
+async function selectNewFile() {
     var file = await open({
         multiple: false,
         filters: [{name: "", extensions: ['txt', 'md'] }]
     });
     if (file == null) return;
-    selectFile(file);
+
+    activeDirectory = null;
+    setActiveFile(file);
+    displayActiveDirectory();
 }
 
-async function selectDirectory() {
-    selectedDirectory = await open({ directory: true});
-    if (selectedDirectory == null) return;
-    openSelectedDirectory();
-    saveConfig();
-}
-
-async function openSelectedDirectory() {
-    if (selectedDirectory == null) return;
-    await readDir(selectedDirectory, {recursive: true }).then(function(entries) {
-        showFileTree(entries, selectedDirectory);
-    });
-}
-
-export function selectFile(path) {
-    selectedFile = path;
-    openSelectedFile();
+export function setActiveFile(path) {
+    activeFile = path;
+    openActiveFile();
     saveConfig();
 } 
 
-async function openSelectedFile() {
-    if (selectedFile == null) return;
-    var pathExists;
-    await exists(selectedFile).then(function(exists) { pathExists = exists });
-    if (!pathExists) return;
+async function selectNewDirectory() {
+    activeDirectory = await open({ directory: true});
+    if (activeDirectory == null) return;
+    
+    previousEditTime = -1;
+    displayActiveDirectory();
+    closeActiveFile();
+    saveConfig();
+}
 
-    setFileTitle();
-    editor.value = await readTextFile(selectedFile);
+async function displayActiveDirectory() {
+    if (activeDirectory == null) {
+        clearTree();
+        if (activeFile != null) showSingleFile(activeFile);
+        return;
+    }
+
+    var pathExists;
+    await exists(activeDirectory).then(function(exists) { pathExists = exists });
+    if (!pathExists) { 
+        clearTree(); 
+        activeDirectory = null;
+        activeFile = null;
+        return;
+    }
+
+    var editTime;
+    await invoke('get_edit_time', {path: activeDirectory}).then((response) => editTime = response);
+    if (editTime == previousEditTime) return;
+    previousEditTime = editTime;
+    
+    await readDir(activeDirectory, {recursive: true }).then(function(entries) {
+        showFileTree(entries);
+    });
+    if (activeFile != null) highlightSelectedFile(activeFile);
+}
+
+function closeActiveFile() {
+    activeFile = null;
+    editor.value = "";
+    handleEditorInput();
+    editor.disabled = true;
+}
+
+async function openActiveFile() {
+    if (activeFile == null) {
+        editor.value = "";
+        editor.disabled = true;
+        setPreviewText();
+        previousEditTime = -1;
+        displayActiveDirectory();
+        return;
+    }
+
+    var pathExists;
+    await exists(activeFile).then(function(exists) { pathExists = exists });
+    if (!pathExists) {
+        activeFile = null;
+        openActiveFile();
+        return;
+    }
+
+    console.log(pathExists);
+
+    if (activeDirectory != null) highlightSelectedFile(activeFile);
+    editor.value = await readTextFile(activeFile);
+    editor.disabled = false;
     setPreviewText();
 }
 
-async function saveSelectedFile() {
-    if (selectedFile != null) {
-        await writeTextFile(selectedFile, editor.value);
-    }
-    else {
-        await save({
-            filters: [{name: "*", extensions: ['txt', 'md']}]
-        }).then(function(path) {
-            writeTextFile(path, editor.value);
-        });
-    }
+async function saveActiveFile() {
+    if (activeFile == null) return;
+    await writeTextFile(activeFile, editor.value);
+}
+
+async function exportActiveFile() {
+    if (activeFile == null) return;
+    await save({
+        filters: [{name: "*", extensions: ['txt', 'md']}]
+    }).then(function(path) {
+        writeTextFile(path, editor.value);
+    });
+}
+
+async function deleteActiveFile() {
+    if (activeFile == null) return;
+
+    var confirmed = await confirm('Are you sure you want to delete this file?', 'leto');
+    if (!confirmed) return;
+
+    await removeFile(activeFile);
+
+    activeFile = null;
+    openActiveFile();
 }
 
 async function createNewFile() {
-
-    selectedFile = selectedDirectory + '\\new.txt';
-    for (var i = 0; i < Infinity; i++) {
-        var pathExists = false;
-        await exists(selectedFile).then(function(exists) { pathExists = exists });
-        if (!pathExists) break;
-        selectedFile = selectedDirectory + `\\new ${i + 1}.txt`;
-    }
-    await writeTextFile(selectedFile, " ");
-    openSelectedDirectory();
-    openSelectedFile();
+    // activeFile = activeDirectory + '\\new.txt';
+    // for (var i = 0; i < Infinity; i++) {
+    //     var pathExists = false;
+    //     await exists(activeFile).then(function(exists) { pathExists = exists });
+    //     if (!pathExists) break;
+    //     activeFile = activeDirectory + `\\new ${i + 1}.txt`;
+    // }
+    // await writeTextFile(activeFile, " ");
+    // displayActiveDirectory();
+    // openActiveFile();
 }
-
-async function renameSelectedFile() {
-    // if (selectFile == null) return;
-    // var nameStart = selectedFile.lastIndexOf("\\");
-    // var nameEnd = selectedFile.lastIndexOf(".");
-    // await renameFile(selectedFile, selectedFile.substring(0, nameStart) + title.value + selectedFile.substring(nameEnd));
-    // selectedFile = selectedFile.substring(0, nameStart) + title.value + selectedFile.substring(nameEnd);
-    // openSelectedDirectory();
-    // openSelectedFile();
-}
-
-function setFileTitle() {
-    title.value = selectedFile.split("\\").slice(-1);
-    title.value = title.value.replace(/\.[^/.]+$/, "");
-}
-
 
 function setNextTheme() {
     currentTheme++;
@@ -276,9 +316,9 @@ function setTheme(theme) {
     applyTheme();
 }
 
-function applyTheme() {
-    document.getElementById("theme-link").setAttribute("href", `themes/${themes[currentTheme]}.css`);
-    saveConfig();
+function setFont(font) {
+    currentFont = font;
+    applyFont();
 }
 
 function toggleSpellcheck() {

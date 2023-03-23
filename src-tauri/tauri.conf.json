@@ -12,9 +12,24 @@
   },
   "tauri": {
     "allowlist": {
-      "all": true,
+      "window" : {
+        "all" : true
+      },
+      "dialog" : {
+        "open" : true,
+        "save" : true,
+        "confirm" : true
+      },
+      "path": {
+        "all" : true
+      },
       "fs": {
-        "all": true,
+        "exists": true,
+        "writeFile": true,
+        "readFile": true,
+        "readDir": true,
+        "renameFile": true,
+        "removeFile": true,
         "scope":["**"]
       },
       "shell": {

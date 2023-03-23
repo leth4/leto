@@ -3,15 +3,17 @@
     --border-radius: 4px;
     --title-font-size: 20px;
     --sidebar-font-size: 15px;
-    --font-family: 'arial';
+    --font-family: 'arial', 'arial';
 }
 
 body {
     font-family: var(--font-family);
+    font-weight: 400;
     scroll-behavior: smooth;
     margin: 0px;
     user-select: none;
     display: var(--display);
+    overflow: hidden;
 }
 
 .main {
@@ -35,13 +37,13 @@ body {
     z-index: 1;
     position: absolute;
     left: 0; top: 0; right: 0; bottom: 0;
-    overflow : auto;
+    overflow-y : auto;
+    overflow-x : hidden;
     padding: 20px;
     font-size: var(--font-size);
     font-family: var(--font-family);
     color: var(--editor-text-color);
     background: var(--editor-background-color);
-    /* background: transparent; */
     white-space: pre-wrap;
     word-wrap: break-word;
     content:  var(--preview-text);
@@ -55,7 +57,8 @@ body {
     flex: 1;
     outline: 0px solid transparent;
     border: 0px solid transparent;
-    overflow : auto;
+    overflow-y : auto;
+    overflow-x : hidden;
     resize: none; 
     padding: 20px;
     font-size: var(--font-size);
