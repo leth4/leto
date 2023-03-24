@@ -6,6 +6,8 @@ import {pathExists, selectNewFile, selectNewDirectory, displayActiveDirectory, t
 const {appWindow} = window.__TAURI__.window;
 const {writeTextFile, readTextFile, createDir} = window.__TAURI__.fs;
 const {appConfigDir} = window.__TAURI__.path;
+const {invoke} = window.__TAURI__.tauri;
+
 
 var focused = true;
 export var activeFile;
@@ -23,6 +25,10 @@ const fontSelector = document.getElementById("font-selector");
 await loadConfig();
 populateFonts();
 populateThemes();
+
+// await invoke("add", {path: activeDirectory}).then((response) => console.log(response));
+// await invoke("commit", {path: activeDirectory}).then((response) => console.log(response));
+// await invoke("push", {path: activeDirectory}).then((response) => console.log(response));
 
 document.addEventListener('contextmenu', event => event.preventDefault());
 editor.addEventListener('input', () => handleEditorInput(), false);

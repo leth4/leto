@@ -166,7 +166,7 @@ export async function createFileInDirectory() {
         setActiveFilePath(activeDirectory + `\\new ${i + 1}.md`);
     }   
 
-    await writeTextFile(activeFile, " ");
+    await writeTextFile(activeFile, "");
 
     reloadDirectory();
     tryOpenActiveFile();  
