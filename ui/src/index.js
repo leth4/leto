@@ -1,23 +1,18 @@
-import {showFileTree, highlightSelectedFile, showSingleFile, openInExplorer, clearTree} from '../src/file-view.js'
+import {openInExplorer} from '../src/file-view.js'
 import {closewindow, minimizeWindow, togglePrefs, toggleSidebar, populateFonts, populateThemes, themes, applyTheme, applyFont, toggleFullscreen} from '../src/window-actions.js'
 import {selectLine, cutLine, moveUp, moveDown, createCheckbox, deselect, copyLineUp, copyLineDown, jumpUp, jumpDown} from '../src/text-actions.js'
+import {pathExists, selectNewFile, selectNewDirectory, displayActiveDirectory, tryOpenActiveFile, saveActiveFile, exportActiveFile, deleteActiveFile, createFileInDirectory, tryChangeFileName} from '../src/file-system.js'
 
 const {appWindow} = window.__TAURI__.window;
-const {exists, writeTextFile, readTextFile, readDir, removeFile, renameFile} = window.__TAURI__.fs;
-const {open, save, confirm, message} = window.__TAURI__.dialog;
+const {writeTextFile, readTextFile, createDir} = window.__TAURI__.fs;
 const {appConfigDir} = window.__TAURI__.path;
-const {invoke} = window.__TAURI__.tauri;
 
 var focused = true;
-var activeFile;
-var activeDirectory;
+export var activeFile;
+export var activeDirectory;
 export var currentTheme = 0;
 export var currentFont = 0;
 var fontSize = 20;
-
-var entriesFound = 0;
-const entriesLimit = 2000;
-var previousEditTime = -1;
 
 const editor = document.getElementById("text-editor");
 const preview = document.getElementById("text-preview");
@@ -34,7 +29,7 @@ editor.addEventListener('input', () => handleEditorInput(), false);
 editor.addEventListener('scroll', () => handleEditorScroll(), false);
 themeSelector.addEventListener('change', () => setTheme(themeSelector.value), false);
 fontSelector.addEventListener('change', () => setFont(fontSelector.value), false);
-fileName.addEventListener('input', () => changeFileName(), false);
+fileName.addEventListener('input', () => tryChangeFileName(), false);
 
 window.onkeydown = (e) => {
     if (!focused) return;
@@ -60,22 +55,18 @@ window.onkeydown = (e) => {
         handleEditorInput();
     }
     else if (e.altKey && e.shiftKey && e.code === 'ArrowUp') {
-        if (editor.selectionStart != editor.selectionEnd) return;
         copyLineUp();
         handleEditorInput();
     }
     else if (e.altKey && e.shiftKey && e.code === 'ArrowDown') {
-        if (editor.selectionStart != editor.selectionEnd) return;
         copyLineDown();
         handleEditorInput();
     }
     else if (e.altKey && e.code === 'ArrowUp') {
-        if (editor.selectionStart != editor.selectionEnd) return;
         moveUp();
         handleEditorInput();
     }
     else if (e.altKey && e.code === 'ArrowDown') {
-        if (editor.selectionStart != editor.selectionEnd) return;
         moveDown();
         handleEditorInput();
     }
@@ -112,7 +103,7 @@ window.onkeydown = (e) => {
          applyFontSize(-3);
     }
     else if (e.ctrlKey && e.code === 'KeyN') {
-        createNewFile();
+        createFileInDirectory();
     }
     else if (e.ctrlKey && e.code === 'KeyE') {
         if (activeDirectory != null)
@@ -137,7 +128,7 @@ await appWindow.onFocusChanged(({ payload: hasFocused }) => {
     focused = hasFocused;
     if (hasFocused) {
         displayActiveDirectory();
-        openActiveFile();
+        tryOpenActiveFile();
     }
 });
 
@@ -147,7 +138,7 @@ export async function handleEditorInput() {
     setPreviewText();
 }
 
-async function setPreviewText() {
+export async function setPreviewText() {
     var editorText = editor.value + ((editor.value.slice(-1) == "\n") ? " " : "");
     editorText = editorText.replace("&", "&amp").replace("<", "&lt;");
     preview.innerHTML = editorText.replace(/(^#{1,4})( .*)/gm, "<mark class='hashtag'>$1</mark><mark class='header'>$2</mark>");
@@ -169,6 +160,17 @@ export async function saveConfig() {
 
 async function loadConfig() {
     const configPath = await appConfigDir();
+    if (! await pathExists(`${configPath}config.json`)) {
+        if (! await pathExists(configPath)) {
+            await createDir(configPath, {recursive: true});
+        }
+        await writeTextFile(`${configPath}config.json`, ``);
+        currentTheme = 0;
+        applyTheme();
+        currentFont = 0;
+        applyFont();
+        return;
+    }
     var config = await readTextFile(`${configPath}config.json`);
     var configObject = JSON.parse(config);
     currentTheme = configObject.currentTheme;
@@ -178,205 +180,22 @@ async function loadConfig() {
     activeFile = configObject.selectedFile;
     activeDirectory = configObject.selectedDirectory;
     await displayActiveDirectory();
-    openActiveFile();
+    tryOpenActiveFile();
     fontSize = configObject.fontSize;
     applyFontSize();
 }
 
-async function selectNewFile() {
-    var file = await open({
-        multiple: false,
-        filters: [{name: "", extensions: ['txt', 'md'] }]
-    });
-    if (file == null) return;
-
-    activeDirectory = null;
-    setActiveFile(file);
-    displayActiveDirectory();
+export function setActiveFilePath(file) {
+    activeFile = file;
 }
 
-export function setActiveFile(path) {
-    activeFile = path;
-    openActiveFile();
-    saveConfig();
-} 
-
-async function selectNewDirectory() {
-
-    var newDirectory = await open({ directory: true});
-    if (newDirectory == null) return;
-
-    activeDirectory = newDirectory;
-    
-    previousEditTime = -1;
-    displayActiveDirectory();
-    closeActiveFile();
-    saveConfig();
-}
-
-async function displayActiveDirectory() {
-    if (activeDirectory == null) {
-        clearTree();
-        if (activeFile != null) showSingleFile(activeFile);
-        return;
-    }
-
-    var pathExists;
-    await exists(activeDirectory).then(function(exists) { pathExists = exists });
-    if (!pathExists) { 
-        clearTree(); 
-        activeDirectory = null;
-        activeFile = null;
-        return;
-    }
-
-    var editTime;
-    await invoke('get_edit_time', {path: activeDirectory}).then((response) => editTime = response);
-    if (editTime == previousEditTime) return;
-    previousEditTime = editTime;
-    
-    entriesFound = 0;
-    var directories;
-    await readDir(activeDirectory, {recursive: false }).then(function(entries) {
-        directories = entries;
-    });
-    await populateChildren(directories)
-
-    console.log(entriesFound);
-    console.log("HELLO");
-
-    if (entriesFound > entriesLimit) {
-        await message(`Selected directory is too big. You can only have ${entriesLimit} files and subfolders in the directory.`, { title: 'leto', type: 'error' });
-        activeDirectory = null;
-        activeFile = null;
-        openActiveFile();
-        return;
-    }
-
-
-    showFileTree(directories);
-    
-    if (activeFile != null) highlightSelectedFile(activeFile);
-}
-
-async function populateChildren(entries) {
-    for (var i = 0; i < entries.length; i++) {
-        if (++entriesFound > entriesLimit) return;
-        if (entries[i].children == null) continue;
-        await readDir(entries[i].path, {recursive: false }).then(function(ent) {
-                entries[i].children = ent;
-            });
-        await populateChildren(entries[i].children);
-    }
-}
-
-function closeActiveFile() {
-    activeFile = null;
-    editor.value = "";
-    handleEditorInput();
-    editor.disabled = true;
-}
-
-async function openActiveFile() {
-    if (activeFile == null) {
-        editor.value = "";
-        editor.disabled = true;
-        setPreviewText();
-        previousEditTime = -1;
-        displayActiveDirectory();
-        return;
-    }
-
-    var pathExists;
-    await exists(activeFile).then(function(exists) { pathExists = exists });
-    if (!pathExists) {
-        activeFile = null;
-        openActiveFile();
-        return;
-    }
-
-    if (activeDirectory != null) highlightSelectedFile(activeFile);
-    editor.value = await readTextFile(activeFile);
-    editor.disabled = false;
-    showFileName();
-    setPreviewText();
-}
-
-async function saveActiveFile() {
-    if (activeFile == null) return;
-    await writeTextFile(activeFile, editor.value);
-}
-
-async function exportActiveFile() {
-    if (activeFile == null) return;
-    await save({
-        filters: [{name: "*", extensions: ['txt', 'md']}]
-    }).then(function(path) {
-        writeTextFile(path, editor.value);
-    });
-}
-
-async function deleteActiveFile() {
-    if (activeFile == null) return;
-
-    var confirmed = await confirm('Are you sure you want to delete this file?', 'leto');
-    if (!confirmed) return;
-
-    await removeFile(activeFile);
-
-    activeFile = null;
-    openActiveFile();
-}
-
-async function createNewFile() {
-    if (activeDirectory != null) {
-        for (var i = 0; i < Infinity; i++) {
-            var pathExists = false;
-            await exists(activeFile).then(function(exists) { pathExists = exists });
-            if (!pathExists) break;
-            activeFile = activeDirectory + `\\new ${i + 1}.md`;
-        }   
-        await writeTextFile(activeFile, " ");
-        displayActiveDirectory();
-        openActiveFile();  
-    }
-}
-
-var isRenaming = false;
-async function changeFileName() {
-    if (isRenaming) return;
-    isRenaming = true;
-
-    if (activeFile == null) return;
-    var pathToFile = activeFile.substring(0,activeFile.lastIndexOf("\\")+1);
-    var newFile = pathToFile + fileName.value + ".md";
-    var success = false;
-
-    await exists(newFile).then(function(exists) { success = !exists });
-    if (!success) {
-        isRenaming = false;
-        return;
-    }
-    await renameFile(activeFile, newFile).then(function(){success = true}, function(){success = false});
-    isRenaming = false;
-    if (!success) {
-        fileName.value = activeFile.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, "");
-        return;
-    }
-
-    activeFile = newFile;
-    previousEditTime = -1;
-    displayActiveDirectory(true);
-    openActiveFile();
-}
-
-async function showFileName() {
-    fileName.value = activeFile.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, "");
+export function setActiveDirectoryPath(directory) {
+    activeDirectory = directory;
 }
 
 function setNextTheme() {
     currentTheme++;
-    if (currentTheme == themes.length) currentTheme = 0;
+    if (currentTheme >= themes.length) currentTheme = 0;
     themeSelector.value = currentTheme;
     applyTheme();
 }
@@ -403,3 +222,4 @@ function applyFontSize(change = 0) {
     document.querySelector(':root').style.setProperty('--font-size', `${fontSize}px`);
     saveConfig();
 }
+

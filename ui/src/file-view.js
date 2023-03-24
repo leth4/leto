@@ -1,4 +1,4 @@
-import {setActiveFile} from "./index.js"
+import {setActiveFile} from "../src/file-system.js"
 
 const {open} = window.__TAURI__.shell;
 
@@ -13,11 +13,11 @@ export function showSingleFile(file) {
 
     var liElement = document.createElement('li');
     liElement.appendChild(fileButton);
-    document.getElementById("file-tree").innerHTML = '';
+    clearFileTree();
     document.getElementById("file-tree").appendChild(liElement);
 }
 
-export function clearTree() {
+export function clearFileTree() {
     document.getElementById("file-tree").innerHTML = '';
 }
 
@@ -50,7 +50,7 @@ export async function openInExplorer(directory) {
 }
 
 export function showFileTree(directoryElements) {
-    document.getElementById("file-tree").innerHTML = '';
+    clearFileTree();
 
     directoryElements.forEach(child => {
         if (child.children != null) {showFolder(child, document.getElementById("file-tree"));}
@@ -68,6 +68,7 @@ function showFile(file, parentElement) {
     fileButton.className = 'file-button';
     fileButton.setAttribute("data-path", file.path);
     fileButton.innerHTML = file.name.replace(/\.[^/.]+$/, "");
+    if (fileButton.innerHTML.replace(/\s/g, '').length == 0) fileButton.innerHTML = "--";
     fileButton.onclick = async () => {setActiveFile(fileButton.getAttribute("data-path"))};
 
     var liElement = document.createElement('li');

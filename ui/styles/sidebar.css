@@ -1,7 +1,7 @@
 .sidebar {
     flex: 1;
     background: var(--sidebar-background-color);
-    color: var(--sidebar-text-color);
+    color: var(--sidebar-folder-color);
     max-width: 200px;
     overflow-y: auto;
     overflow-x: hidden;
@@ -16,7 +16,7 @@
 .file-button {
     background: none;
     border: none;
-    color: var(--editor-hashtag-color);
+    color: var(--sidebar-file-color);
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -46,7 +46,7 @@
     font-family: var(--font-family);
     white-space: nowrap;
     text-overflow: ellipsis;
-    color: var(--sidebar-text-color);
+    color: var(--sidebar-folder-color);
     font-size: var(--sidebar-font-size);
     overflow: hidden;
     text-transform: uppercase;
@@ -106,15 +106,30 @@ select {
     white-space: nowrap;
 }
 
+
+.file-name {
+    background: transparent;
+    color: var(--editor-text-color);
+    border: 1px solid var(--editor-text-color);
+    border-radius: 4px;
+    resize: none; 
+    max-width: 134px;
+    max-height: 20px;
+    outline: none;
+    font-size: var(--sidebar-font-size);
+    font-family: var(--font-family);
+}
+
 select {
     background: var(--sidebar-background-color);
+    border: 1px solid var(--editor-text-color);
     border-radius: 4px;
     outline: none;
     padding-bottom: 0px;
-    color: var(--sidebar-text-color);
+    color: var(--editor-text-color);
     font-family: var(--font-family);
     font-size: var(--sidebar-font-size);
-    width: 70%;
+    width: 140px;
 }
 
 select:hover {
@@ -123,7 +138,7 @@ select:hover {
 
 option {
     background-color: var(--sidebar-background-color);
-    color: var(--sidebar-text-color);
+    color: var(--editor-text-color);
     font-family: var(--font-family);
     font-size: var(--sidebar-font-size);
 }

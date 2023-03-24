@@ -7,7 +7,8 @@
     --scrollbar-color: transparent;
 
     --sidebar-background-color:transparent;
-    --sidebar-text-color: transparent;
+    --sidebar-folder-color: transparent;
+    --sidebar-file-color: transparent;
     --sidebar-selection-color: transparent;
 
     --divider-color: transparent;

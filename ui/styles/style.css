@@ -72,7 +72,7 @@ body {
 }
 
 ::-webkit-scrollbar {
-    width: 6px;
+    width: 3px;
 }
 
 .sidebar::-webkit-scrollbar {
@@ -81,7 +81,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--divider-color);
+    background: var(--scrollbar-color);
     border-radius: 2px;
 }
 
