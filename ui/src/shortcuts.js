@@ -2,7 +2,7 @@ import {openInExplorer} from '../src/file-view.js'
 import {closewindow, minimizeWindow, togglePrefs, toggleSidebar, toggleFullscreen} from '../src/window-actions.js'
 import {selectLine, cutLine, moveUp, moveDown, createCheckbox, deselect, copyLineUp, copyLineDown, jumpUp, jumpDown} from '../src/text-actions.js'
 import {selectNewFile, selectNewDirectory, exportActiveFile, deleteActiveFile, createFileInDirectory} from '../src/file-system.js'
-import {setNextTheme, toggleSpellcheck, focused, handleEditorInput} from '../src/index.js'
+import {setNextTheme, toggleSpellcheck, focused, handleEditorInput, pushToGit} from '../src/index.js'
 
 window.onkeydown = (e) => {
     if (!focused) return;
@@ -92,7 +92,9 @@ window.onkeydown = (e) => {
         toggleFullscreen();
     }
     else if (e.ctrlKey && e.code === 'KeyU') {}
-    else if (e.ctrlKey && e.code === 'KeyG') {}
+    else if (e.ctrlKey && e.code === 'KeyG') {
+        pushToGit();
+    }
     else { return; }
     e.preventDefault();
 }

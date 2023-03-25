@@ -24,24 +24,20 @@ fn get_edit_time(path : &str) -> i32 {
 
 #[tauri::command]
 fn add(_path : &str) -> String {
-  let output = Command::new("cmd")
+  let status = Command::new("cmd")
             .args(["/C", "cd /d E:/Obsidian && git add --all"])
-            .output()
+            .status()
             .expect("failed to execute process");
-  std::println!("{}", String::from_utf8(output.stdout).unwrap());
-   //return String::from_utf8(output.stdout).unwrap();
-   return _path.to_string();
+  return status.to_string();
 }
 
 #[tauri::command]
 fn commit(_path : &str) -> String {
   let output = Command::new("cmd")
-            .args(["/C", "cd /d E:/Obsidian && git commit -m 'leto_backup'"])
+            .args(["/C", "cd /d E:/Obsidian && git commit -m leto_backup"])
             .output()
             .expect("failed to execute process");
-  std::println!("{}", String::from_utf8(output.stdout).unwrap());
-   //return String::from_utf8(output.stdout).unwrap();
-   return _path.to_string();
+  return String::from_utf8(output.stdout).unwrap();
 }
 
 #[tauri::command]
@@ -50,7 +46,7 @@ fn push(_path : &str) -> String {
             .args(["/C", "cd /d E:/Obsidian && git push"])
             .output()
             .expect("failed to execute process");
-  std::println!("{}", std::str::from_utf8(&output.stdout[..]).unwrap());
-   //return String::from_utf8(output.stdout).unwrap();
-   return std::str::from_utf8(&output.stdout[..]).unwrap().to_string();
+          //return String::from_utf8(output.stdout).unwrap();
+          //return std::str::from_utf8(output.stdout).unwrap().to_string();
+  return String::from_utf8(output.stderr).unwrap();
 }

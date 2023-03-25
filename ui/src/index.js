@@ -6,6 +6,7 @@ const {appWindow} = window.__TAURI__.window;
 const {writeTextFile, readTextFile, createDir} = window.__TAURI__.fs;
 const {appConfigDir} = window.__TAURI__.path;
 const {invoke} = window.__TAURI__.tauri;
+const {confirm} = window.__TAURI__.dialog;
 
 export var focused = true;
 export var activeFile;
@@ -23,10 +24,6 @@ const fontSelector = document.getElementById("font-selector");
 await loadConfig();
 populateFonts();
 populateThemes();
-
-// await invoke("add", {path: activeDirectory}).then((response) => console.log(response));
-// await invoke("commit", {path: activeDirectory}).then((response) => console.log(response));
-// await invoke("push", {path: activeDirectory}).then((response) => console.log(response));
 
 document.addEventListener('contextmenu', event => event.preventDefault());
 editor.addEventListener('input', () => handleEditorInput(), false);
@@ -119,6 +116,14 @@ function setTheme(theme) {
 function setFont(font) {
     currentFont = font;
     applyFont();
+}
+
+export async function pushToGit() {
+    var message;
+    await invoke("add", {path: activeDirectory}).then((response) => message += response);
+    await invoke("commit", {path: activeDirectory}).then((response) => message += response);
+    await invoke("push", {path: activeDirectory}).then((response) => message += response);
+    await confirm(message, 'leto');
 }
 
 export function toggleSpellcheck() {
