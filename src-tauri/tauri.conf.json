@@ -31,7 +31,9 @@
         "readDir": true,
         "renameFile": true,
         "removeFile": true,
+        "copyFile" : true,
         "createDir" : true,
+        "removeDir": true,
         "scope":["**"]
       },
       "shell": {
@@ -84,6 +86,7 @@
         "resizable": true,
         "title": "leto",
         "width": 950,
+        "fileDropEnabled" : false,
         "center" : true,
         "focus": true,
         "decorations": false,

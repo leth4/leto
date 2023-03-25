@@ -1,6 +1,4 @@
-import {setActiveFile} from "../src/file-system.js"
-
-const {open} = window.__TAURI__.shell;
+import {setActiveFile, moveFileTo} from "../src/file-system.js"
 
 export function showSingleFile(file) {
     var name = file.replace(/^.*[\\\/]/, '')
@@ -45,9 +43,6 @@ export function highlightSelectedFile(path) {
     }
 }
 
-export async function openInExplorer(directory) {
-    await open(directory);
-}
 
 export function showFileTree(directoryElements) {
     clearFileTree();
@@ -58,6 +53,22 @@ export function showFileTree(directoryElements) {
     directoryElements.forEach(child => {
         if (child.children == null) {showFile(child, document.getElementById("file-tree"));}
     })
+
+    var mainDropArea = document.createElement('li');
+    mainDropArea.style.height = "30px";
+    mainDropArea.setAttribute("data-tauri-drag-region", "");
+    document.getElementById("file-tree").appendChild(mainDropArea);
+
+    mainDropArea.addEventListener('dragenter', (event) => {
+        event.preventDefault();
+    });
+    mainDropArea.addEventListener('dragover', (event) => {
+        event.preventDefault();
+    });
+    mainDropArea.addEventListener('drop', (event) => {
+        moveFileTo(event.dataTransfer.getData("text"), "E:/Game Design");
+        event.preventDefault();
+    });
 }
 
 function showFile(file, parentElement) {
@@ -74,6 +85,10 @@ function showFile(file, parentElement) {
     var liElement = document.createElement('li');
     liElement.appendChild(fileButton);
     parentElement.appendChild(liElement);
+    liElement.draggable = true;
+    liElement.addEventListener('dragstart', (event) => {
+        event.dataTransfer.setData("text", file.path);
+    });
 }
 
 function showFolder(folder, parentElement) {
@@ -81,13 +96,25 @@ function showFolder(folder, parentElement) {
 
     var folderButton = document.createElement('button');
     folderButton.className="folder-button";
+    folderButton.setAttribute("data-path", folder.path);
     folderButton.innerHTML = folder.name;
     folderButton.onclick = () => { liElement.querySelector('.nested').classList.toggle("active"); };
     
     var liElement = document.createElement('li');
     liElement.appendChild(folderButton);
-    parentElement.appendChild(liElement);
     
+    liElement.addEventListener('dragenter', (event) => {
+        event.preventDefault();
+    });
+    liElement.addEventListener('dragover', (event) => {
+        event.preventDefault();
+    });
+    liElement.addEventListener('drop', (event) => {
+        moveFileTo(event.dataTransfer.getData("text"), folder.path);
+        event.preventDefault();
+    });
+    
+    parentElement.appendChild(liElement);
     var ulElement = document.createElement('ul');
     ulElement.className = 'nested';
     liElement.appendChild(ulElement);
@@ -99,3 +126,7 @@ function showFolder(folder, parentElement) {
         if (child.children == null) {showFile(child, ulElement);}
     })
 }
+
+
+const sidebar = document.getElementById("sidebar");
+

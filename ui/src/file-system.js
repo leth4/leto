@@ -1,7 +1,7 @@
 import {showFileTree, highlightSelectedFile, showSingleFile, clearFileTree} from '../src/file-view.js'
 import { setActiveDirectoryPath, setActiveFilePath, activeDirectory, activeFile, handleEditorInput, saveConfig } from '../src/index.js';
 
-const {exists, writeTextFile, readTextFile, readDir, removeFile, renameFile} = window.__TAURI__.fs;
+const {exists, writeTextFile, readTextFile, readDir, removeFile, renameFile, copyFile, createDir, removeDir} = window.__TAURI__.fs;
 const {open, save, confirm, message} = window.__TAURI__.dialog;
 const {invoke} = window.__TAURI__.tauri;
 
@@ -61,7 +61,7 @@ export async function displayActiveDirectory() {
     }
 
     var editTime;
-    await invoke('get_edit_time', {path: activeDirectory}).then((response) => editTime = response, (error) => {});
+    await invoke('get_edit_time', {path: activeDirectory}).then((response) => editTime = response, () => {});
     if (editTime == lastDirectoryEditTime) return;
     lastDirectoryEditTime = editTime;
     
@@ -112,7 +112,7 @@ export async function tryOpenActiveFile() {
 }
 
 async function openActiveFile() {
-if (!activeFile || ! await pathExists(activeFile)) {
+    if (!activeFile || ! await pathExists(activeFile)) {
         removeActiveFile();
         return;
     }
@@ -142,6 +142,20 @@ export async function exportActiveFile() {
     if (exportPath == null) return;
 
     await writeTextFile(exportPath, editor.value);
+}
+
+export async function createNewFolder() {
+    if (!activeDirectory) return;
+    
+    var folderName = activeDirectory + "\\New Folder";
+    for (var i = 0; i < Infinity; i++) {
+        if (!await pathExists(folderName)) break;
+        folderName = activeDirectory + `\\New Folder ${i + 1}`;
+    }
+
+    await createDir(folderName);
+
+    reloadDirectory();
 }
 
 export async function deleteActiveFile() {
@@ -206,6 +220,15 @@ async function changeFileName() {
     }
 
     setActiveFilePath(newFile);
+    reloadDirectory();
+    tryOpenActiveFile();
+}
+
+export async function moveFileTo(oldPath, newPath) {
+    var fileName = oldPath.replace(/^.*[\\\/]/, '');
+    await copyFile(oldPath, newPath + "\\" + fileName);
+    await removeFile(oldPath);
+    setActiveFile(newPath + "\\" + fileName);
     reloadDirectory();
     tryOpenActiveFile();
 }

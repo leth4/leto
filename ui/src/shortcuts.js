@@ -1,7 +1,6 @@
-import {openInExplorer} from '../src/file-view.js'
 import {closewindow, minimizeWindow, togglePrefs, toggleSidebar, toggleFullscreen} from '../src/window-actions.js'
 import {selectLine, cutLine, moveUp, moveDown, createCheckbox, deselect, copyLineUp, copyLineDown, jumpUp, jumpDown} from '../src/text-actions.js'
-import {selectNewFile, selectNewDirectory, exportActiveFile, deleteActiveFile, createFileInDirectory} from '../src/file-system.js'
+import {selectNewFile, selectNewDirectory, exportActiveFile, deleteActiveFile, createFileInDirectory, createNewFolder} from '../src/file-system.js'
 import {setNextTheme, toggleSpellcheck, focused, handleEditorInput, pushToGit} from '../src/index.js'
 
 window.onkeydown = (e) => {
@@ -75,12 +74,11 @@ window.onkeydown = (e) => {
     else if (e.ctrlKey && e.code === 'Minus') {
          applyFontSize(-3);
     }
+    else if (e.ctrlKey && e.shiftKey && e.code === 'KeyN') {
+        createNewFolder();
+    }
     else if (e.ctrlKey && e.code === 'KeyN') {
         createFileInDirectory();
-    }
-    else if (e.ctrlKey && e.code === 'KeyE') {
-        if (activeDirectory != null)
-            openInExplorer(activeDirectory);
     }
     else if (e.ctrlKey && e.code === 'KeyP') {
         togglePrefs();
@@ -91,10 +89,11 @@ window.onkeydown = (e) => {
     else if (e.ctrlKey && e.code === 'KeyF') {
         toggleFullscreen();
     }
-    else if (e.ctrlKey && e.code === 'KeyU') {}
     else if (e.ctrlKey && e.code === 'KeyG') {
         pushToGit();
     }
+    else if (e.ctrlKey && e.code === 'KeyU') {}
+    else if (e.ctrlKey && e.code === 'KeyE') {}
     else { return; }
     e.preventDefault();
 }
