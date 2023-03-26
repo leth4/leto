@@ -79,7 +79,7 @@ export async function displayActiveDirectory() {
         return;
     }
 
-    showFileTree(directories);
+    showFileTree(directories, activeDirectory);
     if (activeFile) highlightSelectedFile(activeFile);
 }
 
@@ -225,12 +225,46 @@ async function changeFileName() {
 }
 
 export async function moveFileTo(oldPath, newPath) {
+    if (newPath == oldPath.substring(0,oldPath.lastIndexOf("\\"))) return;
+
     var fileName = oldPath.replace(/^.*[\\\/]/, '');
-    await copyFile(oldPath, newPath + "\\" + fileName);
+    var fileExtension = /[^.]*$/.exec(fileName)[0];
+    var filePath = newPath + `\\${fileName}`;
+    for (var i = 0; i < Infinity; i++) {
+        if (!await pathExists(filePath)) break;
+        filePath = newPath + `\\${fileName.replace(/\.[^/.]+$/, "")} ${i + 1}.${fileExtension}`;
+    }
+
+    await copyFile(oldPath, filePath);
     await removeFile(oldPath);
-    setActiveFile(newPath + "\\" + fileName);
+    setActiveFile(filePath);
     reloadDirectory();
     tryOpenActiveFile();
+}
+
+export async function moveFolderTo(oldPath, newPath) {
+    if (!await pathExists(oldPath)) return;
+
+    if (newPath == oldPath.substring(0,oldPath.lastIndexOf("\\"))) return;
+    if (newPath.includes(oldPath)) return;
+
+    var folderName = newPath + `\\${oldPath.replace(/^.*[\\\/]/, '')}`;
+    for (var i = 0; i < Infinity; i++) {
+        if (!await pathExists(folderName)) break;
+        folderName = newPath + `\\${oldPath.replace(/^.*[\\\/]/, '')} ${i + 1}`;
+    }
+
+    await invoke('move_dir', {oldPath: oldPath, newPath: folderName});
+
+    tryOpenActiveFile();
+    reloadDirectory();
+}
+
+export async function deleteFolder(path) {
+    if (!await pathExists(activeFile)) return;
+    await removeDir(path);
+    tryOpenActiveFile();
+    reloadDirectory();
 }
 
 export async function pathExists(path) {

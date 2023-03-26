@@ -3,15 +3,47 @@
   windows_subsystem = "windows"
 )]
 
+use std::fs;
 use std::fs::metadata;
 use std::time::SystemTime;
 use std::process::Command;
+use std::path::Path;
 
 fn main() {
   tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![get_edit_time, add, commit, push])
+    .invoke_handler(tauri::generate_handler![get_edit_time, add, commit, push, move_dir])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
+}
+
+#[tauri::command]
+fn move_dir(old_path : &str, new_path : &str) {
+    let src = Path::new(old_path);
+    let dst = Path::new(new_path);
+    move_dir_recursive(src, dst).map_err(|err| println!("{:?}", err)).ok();
+}
+
+fn move_dir_recursive(src: &Path, dst: &Path) -> std::io::Result<()> {
+  if src.is_dir() {
+    fs::create_dir_all(dst)?;
+
+    for entry in src.read_dir()? {
+      let entry = entry?;
+      let src_path = entry.path();
+      let dst_path = dst.join(entry.file_name());
+      if src_path.is_dir() {
+        move_dir_recursive(&src_path, &dst_path)?;
+      }
+      else {
+        fs::rename(&src_path, &dst_path)?;
+      }
+    }
+  } else {
+    fs::rename(src, dst)?;
+  }
+
+  fs::remove_dir_all(src)?;
+  Ok(())
 }
 
 #[tauri::command]

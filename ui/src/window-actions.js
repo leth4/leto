@@ -2,7 +2,7 @@ import { saveConfig, currentFont, currentTheme } from "../src/index.js";
 
 const {appWindow} = window.__TAURI__.window;
 export const themes = ["gleam", "aske", "zima", "spirit"];
-const fonts = ["arial", "georgia", "cascadia mono", "helvetica neue", "segoe ui", "inter"];
+const fonts = ["arial", "georgia", "cascadia mono", "helvetica neue", "segoe ui", "inter", "raleway", "poppins", "roboto"];
 
 var prefsToggled = false;
 var sidebarToggled = true;

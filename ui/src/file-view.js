@@ -1,4 +1,4 @@
-import {setActiveFile, moveFileTo} from "../src/file-system.js"
+import {setActiveFile, moveFileTo, moveFolderTo} from "../src/file-system.js"
 
 export function showSingleFile(file) {
     var name = file.replace(/^.*[\\\/]/, '')
@@ -44,7 +44,7 @@ export function highlightSelectedFile(path) {
 }
 
 
-export function showFileTree(directoryElements) {
+export function showFileTree(directoryElements, directoryPath) {
     clearFileTree();
 
     directoryElements.forEach(child => {
@@ -66,7 +66,13 @@ export function showFileTree(directoryElements) {
         event.preventDefault();
     });
     mainDropArea.addEventListener('drop', (event) => {
-        moveFileTo(event.dataTransfer.getData("text"), "E:/Game Design");
+        var path = event.dataTransfer.getData("text");
+        if (path.slice(-1) == "/") {
+            moveFolderTo(path.slice(0, -1), directoryPath)
+        }
+        else {
+            moveFileTo(event.dataTransfer.getData("text"), directoryPath);
+        }
         event.preventDefault();
     });
 }
@@ -99,18 +105,29 @@ function showFolder(folder, parentElement) {
     folderButton.setAttribute("data-path", folder.path);
     folderButton.innerHTML = folder.name;
     folderButton.onclick = () => { liElement.querySelector('.nested').classList.toggle("active"); };
+
+    folderButton.draggable = true;
+    folderButton.addEventListener('dragstart', (event) => {
+        event.dataTransfer.setData("text", folder.path + "/");
+    });
     
     var liElement = document.createElement('li');
     liElement.appendChild(folderButton);
     
-    liElement.addEventListener('dragenter', (event) => {
+    folderButton.addEventListener('dragenter', (event) => {
         event.preventDefault();
     });
-    liElement.addEventListener('dragover', (event) => {
+    folderButton.addEventListener('dragover', (event) => {
         event.preventDefault();
     });
-    liElement.addEventListener('drop', (event) => {
-        moveFileTo(event.dataTransfer.getData("text"), folder.path);
+    folderButton.addEventListener('drop', (event) => {
+        var path = event.dataTransfer.getData("text");
+        if (path.slice(-1) == "/") {
+            moveFolderTo(path.slice(0, -1), folder.path)
+        }
+        else {
+            moveFileTo(event.dataTransfer.getData("text"), folder.path);
+        }
         event.preventDefault();
     });
     

@@ -1,7 +1,7 @@
 import {closewindow, minimizeWindow, togglePrefs, toggleSidebar, toggleFullscreen} from '../src/window-actions.js'
 import {selectLine, cutLine, moveUp, moveDown, createCheckbox, deselect, copyLineUp, copyLineDown, jumpUp, jumpDown} from '../src/text-actions.js'
 import {selectNewFile, selectNewDirectory, exportActiveFile, deleteActiveFile, createFileInDirectory, createNewFolder} from '../src/file-system.js'
-import {setNextTheme, toggleSpellcheck, focused, handleEditorInput, pushToGit} from '../src/index.js'
+import {setNextTheme, toggleSpellcheck, focused, handleEditorInput, pushToGit, applyFontSize} from '../src/index.js'
 
 window.onkeydown = (e) => {
     if (!focused) return;
@@ -22,7 +22,7 @@ window.onkeydown = (e) => {
         toggleSidebar();
     }
     else if (e.ctrlKey && e.code === 'KeyX') {
-        if (editor.selectionStart != editor.selectionEnd) return;
+        if (document.getElementById("text-editor").selectionStart != document.getElementById("text-editor").selectionEnd) return;
         cutLine();
         handleEditorInput();
     }

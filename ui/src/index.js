@@ -131,7 +131,7 @@ export function toggleSpellcheck() {
     editor.setAttribute("spellcheck", newValue);
 }
 
-function applyFontSize(change = 0) {
+export function applyFontSize(change = 0) {
     fontSize += change;
     if (fontSize > 40) fontSize = 40;
     else if (fontSize < 14) fontSize = 14;
