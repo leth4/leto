@@ -1,8 +1,8 @@
 import {showFileTree, highlightSelectedFile, showSingleFile, clearFileTree} from '../src/file-view.js'
 import { setActiveDirectoryPath, setActiveFilePath, activeDirectory, activeFile, handleEditorInput, saveConfig } from '../src/index.js';
 
-const {exists, writeTextFile, readTextFile, readDir, removeFile, renameFile, copyFile, createDir, removeDir} = window.__TAURI__.fs;
-const {open, save, confirm, message} = window.__TAURI__.dialog;
+const {exists, writeTextFile, readTextFile, readDir, renameFile, createDir, removeDir} = window.__TAURI__.fs;
+const {open, save, message} = window.__TAURI__.dialog;
 const {invoke} = window.__TAURI__.tauri;
 
 const editor = document.getElementById("text-editor");
@@ -158,16 +158,6 @@ export async function createNewFolder() {
     reloadDirectory();
 }
 
-export async function deleteActiveFile() {
-    if (!activeFile) return;
-
-    if (! await confirm('Are you sure you want to delete this file?', 'leto')) return;
-
-    await removeFile(activeFile);
-
-    removeActiveFile();
-}
-
 export async function createFileInDirectory() {
     if (!activeDirectory) {
         createFileAnywhere();
@@ -235,8 +225,8 @@ export async function moveFileTo(oldPath, newPath) {
         filePath = newPath + `\\${fileName.replace(/\.[^/.]+$/, "")} ${i + 1}.${fileExtension}`;
     }
 
-    await copyFile(oldPath, filePath);
-    await removeFile(oldPath);
+    await invoke('move_to', {oldPath: oldPath, newPath: filePath});
+
     setActiveFile(filePath);
     reloadDirectory();
     tryOpenActiveFile();
@@ -254,7 +244,7 @@ export async function moveFolderTo(oldPath, newPath) {
         folderName = newPath + `\\${oldPath.replace(/^.*[\\\/]/, '')} ${i + 1}`;
     }
 
-    await invoke('move_dir', {oldPath: oldPath, newPath: folderName});
+    await invoke('move_to', {oldPath: oldPath, newPath: folderName});
 
     tryOpenActiveFile();
     reloadDirectory();
@@ -271,4 +261,12 @@ export async function pathExists(path) {
     var pathExists = false;
     await exists(path).then(function(exists) { pathExists = exists });
     return pathExists;
+}
+
+export async function moveFolderToTrash(path) {
+    moveFolderTo(path, `${activeDirectory}\\.trash`);
+}
+
+export async function moveFileToTrash(path) {
+    moveFileTo(path, `${activeDirectory}\\.trash`)
 }

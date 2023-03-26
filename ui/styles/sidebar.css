@@ -142,3 +142,20 @@ option {
     font-family: var(--font-family);
     font-size: var(--sidebar-font-size);
 }
+
+.delete-area {
+    border: 1px solid var(--editor-text-color);
+    box-sizing: border-box;
+    height: 50px;
+    z-index: 10;
+    background-color: var(--sidebar-background-color);
+    width: 200px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    display: none;
+}
+
+.delete-area.active {
+    display: block;
+}

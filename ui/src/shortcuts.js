@@ -1,6 +1,6 @@
 import {closewindow, minimizeWindow, togglePrefs, toggleSidebar, toggleFullscreen} from '../src/window-actions.js'
 import {selectLine, cutLine, moveUp, moveDown, createCheckbox, deselect, copyLineUp, copyLineDown, jumpUp, jumpDown} from '../src/text-actions.js'
-import {selectNewFile, selectNewDirectory, exportActiveFile, deleteActiveFile, createFileInDirectory, createNewFolder} from '../src/file-system.js'
+import {selectNewFile, selectNewDirectory, exportActiveFile, createFileInDirectory, createNewFolder} from '../src/file-system.js'
 import {setNextTheme, toggleSpellcheck, focused, handleEditorInput, pushToGit, applyFontSize} from '../src/index.js'
 
 window.onkeydown = (e) => {
@@ -82,9 +82,6 @@ window.onkeydown = (e) => {
     }
     else if (e.ctrlKey && e.code === 'KeyP') {
         togglePrefs();
-    }
-    else if (e.ctrlKey && e.shiftKey && e.code === 'KeyD') {
-        deleteActiveFile();
     }
     else if (e.ctrlKey && e.code === 'KeyF') {
         toggleFullscreen();

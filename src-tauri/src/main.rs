@@ -8,19 +8,27 @@ use std::fs::metadata;
 use std::time::SystemTime;
 use std::process::Command;
 use std::path::Path;
+use std::path::PathBuf;
 
 fn main() {
   tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![get_edit_time, add, commit, push, move_dir])
+    .invoke_handler(tauri::generate_handler![get_edit_time, add, commit, push, move_to])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
 
 #[tauri::command]
-fn move_dir(old_path : &str, new_path : &str) {
+fn move_to(old_path : &str, new_path : &str) {
     let src = Path::new(old_path);
     let dst = Path::new(new_path);
-    move_dir_recursive(src, dst).map_err(|err| println!("{:?}", err)).ok();
+    if src.is_dir() {
+      move_dir_recursive(src, dst).map_err(|err| println!("{:?}", err)).ok();
+    } else {
+      let path_buf = PathBuf::from(dst);
+      let folder = path_buf.parent().unwrap();
+      fs::create_dir_all(folder).expect("");
+      fs::rename(&src, &dst).expect("");
+    }
 }
 
 fn move_dir_recursive(src: &Path, dst: &Path) -> std::io::Result<()> {
@@ -33,8 +41,7 @@ fn move_dir_recursive(src: &Path, dst: &Path) -> std::io::Result<()> {
       let dst_path = dst.join(entry.file_name());
       if src_path.is_dir() {
         move_dir_recursive(&src_path, &dst_path)?;
-      }
-      else {
+      } else {
         fs::rename(&src_path, &dst_path)?;
       }
     }
@@ -78,7 +85,5 @@ fn push(_path : &str) -> String {
             .args(["/C", "cd /d E:/Obsidian && git push"])
             .output()
             .expect("failed to execute process");
-          //return String::from_utf8(output.stdout).unwrap();
-          //return std::str::from_utf8(output.stdout).unwrap().to_string();
   return String::from_utf8(output.stderr).unwrap();
 }

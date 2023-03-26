@@ -1,4 +1,4 @@
-import {setActiveFile, moveFileTo, moveFolderTo} from "../src/file-system.js"
+import {setActiveFile, moveFileTo, moveFolderTo, moveFolderToTrash, moveFileToTrash} from "../src/file-system.js"
 
 export function showSingleFile(file) {
     var name = file.replace(/^.*[\\\/]/, '')
@@ -145,5 +145,30 @@ function showFolder(folder, parentElement) {
 }
 
 
-const sidebar = document.getElementById("sidebar");
 
+var deleteArea = document.getElementById("delete-area");
+
+deleteArea.addEventListener('dragenter', (event) => {
+    event.preventDefault();
+});
+deleteArea.addEventListener('dragover', (event) => {
+    event.preventDefault();
+});
+deleteArea.addEventListener('drop', (event) => {
+    const path = event.dataTransfer.getData("text");
+    if (path.slice(-1) == "/") {
+        moveFolderToTrash(path.slice(0, -1))
+    }
+    else {
+        moveFileToTrash(path);
+    }
+    event.preventDefault();
+});
+
+document.addEventListener("dragstart", () => {
+    deleteArea.classList.add("active");
+});
+
+document.addEventListener("dragend", function(event) {
+  deleteArea.classList.remove("active");
+});
