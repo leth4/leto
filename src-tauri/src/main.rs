@@ -12,9 +12,14 @@ use std::path::PathBuf;
 
 fn main() {
   tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![get_edit_time, add, commit, push, move_to])
+    .invoke_handler(tauri::generate_handler![get_edit_time, add, commit, push, move_to, rename_dir])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
+}
+
+#[tauri::command]
+fn rename_dir(old_path : &str, new_path : &str) {
+    fs::rename(old_path, new_path).expect("");
 }
 
 #[tauri::command]

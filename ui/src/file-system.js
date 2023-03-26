@@ -210,7 +210,23 @@ async function changeFileName() {
     }
 
     setActiveFilePath(newFile);
-    reloadDirectory();
+    // reloadDirectory();
+    // tryOpenActiveFile();
+}
+
+export async function renameFolder(oldPath, newPath) {
+    var finalPath = newPath;
+    for (var i = 0; i < Infinity; i++) {
+        if (! await pathExists(finalPath)) break;
+        finalPath = newPath + ` ${i + 1}`;
+    }
+
+    await invoke('rename_dir', {oldPath: oldPath, newPath: newPath});
+    
+    if (activeFile.includes(oldPath)) {
+        activeFile.replace(oldPath, newPath);
+    }
+
     tryOpenActiveFile();
 }
 

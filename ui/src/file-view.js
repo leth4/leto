@@ -1,4 +1,17 @@
-import {setActiveFile, moveFileTo, moveFolderTo, moveFolderToTrash, moveFileToTrash} from "../src/file-system.js"
+import {setActiveFile, moveFileTo, moveFolderTo, moveFolderToTrash, moveFileToTrash, tryChangeFileName, renameFolder} from "../src/file-system.js"
+
+var fileName = document.getElementById("file-name");
+fileName.addEventListener('input', async () => {
+    tryChangeFileName();
+});
+fileName.addEventListener('focusout', async () => {
+    fileName.parentElement.firstChild.innerHTML = fileName.value;
+    fileName.parentElement.firstChild.style.display = "block";
+    fileName.parentElement.draggable = "true";
+    document.getElementById("preferences").append(fileName);
+});
+
+// DISABLE DRAG WHILE RENAMING
 
 export function showSingleFile(file) {
     var name = file.replace(/^.*[\\\/]/, '')
@@ -43,7 +56,6 @@ export function highlightSelectedFile(path) {
     }
 }
 
-
 export function showFileTree(directoryElements, directoryPath) {
     clearFileTree();
 
@@ -59,12 +71,8 @@ export function showFileTree(directoryElements, directoryPath) {
     mainDropArea.setAttribute("data-tauri-drag-region", "");
     document.getElementById("file-tree").appendChild(mainDropArea);
 
-    mainDropArea.addEventListener('dragenter', (event) => {
-        event.preventDefault();
-    });
-    mainDropArea.addEventListener('dragover', (event) => {
-        event.preventDefault();
-    });
+    mainDropArea.addEventListener('dragenter', (event) => { event.preventDefault(); });
+    mainDropArea.addEventListener('dragover', (event) => { event.preventDefault(); });
     mainDropArea.addEventListener('drop', (event) => {
         var path = event.dataTransfer.getData("text");
         if (path.slice(-1) == "/") {
@@ -86,14 +94,18 @@ function showFile(file, parentElement) {
     fileButton.setAttribute("data-path", file.path);
     fileButton.innerHTML = file.name.replace(/\.[^/.]+$/, "");
     if (fileButton.innerHTML.replace(/\s/g, '').length == 0) fileButton.innerHTML = "--";
-    fileButton.onclick = async () => {setActiveFile(fileButton.getAttribute("data-path"))};
+    fileButton.onmouseup = async (event) => {
+        if (event.button == 2) {
+            liElement.append(fileName);
+            fileButton.parentElement.draggable = false;
+            fileName.focus();
+            fileButton.style.display = "none";
+        }
+        setActiveFile(fileButton.getAttribute("data-path"))
+    };
 
-    fileButton.addEventListener('dragenter', (event) => {
-        event.preventDefault();
-    });
-    fileButton.addEventListener('dragover', (event) => {
-        event.preventDefault();
-    });
+    fileButton.addEventListener('dragenter', (event) => { event.preventDefault(); });
+    fileButton.addEventListener('dragover', (event) => { event.preventDefault(); });
     fileButton.addEventListener('drop', (event) => {
         var path = event.dataTransfer.getData("text");
         if (path.slice(-1) == "/") {
@@ -104,6 +116,7 @@ function showFile(file, parentElement) {
         }
         event.preventDefault();
     });
+
 
     var liElement = document.createElement('li');
     liElement.appendChild(fileButton);
@@ -131,12 +144,8 @@ function showFolder(folder, parentElement) {
     var liElement = document.createElement('li');
     liElement.appendChild(folderButton);
     
-    folderButton.addEventListener('dragenter', (event) => {
-        event.preventDefault();
-    });
-    folderButton.addEventListener('dragover', (event) => {
-        event.preventDefault();
-    });
+    folderButton.addEventListener('dragenter', (event) => { event.preventDefault(); });
+    folderButton.addEventListener('dragover', (event) => { event.preventDefault(); });
     folderButton.addEventListener('drop', (event) => {
         var path = event.dataTransfer.getData("text");
         if (path.slice(-1) == "/") {
@@ -165,12 +174,8 @@ function showFolder(folder, parentElement) {
 
 var deleteArea = document.getElementById("delete-area");
 
-deleteArea.addEventListener('dragenter', (event) => {
-    event.preventDefault();
-});
-deleteArea.addEventListener('dragover', (event) => {
-    event.preventDefault();
-});
+deleteArea.addEventListener('dragenter', (event) => { event.preventDefault(); });
+deleteArea.addEventListener('dragover', (event) => { event.preventDefault(); });
 deleteArea.addEventListener('drop', (event) => {
     const path = event.dataTransfer.getData("text");
     if (path.slice(-1) == "/") {

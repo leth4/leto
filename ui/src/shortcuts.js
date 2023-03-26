@@ -6,7 +6,10 @@ import {setNextTheme, toggleSpellcheck, focused, handleEditorInput, pushToGit, a
 window.onkeydown = (e) => {
     if (!focused) return;
 
-    if (e.ctrlKey && e.shiftKey && e.code === 'KeyO') {
+    if (document.activeElement == document.getElementById("file-name") && e.code === 'Enter') {
+        document.getElementById("file-name").blur();
+    } 
+    else if (e.ctrlKey && e.shiftKey && e.code === 'KeyO') {
         selectNewDirectory();
     }
     else if (e.ctrlKey && e.code === 'KeyO') {

@@ -17,7 +17,6 @@ var fontSize = 20;
 
 const editor = document.getElementById("text-editor");
 const preview = document.getElementById("text-preview");
-const fileName = document.getElementById("file-name");
 const themeSelector = document.getElementById("theme-selector");
 const fontSelector = document.getElementById("font-selector");
 
@@ -30,7 +29,7 @@ editor.addEventListener('input', () => handleEditorInput(), false);
 editor.addEventListener('scroll', () => handleEditorScroll(), false);
 themeSelector.addEventListener('change', () => setTheme(themeSelector.value), false);
 fontSelector.addEventListener('change', () => setFont(fontSelector.value), false);
-fileName.addEventListener('input', () => tryChangeFileName(), false);
+
 
 await appWindow.onFocusChanged(({ payload: hasFocused }) => {
     focused = hasFocused;
