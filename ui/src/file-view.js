@@ -88,6 +88,23 @@ function showFile(file, parentElement) {
     if (fileButton.innerHTML.replace(/\s/g, '').length == 0) fileButton.innerHTML = "--";
     fileButton.onclick = async () => {setActiveFile(fileButton.getAttribute("data-path"))};
 
+    fileButton.addEventListener('dragenter', (event) => {
+        event.preventDefault();
+    });
+    fileButton.addEventListener('dragover', (event) => {
+        event.preventDefault();
+    });
+    fileButton.addEventListener('drop', (event) => {
+        var path = event.dataTransfer.getData("text");
+        if (path.slice(-1) == "/") {
+            moveFolderTo(path.slice(0, -1), file.path.substring(0,file.path.lastIndexOf("\\")))
+        }
+        else {
+            moveFileTo(event.dataTransfer.getData("text"), file.path.substring(0,file.path.lastIndexOf("\\")))
+        }
+        event.preventDefault();
+    });
+
     var liElement = document.createElement('li');
     liElement.appendChild(fileButton);
     parentElement.appendChild(liElement);

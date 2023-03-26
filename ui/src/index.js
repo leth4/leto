@@ -49,6 +49,8 @@ export async function handleEditorInput() {
 export async function setPreviewText() {
     var editorText = editor.value + ((editor.value.slice(-1) == "\n") ? " " : "");
     editorText = editorText.replace("&", "&amp").replace("<", "&lt;");
+    editorText = editorText.replace(/(?<!# )(\*)(.*?)(\*)/g, "<mark class='hashtag'>$1</mark><mark class='bold'>$2</mark><mark class='hashtag'>$3</mark>");
+    
     preview.innerHTML = editorText.replace(/(^#{1,4})( .*)/gm, "<mark class='hashtag'>$1</mark><mark class='header'>$2</mark>");
 }
 

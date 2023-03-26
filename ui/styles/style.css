@@ -90,6 +90,11 @@ mark.header {
     background-color: transparent;
 }
 
+mark.bold {
+    color: var(--editor-header-color);
+    background-color: transparent;
+}
+
 mark.hashtag {
     color: var(--editor-hashtag-color);
     background-color: transparent;
