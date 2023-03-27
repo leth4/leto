@@ -11,11 +11,11 @@
     </head>
 
     <body>
-        <div class="main">
-            <div class="sidebar" id="sidebar" data-tauri-drag-region>
-                <div class="sidebar-content" id="sidebar-content">
+        <div id="main">
+            <div id="sidebar" data-tauri-drag-region>
+                <div id="sidebar-content">
                     <ul id="file-tree" data-tauri-drag-region> </ul>
-                    <ul class="preferences" id="preferences" data-tauri-drag-region>
+                    <ul id="preferences" data-tauri-drag-region>
                         <li class="pref" data-tauri-drag-region><input spellcheck="false" type="text" class="file-name"
                                 id="file-name" autocomplete="false"> </input></li>
                         <li class=" pref" data-tauri-drag-region><select name="font" id="font-selector"> </select></li>
@@ -25,9 +25,9 @@
                 </div>
                 <div id="delete-area" class="delete-area">delete</div>
             </div>
-            <div class="text-div" id="text-div">
-                <div class="text-preview" id="text-preview"></div>
-                <textarea class="text-editor" id="text-editor" spellcheck="false" autofocus></textarea>
+            <div id="text-area">
+                <div id="text-preview"></div>
+                <textarea id="text-editor" spellcheck="false" autofocus></textarea>
             </div>
         </div>
         <script type="module" src="src/index.js"></script>

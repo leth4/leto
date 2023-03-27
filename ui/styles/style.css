@@ -16,14 +16,14 @@ body {
     overflow: hidden;
 }
 
-.main {
+#main {
     display: flex;
     height: 100vh;
     width: 100wh;
     border-radius: var(--border-radius);
 }
 
-.text-div {
+#text-area {
     flex: 1;
     display: flex;
     border-radius: 0 var(--border-radius) var(--border-radius) 0;
@@ -31,38 +31,38 @@ body {
     overflow: hidden;
     border-left: calc(1px - var(--shadow)) solid var(--divider-color);
     box-shadow:  calc(100px - var(--shadow) * 100) 0 20px var(--divider-color);
+    background: var(--editor-background-color);
 }
 
-.text-preview {
+#text-preview {
     z-index: 1;
-    position: absolute;
-    left: 0; top: 0; right: 0; bottom: 0;
     overflow-y : auto;
     overflow-x : hidden;
     padding: 20px;
     font-size: var(--font-size);
     font-family: var(--font-family);
+    position: absolute;
+    left: 0; top: 0; right: 0; bottom: 0;
     color: var(--editor-text-color);
-    background: var(--editor-background-color);
     white-space: pre-wrap;
     word-wrap: break-word;
     content:  var(--preview-text);
 }
 
-.text-editor {
-    background: transparent;
-    color: transparent;
-    caret-color: var(--editor-text-color);
-    z-index: 2;
+#text-editor {
     flex: 1;
-    outline: 0px solid transparent;
-    border: 0px solid transparent;
+    z-index: 2;
     overflow-y : auto;
     overflow-x : hidden;
-    resize: none; 
     padding: 20px;
     font-size: var(--font-size);
     font-family: var(--font-family);
+    background: transparent;
+    color: transparent;
+    caret-color: var(--editor-text-color);
+    outline: 0px solid transparent;
+    border: 0px solid transparent;
+    resize: none; 
     font-weight: inherit;
 }
 

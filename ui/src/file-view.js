@@ -1,5 +1,7 @@
 import {setActiveFile, moveFileTo, moveFolderTo, moveFolderToTrash, moveFileToTrash, tryChangeFileName, renameFolder} from "../src/file-system.js"
 
+var openFolders = [];
+
 var fileName = document.getElementById("file-name");
 fileName.addEventListener('input', async () => {
     tryChangeFileName();
@@ -11,9 +13,8 @@ fileName.addEventListener('focusout', async () => {
     document.getElementById("preferences").append(fileName);
 });
 
-// DISABLE DRAG WHILE RENAMING
-
 export function showSingleFile(file) {
+    openFolders = null;
     var name = file.replace(/^.*[\\\/]/, '')
     name = name.replace(/\.[^/.]+$/, "");
 
@@ -123,6 +124,7 @@ function showFile(file, parentElement) {
     parentElement.appendChild(liElement);
     liElement.draggable = true;
     liElement.addEventListener('dragstart', (event) => {
+        event.dataTransfer.setData("text/path", file.path);
         event.dataTransfer.setData("text", file.path);
     });
 }
@@ -134,11 +136,22 @@ function showFolder(folder, parentElement) {
     folderButton.className="folder-button";
     folderButton.setAttribute("data-path", folder.path);
     folderButton.innerHTML = folder.name;
-    folderButton.onclick = () => { liElement.querySelector('.nested').classList.toggle("active"); };
-
+    folderButton.onclick = () => {
+        var nested = liElement.querySelector('.nested');
+        if (nested.classList.contains("active")) {
+            nested.classList.remove("active");
+            openFolders.filter(item => item !== folder.path)
+        }
+        else {
+            nested.classList.add("active");
+            openFolders.push(folder.path);
+        }
+    };
+    
     folderButton.draggable = true;
     folderButton.addEventListener('dragstart', (event) => {
-        event.dataTransfer.setData("text", folder.path + "/");
+        event.dataTransfer.setData("text/path", folder.path  + "/");
+        event.dataTransfer.setData("text", folder.path  + "/");
     });
     
     var liElement = document.createElement('li');
@@ -147,12 +160,12 @@ function showFolder(folder, parentElement) {
     folderButton.addEventListener('dragenter', (event) => { event.preventDefault(); });
     folderButton.addEventListener('dragover', (event) => { event.preventDefault(); });
     folderButton.addEventListener('drop', (event) => {
-        var path = event.dataTransfer.getData("text");
+        var path = event.dataTransfer.getData("text/path");
         if (path.slice(-1) == "/") {
             moveFolderTo(path.slice(0, -1), folder.path)
         }
         else {
-            moveFileTo(event.dataTransfer.getData("text"), folder.path);
+            moveFileTo(path, folder.path);
         }
         event.preventDefault();
     });
@@ -161,13 +174,17 @@ function showFolder(folder, parentElement) {
     var ulElement = document.createElement('ul');
     ulElement.className = 'nested';
     liElement.appendChild(ulElement);
-
+    
     folder.children.forEach(child => {
         if (child.children != null) {showFolder(child, ulElement);}
     })
     folder.children.forEach(child => {
         if (child.children == null) {showFile(child, ulElement);}
     })
+    
+    if (openFolders.includes(folder.path)) {
+        liElement.querySelector('.nested').classList.add("active");
+    }
 }
 
 
@@ -177,7 +194,7 @@ var deleteArea = document.getElementById("delete-area");
 deleteArea.addEventListener('dragenter', (event) => { event.preventDefault(); });
 deleteArea.addEventListener('dragover', (event) => { event.preventDefault(); });
 deleteArea.addEventListener('drop', (event) => {
-    const path = event.dataTransfer.getData("text");
+    const path = event.dataTransfer.getData("text/path");
     if (path.slice(-1) == "/") {
         moveFolderToTrash(path.slice(0, -1))
     }
@@ -187,10 +204,11 @@ deleteArea.addEventListener('drop', (event) => {
     event.preventDefault();
 });
 
-document.addEventListener("dragstart", () => {
-    deleteArea.classList.add("active");
+document.addEventListener("dragstart", (event) => {
+    if (event.dataTransfer.getData("text/path"))
+        deleteArea.classList.add("active");
 });
 
-document.addEventListener("dragend", function(event) {
-  deleteArea.classList.remove("active");
+document.addEventListener("dragend", () => {
+    deleteArea.classList.remove("active");
 });

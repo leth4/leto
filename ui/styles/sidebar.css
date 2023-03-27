@@ -1,4 +1,4 @@
-.sidebar {
+#sidebar {
     flex: 1;
     background: var(--sidebar-background-color);
     color: var(--sidebar-folder-color);
@@ -9,7 +9,7 @@
     transition: max-width 0.4s ease-in-out;
 }
 
-.sidebar-content {
+#sidebar-content {
     transition: opacity 0.3s ease-in;
 }
 
@@ -96,7 +96,7 @@ select {
     display : inline-block;
 }
 
-.preferences {
+#preferences {
     display: none;
 }
 
