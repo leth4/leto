@@ -87,7 +87,7 @@
         "title": "leto",
         "width": 950,
         "fileDropEnabled" : false,
-        "center" : true,
+        "center" : false,
         "focus": true,
         "decorations": false,
         "transparent": true

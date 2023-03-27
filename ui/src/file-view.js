@@ -13,6 +13,25 @@ fileName.addEventListener('focusout', async () => {
     document.getElementById("preferences").append(fileName);
 });
 
+export function setFileToRename(path) {
+    var files = document.getElementsByClassName("file-button");
+    var fileElement;
+    for (var i = 0; i < files.length; i++) {
+        if (files[i].getAttribute('data-path') == path) {
+            fileElement = files[i];
+            break;
+        }
+    }
+    console.log(fileElement);
+    if (fileElement == null) return;
+
+    fileElement.parentElement.append(fileName);
+    fileName.focus();
+    fileElement.parentElement.draggable = false;
+    fileElement.style.display = "none";
+}
+
+
 export function showSingleFile(file) {
     openFolders = null;
     var name = file.replace(/^.*[\\\/]/, '')

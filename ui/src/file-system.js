@@ -1,5 +1,5 @@
-import {showFileTree, highlightSelectedFile, showSingleFile, clearFileTree} from '../src/file-view.js'
-import { setActiveDirectoryPath, setActiveFilePath, activeDirectory, activeFile, handleEditorInput, saveConfig } from '../src/index.js';
+import {showFileTree, highlightSelectedFile, showSingleFile, clearFileTree, setFileToRename} from '../src/file-view.js'
+import { handleEditorInput, saveConfig } from '../src/index.js';
 
 const {exists, writeTextFile, readTextFile, readDir, renameFile, createDir, removeDir} = window.__TAURI__.fs;
 const {open, save, message} = window.__TAURI__.dialog;
@@ -8,6 +8,9 @@ const {invoke} = window.__TAURI__.tauri;
 const editor = document.getElementById("text-editor");
 const fileName = document.getElementById("file-name");
 const directoryEntriesLimit = 2000;
+
+export var activeFile;
+export var activeDirectory;
 
 var entriesFound = 0;
 var lastDirectoryEditTime = -1;
@@ -20,13 +23,18 @@ export async function selectNewFile() {
     });
     if (!file) return;
 
-    setActiveDirectoryPath(null);
-    setActiveFile(file);
+    activeDirectory = null;
+    activeFile = file;
+    displayActiveDirectory();
+}
+
+export function setActiveDirectory(path) {
+    activeDirectory = path;
     displayActiveDirectory();
 }
 
 export function setActiveFile(path) {
-    setActiveFilePath(path);
+    activeFile = path;
     tryOpenActiveFile();
     saveConfig();
 } 
@@ -35,7 +43,7 @@ export async function selectNewDirectory() {
     var newDirectory = await open({ directory: true});
     if (!newDirectory) return;
 
-    setActiveDirectoryPath(newDirectory);
+    activeDirectory = newDirectory;
     
     reloadDirectory();
     removeActiveFile();
@@ -44,7 +52,7 @@ export async function selectNewDirectory() {
 
 async function reloadDirectory() {
     lastDirectoryEditTime = -1;
-    displayActiveDirectory();
+    await displayActiveDirectory();
 }
 
 export async function displayActiveDirectory() {
@@ -55,8 +63,8 @@ export async function displayActiveDirectory() {
 
     if (! await pathExists(activeDirectory)) {
         clearFileTree(); 
-        setActiveDirectoryPath(null);
-        setActiveFilePath(null);
+        activeDirectory = null;
+        activeFile = null;
         return;
     }
 
@@ -74,7 +82,7 @@ export async function displayActiveDirectory() {
 
     if (entriesFound > directoryEntriesLimit) {
         await message(`Selected directory is too big. You can only have ${directoryEntriesLimit} files and subfolders in the directory.`, { title: 'leto', type: 'error' });
-        setActiveDirectoryPath(null);
+        activeDirectory = null;
         removeActiveFile();
         return;
     }
@@ -95,7 +103,7 @@ async function populateChildren(entries) {
 }
 
 export function removeActiveFile() {
-    setActiveFilePath(null);
+    setActiveFile = null;
     editor.value = "";
     editor.disabled = true;
     handleEditorInput();
@@ -164,16 +172,17 @@ export async function createFileInDirectory() {
         return;
     }
     
-    setActiveFilePath(activeDirectory + `\\new.md`);
+    activeFile = activeDirectory + `\\new.md`;
     for (var i = 0; i < Infinity; i++) {
         if (!await pathExists(activeFile)) break;
-        setActiveFilePath(activeDirectory + `\\new ${i + 1}.md`);
+        activeFile = activeDirectory + `\\new ${i + 1}.md`;
     }   
 
     await writeTextFile(activeFile, "");
 
-    reloadDirectory();
-    tryOpenActiveFile();  
+    await reloadDirectory();
+    tryOpenActiveFile();
+    setFileToRename(activeFile);
 }
 
 export async function createFileAnywhere() {
@@ -184,7 +193,7 @@ export async function createFileAnywhere() {
     if (exportPath == null) return;
 
     await writeTextFile(exportPath, "");
-    setActiveFilePath(exportPath);
+    activeFile = exportPath;
     reloadDirectory();
     tryOpenActiveFile();
 }
@@ -209,7 +218,7 @@ async function changeFileName() {
         return;
     }
 
-    setActiveFilePath(newFile);
+    activeFile = newFile;
     // reloadDirectory();
     // tryOpenActiveFile();
 }

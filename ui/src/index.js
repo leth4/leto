@@ -1,6 +1,6 @@
 
 import {populateFonts, populateThemes, themes, applyTheme, applyFont} from '../src/window-actions.js'
-import {pathExists, displayActiveDirectory, tryOpenActiveFile, saveActiveFile, tryChangeFileName} from '../src/file-system.js'
+import {pathExists, displayActiveDirectory, setActiveFile, setActiveDirectory, activeFile, activeDirectory, saveActiveFile} from '../src/file-system.js'
 
 const {appWindow} = window.__TAURI__.window;
 const {writeTextFile, readTextFile, createDir} = window.__TAURI__.fs;
@@ -9,8 +9,6 @@ const {invoke} = window.__TAURI__.tauri;
 const {confirm} = window.__TAURI__.dialog;
 
 export var focused = true;
-export var activeFile;
-export var activeDirectory;
 export var currentTheme = 0;
 export var currentFont = 0;
 var fontSize = 20;
@@ -86,10 +84,8 @@ async function loadConfig() {
     applyTheme();
     currentFont = configObject.currentFont;
     applyFont();
-    activeFile = configObject.selectedFile;
-    activeDirectory = configObject.selectedDirectory;
-    await displayActiveDirectory();
-    tryOpenActiveFile();
+    setActiveFile(configObject.selectedFile);
+    setActiveDirectory(configObject.selectedDirectory);
     fontSize = configObject.fontSize;
     applyFontSize();
 }
