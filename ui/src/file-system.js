@@ -1,12 +1,11 @@
 import {showFileTree, highlightSelectedFile, showSingleFile, clearFileTree, setFileToRename} from '../src/file-view.js'
 import { handleEditorInput, saveConfig } from '../src/index.js';
 
-const {exists, writeTextFile, readTextFile, readDir, renameFile, createDir, removeDir} = window.__TAURI__.fs;
+const {exists, writeTextFile, readTextFile, readDir, createDir, removeDir} = window.__TAURI__.fs;
 const {open, save, message} = window.__TAURI__.dialog;
 const {invoke} = window.__TAURI__.tauri;
 
 const editor = document.getElementById("text-editor");
-const fileName = document.getElementById("file-name");
 const directoryEntriesLimit = 2000;
 
 export var activeFile;
@@ -14,7 +13,6 @@ export var activeDirectory;
 
 var entriesFound = 0;
 var lastDirectoryEditTime = -1;
-var isRenaming = false;
 
 export async function selectNewFile() {
     var file = await open({
@@ -103,7 +101,7 @@ async function populateChildren(entries) {
 }
 
 export function removeActiveFile() {
-    setActiveFile = null;
+    activeFile = null;
     editor.value = "";
     editor.disabled = true;
     handleEditorInput();
@@ -129,8 +127,6 @@ async function openActiveFile() {
     editor.value = await readTextFile(activeFile);
     editor.disabled = false;
     handleEditorInput();
-
-    fileName.value = activeFile.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, "");
 }
 
 
@@ -198,44 +194,39 @@ export async function createFileAnywhere() {
     tryOpenActiveFile();
 }
 
-export async function tryChangeFileName() {
-    if (isRenaming) return;
-    isRenaming = true;
-    await changeFileName().then(isRenaming = false);
-}
-
-async function changeFileName() {
-    if (activeFile == null) return;
-    
-    var newFile = activeFile.substring(0,activeFile.lastIndexOf("\\")+1) + fileName.value + ".md";
-    
-    var success = ! await pathExists(newFile);
-    if (!success) return;
-
-    await renameFile(activeFile, newFile).then(function(){success = true}, function(){success = false});
-    if (!success) {
-        fileName.value = activeFile.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, "");
-        return;
+export async function renameFile(filePath, newName) {
+    var newFile = `${filePath.substring(0,filePath.lastIndexOf("\\")+1)}${newName}.md`;
+    if (newFile == filePath) return;
+    for (var i = 0; i < Infinity; i++) {
+        if (! await pathExists(newFile)) break;
+        newFile = `${filePath.substring(0,filePath.lastIndexOf("\\")+1)}${newName} ${i + 1}.md`;
     }
 
+    
+    await invoke('rename', {oldPath: filePath, newPath: newFile});
+    if (activeFile == filePath)
     activeFile = newFile;
-    // reloadDirectory();
-    // tryOpenActiveFile();
+    console.log("UNCALLED");
+
+    reloadDirectory();
+    tryOpenActiveFile();
 }
 
-export async function renameFolder(oldPath, newPath) {
+export async function renameFolder(oldPath, newName) {
+    var newPath = oldPath.substring(0,oldPath.lastIndexOf("\\") + 1) + newName;
     var finalPath = newPath;
     for (var i = 0; i < Infinity; i++) {
         if (! await pathExists(finalPath)) break;
         finalPath = newPath + ` ${i + 1}`;
     }
 
-    await invoke('rename_dir', {oldPath: oldPath, newPath: newPath});
+    await invoke('rename', {oldPath: oldPath, newPath: newPath});
     
     if (activeFile.includes(oldPath)) {
         activeFile.replace(oldPath, newPath);
     }
 
+    reloadDirectory();
     tryOpenActiveFile();
 }
 

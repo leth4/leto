@@ -9,6 +9,9 @@ window.onkeydown = (e) => {
     if (document.activeElement == document.getElementById("file-name") && e.code === 'Enter') {
         document.getElementById("file-name").blur();
     } 
+    else if (document.activeElement == document.getElementById("folder-name") && e.code === 'Enter') {
+        document.getElementById("folder-name").blur();
+    }
     else if (e.ctrlKey && e.shiftKey && e.code === 'KeyO') {
         selectNewDirectory();
     }

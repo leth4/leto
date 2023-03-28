@@ -107,7 +107,20 @@ select {
 }
 
 
-.file-name {
+#file-name {
+    background: transparent;
+    color: var(--editor-text-color);
+    border: 1px solid var(--editor-text-color);
+    border-radius: 4px;
+    resize: none; 
+    max-width: 134px;
+    max-height: 20px;
+    outline: none;
+    font-size: var(--sidebar-font-size);
+    font-family: var(--font-family);
+}
+
+#folder-name {
     background: transparent;
     color: var(--editor-text-color);
     border: 1px solid var(--editor-text-color);

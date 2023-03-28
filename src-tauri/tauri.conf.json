@@ -29,7 +29,6 @@
         "writeFile": true,
         "readFile": true,
         "readDir": true,
-        "renameFile": true,
         "removeFile": true,
         "copyFile" : true,
         "createDir" : true,

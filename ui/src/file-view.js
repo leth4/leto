@@ -1,17 +1,31 @@
-import {setActiveFile, moveFileTo, moveFolderTo, moveFolderToTrash, moveFileToTrash, tryChangeFileName, renameFolder} from "../src/file-system.js"
+import {setActiveFile, moveFileTo, moveFolderTo, moveFolderToTrash, moveFileToTrash, renameFile, renameFolder} from "../src/file-system.js"
 
 var openFolders = [];
+var renamingFolder;
 
-var fileName = document.getElementById("file-name");
-fileName.addEventListener('input', async () => {
-    tryChangeFileName();
+var fileNameInput = document.getElementById("file-name");
+fileNameInput.addEventListener('input', async () => { fileNameInput.value = sanitizeFilename(fileNameInput.value) });
+fileNameInput.addEventListener('focusout', async () => {
+    renameFile(fileNameInput.parentElement.firstChild.getAttribute("data-path"), fileNameInput.value);
+    fileNameInput.parentElement.firstChild.innerHTML = fileNameInput.value;
+    fileNameInput.parentElement.firstChild.style.display = "block";
+    fileNameInput.parentElement.draggable = "true";
+    document.getElementById("preferences").append(fileNameInput);
 });
-fileName.addEventListener('focusout', async () => {
-    fileName.parentElement.firstChild.innerHTML = fileName.value;
-    fileName.parentElement.firstChild.style.display = "block";
-    fileName.parentElement.draggable = "true";
-    document.getElementById("preferences").append(fileName);
+
+var folderNameInput = document.getElementById("folder-name");
+folderNameInput.addEventListener('input', () => { folderNameInput.value = sanitizeFilename(folderNameInput.value); });
+folderNameInput.addEventListener('focusout', async () => {
+    await renameFolder(renamingFolder.getAttribute("data-path"), folderNameInput.value);
+    renamingFolder.innerHTML = folderNameInput.value;
+    renamingFolder.style.display = "block";
+    renamingFolder.parentElement.draggable = "true";
+    document.getElementById("preferences").append(folderNameInput);
 });
+
+function sanitizeFilename(name) {
+    return name.replace(/[<>:"/\\|?*\x00-\x1F]/g, "")
+}
 
 export function setFileToRename(path) {
     var files = document.getElementsByClassName("file-button");
@@ -22,11 +36,11 @@ export function setFileToRename(path) {
             break;
         }
     }
-    console.log(fileElement);
+
     if (fileElement == null) return;
 
-    fileElement.parentElement.append(fileName);
-    fileName.focus();
+    fileElement.parentElement.append(fileNameInput);
+    fileNameInput.focus();
     fileElement.parentElement.draggable = false;
     fileElement.style.display = "none";
 }
@@ -114,16 +128,18 @@ function showFile(file, parentElement) {
     fileButton.setAttribute("data-path", file.path);
     fileButton.innerHTML = file.name.replace(/\.[^/.]+$/, "");
     if (fileButton.innerHTML.replace(/\s/g, '').length == 0) fileButton.innerHTML = "--";
-    fileButton.onmouseup = async (event) => {
+    fileButton.onmouseup = (event) => {
         if (event.button == 2) {
-            liElement.append(fileName);
+            liElement.append(fileNameInput);
             fileButton.parentElement.draggable = false;
-            fileName.focus();
+            fileNameInput.focus();
+            fileNameInput.value = file.name.replace(/\.[^/.]+$/, "")
             fileButton.style.display = "none";
         }
-        setActiveFile(fileButton.getAttribute("data-path"))
+        setActiveFile(file.path);
     };
-
+    
+    
     fileButton.addEventListener('dragenter', (event) => { event.preventDefault(); });
     fileButton.addEventListener('dragover', (event) => { event.preventDefault(); });
     fileButton.addEventListener('drop', (event) => {
@@ -155,15 +171,26 @@ function showFolder(folder, parentElement) {
     folderButton.className="folder-button";
     folderButton.setAttribute("data-path", folder.path);
     folderButton.innerHTML = folder.name;
-    folderButton.onclick = () => {
-        var nested = liElement.querySelector('.nested');
-        if (nested.classList.contains("active")) {
-            nested.classList.remove("active");
-            openFolders.filter(item => item !== folder.path)
+    folderButton.onmouseup = async (event) => {
+        if (event.button == 2) {
+            liElement.insertBefore(folderNameInput, liElement.firstChild);
+            // liElement.append(folderNameInput);
+            folderNameInput.value = folder.name;
+            folderNameInput.focus();
+            renamingFolder = folderButton;
+            folderButton.parentElement.draggable = false;
+            folderButton.style.display = "none";
         }
         else {
-            nested.classList.add("active");
-            openFolders.push(folder.path);
+            var nested = liElement.querySelector('.nested');
+            if (nested.classList.contains("active")) {
+                nested.classList.remove("active");
+                openFolders.filter(item => item !== folder.path)
+            }
+            else {
+                nested.classList.add("active");
+                openFolders.push(folder.path);
+            }
         }
     };
     
