@@ -1,4 +1,5 @@
 #sidebar {
+    z-index: 1;
     flex: 1;
     background: var(--sidebar-background-color);
     color: var(--sidebar-folder-color);
@@ -139,7 +140,7 @@ select {
     border-radius: 4px;
     outline: none;
     padding-bottom: 0px;
-    color: var(--editor-text-color);
+    color: var(--sidebar-folder-color);
     font-family: var(--font-family);
     font-size: var(--sidebar-font-size);
     width: 140px;
@@ -151,15 +152,20 @@ select:hover {
 
 option {
     background-color: var(--sidebar-background-color);
-    color: var(--editor-text-color);
+    color: var(--sidebar-folder-color);
     font-family: var(--font-family);
     font-size: var(--sidebar-font-size);
 }
 
 .delete-area {
-    border: 1px solid var(--editor-text-color);
+    border-top: calc(1px - var(--shadow)) solid var(--divider-color);
+    box-shadow: 0 0 calc(var(--shadow) * 20) var(--divider-color);
+    color: var(--sidebar-folder-color);
     box-sizing: border-box;
-    height: 50px;
+    height: 40px;
+    text-align: center;
+    margin: auto;
+    padding: 10px;
     z-index: 10;
     background-color: var(--sidebar-background-color);
     width: 200px;

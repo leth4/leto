@@ -222,7 +222,7 @@ export async function renameFolder(oldPath, newName) {
 
     await invoke('rename', {oldPath: oldPath, newPath: newPath});
     
-    if (activeFile.includes(oldPath)) {
+    if (activeFile && activeFile.includes(oldPath)) {
         activeFile.replace(oldPath, newPath);
     }
 

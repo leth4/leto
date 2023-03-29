@@ -127,18 +127,7 @@ function showFile(file, parentElement) {
     fileButton.className = 'file-button';
     fileButton.setAttribute("data-path", file.path);
     fileButton.innerHTML = file.name.replace(/\.[^/.]+$/, "");
-    if (fileButton.innerHTML.replace(/\s/g, '').length == 0) fileButton.innerHTML = "--";
-    fileButton.onmouseup = (event) => {
-        if (event.button == 2) {
-            liElement.append(fileNameInput);
-            fileButton.parentElement.draggable = false;
-            fileNameInput.focus();
-            fileNameInput.value = file.name.replace(/\.[^/.]+$/, "")
-            fileButton.style.display = "none";
-        }
-        setActiveFile(file.path);
-    };
-    
+    if (fileButton.innerHTML.replace(/\s/g, '').length == 0) fileButton.innerHTML = "--";    
     
     fileButton.addEventListener('dragenter', (event) => { event.preventDefault(); });
     fileButton.addEventListener('dragover', (event) => { event.preventDefault(); });
@@ -152,7 +141,6 @@ function showFile(file, parentElement) {
         }
         event.preventDefault();
     });
-
 
     var liElement = document.createElement('li');
     liElement.appendChild(fileButton);
@@ -171,28 +159,6 @@ function showFolder(folder, parentElement) {
     folderButton.className="folder-button";
     folderButton.setAttribute("data-path", folder.path);
     folderButton.innerHTML = folder.name;
-    folderButton.onmouseup = async (event) => {
-        if (event.button == 2) {
-            liElement.insertBefore(folderNameInput, liElement.firstChild);
-            // liElement.append(folderNameInput);
-            folderNameInput.value = folder.name;
-            folderNameInput.focus();
-            renamingFolder = folderButton;
-            folderButton.parentElement.draggable = false;
-            folderButton.style.display = "none";
-        }
-        else {
-            var nested = liElement.querySelector('.nested');
-            if (nested.classList.contains("active")) {
-                nested.classList.remove("active");
-                openFolders.filter(item => item !== folder.path)
-            }
-            else {
-                nested.classList.add("active");
-                openFolders.push(folder.path);
-            }
-        }
-    };
     
     folderButton.draggable = true;
     folderButton.addEventListener('dragstart', (event) => {
@@ -257,4 +223,41 @@ document.addEventListener("dragstart", (event) => {
 
 document.addEventListener("dragend", () => {
     deleteArea.classList.remove("active");
+});
+
+document.getElementById("file-tree").addEventListener("mouseup", (event) => {
+    if (!event.target) return;
+    if (event.target.classList.contains("file-button")) {
+        const fileButton = event.target;
+        if (event.button == 2) {
+            fileButton.parentElement.append(fileNameInput);
+            fileButton.parentElement.draggable = false;
+            fileNameInput.focus();
+            fileNameInput.value = fileButton.innerHTML;
+            fileButton.style.display = "none";
+        }
+        setActiveFile(fileButton.getAttribute("data-path"));
+    }
+    else if (event.target.classList.contains("folder-button")) {
+        const folderButton = event.target;
+        if (event.button == 2) {
+            folderButton.parentElement.insertBefore(folderNameInput, folderButton.parentElement.firstChild);
+            folderNameInput.value = folderButton.innerHTML;
+            folderNameInput.focus();
+            renamingFolder = folderButton;
+            folderButton.parentElement.draggable = false;
+            folderButton.style.display = "none";
+        }
+        else {
+            const nested = folderButton.parentElement.querySelector('.nested');
+            if (nested.classList.contains("active")) {
+                nested.classList.remove("active");
+                openFolders.filter(item => item !== folderButton.getAttribute("data-path"))
+            }
+            else {
+                nested.classList.add("active");
+                openFolders.push(folderButton.getAttribute("data-path"));
+            }
+        }
+    }
 });

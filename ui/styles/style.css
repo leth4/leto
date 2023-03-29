@@ -24,18 +24,19 @@ body {
 }
 
 #text-area {
+    z-index: 2;
     flex: 1;
     display: flex;
     border-radius: 0 var(--border-radius) var(--border-radius) 0;
     position: relative;
     overflow: hidden;
     border-left: calc(1px - var(--shadow)) solid var(--divider-color);
-    box-shadow:  calc(100px - var(--shadow) * 100) 0 20px var(--divider-color);
+    box-shadow: 0 0 calc(var(--shadow) * 20) var(--divider-color);
     background: var(--editor-background-color);
 }
 
 #text-preview {
-    z-index: 1;
+    z-index: 3;
     overflow-y : auto;
     overflow-x : hidden;
     padding: 20px;
@@ -51,7 +52,7 @@ body {
 
 #text-editor {
     flex: 1;
-    z-index: 2;
+    z-index: 4;
     overflow-y : auto;
     overflow-x : hidden;
     padding: 20px;

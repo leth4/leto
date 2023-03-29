@@ -1,13 +1,13 @@
 :root {
     --editor-background-color: #523d3c;
-    --editor-text-color: #e8eadd;
+    --editor-text-color: #d1d2c8;
     --editor-header-color: #f7cca1;
     --editor-hashtag-color: #8e6a65;
     --selection-color: #1f4047;
     --scrollbar-color: #8e6a65;
 
     --sidebar-background-color:#1f4047;
-    --sidebar-folder-color: #e8eadd;
+    --sidebar-folder-color: #d1d2c8;
     --sidebar-file-color: #9aacb2;
     --sidebar-selection-color: #2e4d54;
 

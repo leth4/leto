@@ -1,7 +1,7 @@
 import { saveConfig, currentFont, currentTheme } from "../src/index.js";
 
 const {appWindow} = window.__TAURI__.window;
-export const themes = ["gleam", "aske", "zima", "spirit", "fragment", "patrol"];
+export const themes = ["gleam", "aske", "zima", "spirit", "fragment", "patrol", "osen"];
 const fonts = ["arial", "georgia", "cascadia mono", "helvetica neue", "segoe ui", "inter", "raleway", "poppins", "roboto"];
 
 var prefsToggled = false;
@@ -39,6 +39,7 @@ export function togglePrefs() {
 export function toggleSidebar() {
     sidebarToggled = !sidebarToggled;
     document.getElementById("sidebar").style.maxWidth = sidebarToggled ? "200px" : "50px";
+    document.getElementById("sidebar").style.overflowY = sidebarToggled ? "auto" : "hidden";
 
     document.getElementById("sidebar-content").style.opacity = sidebarToggled ? "1" : "0";
     document.getElementById("sidebar-content").style.pointerEvents = sidebarToggled ? "all" : "none";

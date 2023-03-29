@@ -17,6 +17,7 @@ export function cutLine() {
 export function moveDown() {
     var [ lineStart, lineEnd ] = getLineBorders();
     if (lineEnd - 1 == lineStart) return;
+    if (lineEnd == editor.value.length) return;
 
     var positionAtLine = editor.selectionStart - lineStart;
     var lineToMove = editor.value.slice(lineStart, lineEnd);
@@ -31,7 +32,6 @@ export function moveDown() {
     selectLine();
     document.execCommand("delete");
     lineEnd = getLineEnd();
-    if (lineEnd > editor.value.length) lineToMove = "\n" + lineToMove;
 
     editor.setSelectionRange(lineEnd, lineEnd);
     document.execCommand("insertText", false, lineToMove);
