@@ -1,4 +1,5 @@
 
+import {addInputToBuffer} from '../src/undo-buffer.js'
 import {populateFonts, populateThemes, themes, applyTheme, applyFont} from '../src/window-actions.js'
 import {pathExists, displayActiveDirectory, setActiveFile, setActiveDirectory, activeFile, activeDirectory, saveActiveFile} from '../src/file-system.js'
 
@@ -23,7 +24,7 @@ populateFonts();
 populateThemes();
 
 document.addEventListener('contextmenu', event => event.preventDefault());
-editor.addEventListener('input', () => handleEditorInput(), false);
+editor.addEventListener('input', (event) => handleEditorInput(event), false);
 editor.addEventListener('scroll', () => handleEditorScroll(), false);
 themeSelector.addEventListener('change', () => setTheme(themeSelector.value), false);
 fontSelector.addEventListener('change', () => setFont(fontSelector.value), false);
@@ -36,10 +37,12 @@ await appWindow.onFocusChanged(({ payload: hasFocused }) => {
     }
 });
 
-export async function handleEditorInput() {
-    handleEditorScroll();
+export async function handleEditorInput(e) {
     saveActiveFile();
     setPreviewText();
+    handleEditorScroll();
+
+    if (e) addInputToBuffer(e.inputType);    
 }
 
 export async function setPreviewText() {
@@ -49,7 +52,9 @@ export async function setPreviewText() {
     preview.innerHTML = editorText.replace(/(^#{1,4})( .*)/gm, "<mark class='hashtag'>$1</mark><mark class='header'>$2</mark>");
 }
 
-async function handleEditorScroll() { preview.scrollTop = editor.scrollTop; }
+async function handleEditorScroll() { 
+    preview.scrollTop = editor.scrollTop; 
+}
 
 export async function saveConfig() {
     const configPath = await appConfigDir();
@@ -88,21 +93,6 @@ async function loadConfig() {
     applyFontSize();
 }
 
-export function setActiveFilePath(file) {
-    activeFile = file;
-}
-
-export function setActiveDirectoryPath(directory) {
-    activeDirectory = directory;
-}
-
-export function setNextTheme() {
-    currentTheme++;
-    if (currentTheme >= themes.length) currentTheme = 0;
-    themeSelector.value = currentTheme;
-    applyTheme();
-}
-
 function setTheme(theme) {
     currentTheme = theme;
     applyTheme();
@@ -134,3 +124,9 @@ export function applyFontSize(change = 0) {
     saveConfig();
 }
 
+export function setNextTheme() {
+    currentTheme++;
+    if (currentTheme >= themes.length) currentTheme = 0;
+    themeSelector.value = currentTheme;
+    applyTheme();
+}

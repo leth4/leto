@@ -1,7 +1,8 @@
 import {closewindow, minimizeWindow, togglePrefs, toggleSidebar, toggleFullscreen} from '../src/window-actions.js'
 import {selectLine, cutLine, moveUp, moveDown, createCheckbox, deselect, copyLineUp, copyLineDown, jumpUp, jumpDown} from '../src/text-actions.js'
 import {selectNewFile, selectNewDirectory, exportActiveFile, createFileInDirectory, createNewFolder} from '../src/file-system.js'
-import {setNextTheme, toggleSpellcheck, focused, handleEditorInput, pushToGit, applyFontSize} from '../src/index.js'
+import {toggleSpellcheck, focused, handleEditorInput, pushToGit, applyFontSize, setNextTheme} from '../src/index.js'
+import {undo, redo} from '../src/undo-buffer.js'
 
 window.onkeydown = (e) => {
     if (!focused) return;
@@ -17,6 +18,14 @@ window.onkeydown = (e) => {
     }
     else if (e.ctrlKey && e.code === 'KeyO') {
         selectNewFile();
+    }
+    else if (e.ctrlKey && e.shiftKey && e.code === 'KeyZ') {
+        e.preventDefault();
+        redo();
+    }
+    else if (e.ctrlKey && e.code === 'KeyZ') {
+        e.preventDefault();
+        undo();
     }
     else if (e.ctrlKey && e.shiftKey && e.code === 'KeyS') {
         exportActiveFile();

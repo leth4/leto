@@ -21,39 +21,34 @@ export function moveDown() {
 
     var positionAtLine = editor.selectionStart - lineStart;
     var lineToMove = editor.value.slice(lineStart, lineEnd);
+    var [nextLineStart, nextLineEnd] = getLineBorders(lineEnd);
+    var targetLine = editor.value.slice(nextLineStart, nextLineEnd);
 
-    if (lineEnd > editor.value.length) {
-        editor.setSelectionRange(lineStart, lineStart);
-        document.execCommand("insertText", false, "\n");
-        editor.setSelectionRange(lineStart + positionAtLine + 1, lineStart + positionAtLine + 1);
-        return;
-    }
+    // if (lineEnd > editor.value.length) {
+    //     editor.setSelectionRange(lineStart, lineStart);
+    //     document.execCommand("insertText", false, "\n");
+    //     editor.setSelectionRange(lineStart + positionAtLine + 1, lineStart + positionAtLine + 1);
+    //     return;
+    // }
 
-    selectLine();
-    document.execCommand("delete");
-    lineEnd = getLineEnd();
-
-    editor.setSelectionRange(lineEnd, lineEnd);
-    document.execCommand("insertText", false, lineToMove);
-    setCursorAndFocus(lineEnd + positionAtLine);
+    editor.setSelectionRange(lineStart, nextLineEnd);
+    document.execCommand("insertText", false, targetLine + lineToMove);
+    setCursorAndFocus(lineStart + targetLine.length + positionAtLine);
 }
 
 export function moveUp() {
-    var [ lineStart, lineEnd ] = getLineBorders();
+    var [ lineStart, lineEnd ] = getLineBorders(editor.selectionStart);
     if (lineEnd - 1 == lineStart) return;
     if (lineStart == 0) return;
 
     var positionAtLine = editor.selectionStart - lineStart;
     var lineToMove = editor.value.slice(lineStart, lineEnd);
+    var [prevLineStart, prevLineEnd] = getLineBorders(lineStart - 1);
+    var targetLine = editor.value.slice(prevLineStart, prevLineEnd);
 
-    selectLine();
-    document.execCommand("delete");
-    editor.setSelectionRange(lineStart-1, lineStart-1);
-    lineStart = getLineStart();
-
-    editor.setSelectionRange(lineStart, lineStart);
-    document.execCommand("insertText", false, lineToMove);
-    setCursorAndFocus(lineStart + positionAtLine);
+    editor.setSelectionRange(prevLineStart, lineEnd);
+    document.execCommand("insertText", false, lineToMove + targetLine);
+    setCursorAndFocus(prevLineStart + positionAtLine);
 }
 
 export function copyLineDown() {
@@ -131,18 +126,18 @@ function setCursorAndFocus(position) {
     editor.focus();
 }
 
-function getLineBorders() {
-    return [getLineStart(), getLineEnd()];
+function getLineBorders(position = editor.selectionEnd) {
+    return [getLineStart(position), getLineEnd(position)];
 }
 
-function getLineStart() {
-    var lineStart = editor.selectionStart - 1;
+function getLineStart(position = editor.selectionEnd) {
+    var lineStart = position - 1;
     for (; lineStart >= 0 && editor.value[lineStart] != "\n"; lineStart--);
     return lineStart + 1;
 }
 
-function getLineEnd() {
-    var lineEnd = editor.selectionStart;
+function getLineEnd(position = editor.selectionEnd) {
+    var lineEnd = position;
     for (; lineEnd < editor.value.length && editor.value[lineEnd] != "\n"; lineEnd++);
     return lineEnd + 1;
 }

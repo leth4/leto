@@ -1,5 +1,6 @@
 import {showFileTree, highlightSelectedFile, showSingleFile, clearFileTree, setFileToRename} from '../src/file-view.js'
 import { handleEditorInput, saveConfig } from '../src/index.js';
+import { resetBuffers } from '../src/undo-buffer.js'
 
 const {exists, writeTextFile, readTextFile, readDir, createDir, removeDir} = window.__TAURI__.fs;
 const {open, save, message} = window.__TAURI__.dialog;
@@ -111,6 +112,7 @@ export function removeActiveFile() {
 export async function tryOpenActiveFile() {
     try {
         await openActiveFile();
+        resetBuffers();
     }
     catch {
         removeActiveFile();
