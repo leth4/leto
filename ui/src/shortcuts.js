@@ -1,7 +1,7 @@
 import {closewindow, minimizeWindow, togglePrefs, toggleSidebar, toggleFullscreen} from '../src/window-actions.js'
 import {selectLine, cutLine, moveUp, moveDown, createCheckbox, deselect, copyLineUp, copyLineDown, jumpUp, jumpDown} from '../src/text-actions.js'
 import {selectNewFile, selectNewDirectory, exportActiveFile, createFileInDirectory, createNewFolder} from '../src/file-system.js'
-import {toggleSpellcheck, focused, handleEditorInput, pushToGit, applyFontSize, setNextTheme} from '../src/index.js'
+import {toggleSpellcheck, focused, handleEditorInput, applyFontSize, setNextTheme} from '../src/index.js'
 import {undo, redo} from '../src/undo-buffer.js'
 
 window.onkeydown = (e) => {
@@ -101,9 +101,7 @@ window.onkeydown = (e) => {
     else if (e.ctrlKey && e.code === 'KeyF') {
         toggleFullscreen();
     }
-    else if (e.ctrlKey && e.code === 'KeyG') {
-        pushToGit();
-    }
+    else if (e.ctrlKey && e.code === 'KeyG') {}
     else if (e.ctrlKey && e.code === 'KeyU') {}
     else if (e.ctrlKey && e.code === 'KeyE') {}
     else { return; }

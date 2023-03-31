@@ -6,8 +6,6 @@ import {pathExists, displayActiveDirectory, setActiveFile, setActiveDirectory, a
 const {appWindow} = window.__TAURI__.window;
 const {writeTextFile, readTextFile, createDir} = window.__TAURI__.fs;
 const {appConfigDir} = window.__TAURI__.path;
-const {invoke} = window.__TAURI__.tauri;
-const {confirm} = window.__TAURI__.dialog;
 
 export var focused = true;
 export var currentTheme = 0;
@@ -47,9 +45,10 @@ export async function handleEditorInput(e) {
 
 export async function setPreviewText() {
     var editorText = editor.value + ((editor.value.slice(-1) == "\n") ? " " : "");
-    editorText = editorText.replace("&", "&amp").replace("<", "&lt;");
-    editorText = editorText.replace(/(?<!# )(\*)(.*?)(\*)/g, "<mark class='hashtag'>$1</mark><mark class='bold'>$2</mark><mark class='hashtag'>$3</mark>");
-    preview.innerHTML = editorText.replace(/(^#{1,4})( .*)/gm, "<mark class='hashtag'>$1</mark><mark class='header'>$2</mark>");
+    editorText = editorText.replace("&", "&amp").replace("<", "&lt;")
+        .replace(/(?<!# )(\*)(.*?)(\*)/g, "<mark class='hashtag'>$1</mark><mark class='bold'>$2</mark><mark class='hashtag'>$3</mark>")
+        .replace(/(^#{1,4})( .*)/gm, "<mark class='hashtag'>$1</mark><mark class='header'>$2</mark>");
+    preview.innerHTML = editorText;
 }
 
 async function handleEditorScroll() { 
@@ -101,14 +100,6 @@ function setTheme(theme) {
 function setFont(font) {
     currentFont = font;
     applyFont();
-}
-
-export async function pushToGit() {
-    var message;
-    await invoke("add", {path: activeDirectory}).then((response) => message += response);
-    await invoke("commit", {path: activeDirectory}).then((response) => message += response);
-    await invoke("push", {path: activeDirectory}).then((response) => message += response);
-    await confirm(message, 'leto');
 }
 
 export function toggleSpellcheck() {

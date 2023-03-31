@@ -110,6 +110,7 @@ export function removeActiveFile() {
 }
 
 export async function tryOpenActiveFile() {
+    editor.disabled = true;
     try {
         await openActiveFile();
         resetBuffers();

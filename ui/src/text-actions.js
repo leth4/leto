@@ -24,13 +24,6 @@ export function moveDown() {
     var [nextLineStart, nextLineEnd] = getLineBorders(lineEnd);
     var targetLine = editor.value.slice(nextLineStart, nextLineEnd);
 
-    // if (lineEnd > editor.value.length) {
-    //     editor.setSelectionRange(lineStart, lineStart);
-    //     document.execCommand("insertText", false, "\n");
-    //     editor.setSelectionRange(lineStart + positionAtLine + 1, lineStart + positionAtLine + 1);
-    //     return;
-    // }
-
     editor.setSelectionRange(lineStart, nextLineEnd);
     document.execCommand("insertText", false, targetLine + lineToMove);
     setCursorAndFocus(lineStart + targetLine.length + positionAtLine);
