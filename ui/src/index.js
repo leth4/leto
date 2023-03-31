@@ -11,15 +11,14 @@ export var focused = true;
 export var currentTheme = 0;
 export var currentFont = 0;
 var fontSize = 20;
+var fontWeight = 300;
 
 const editor = document.getElementById("text-editor");
 const preview = document.getElementById("text-preview");
 const themeSelector = document.getElementById("theme-selector");
 const fontSelector = document.getElementById("font-selector");
 
-await loadConfig();
-populateFonts();
-populateThemes();
+loadConfig();
 
 document.addEventListener('contextmenu', event => event.preventDefault());
 editor.addEventListener('input', (event) => handleEditorInput(event), false);
@@ -40,7 +39,7 @@ export async function handleEditorInput(e) {
     setPreviewText();
     handleEditorScroll();
 
-    if (e) addInputToBuffer(e.inputType);    
+    addInputToBuffer(e);
 }
 
 export async function setPreviewText() {
@@ -62,7 +61,8 @@ export async function saveConfig() {
         selectedDirectory : activeDirectory,
         currentTheme : currentTheme,
         currentFont : currentFont,
-        fontSize : fontSize
+        fontSize : fontSize,
+        fontWeight : fontWeight
     }
     await writeTextFile(`${configPath}config.json`, JSON.stringify(configObject))
 }
@@ -78,6 +78,8 @@ async function loadConfig() {
         applyTheme();
         currentFont = 0;
         applyFont();
+        fontWeight = 300;
+        applyFontSize();
         return;
     }
     var config = await readTextFile(`${configPath}config.json`);
@@ -90,6 +92,11 @@ async function loadConfig() {
     setActiveDirectory(configObject.selectedDirectory);
     fontSize = configObject.fontSize;
     applyFontSize();
+    fontWeight = configObject.fontWeight;
+    applyFontWeight();
+
+    populateFonts();
+    populateThemes();
 }
 
 function setTheme(theme) {
@@ -112,6 +119,14 @@ export function applyFontSize(change = 0) {
     if (fontSize > 40) fontSize = 40;
     else if (fontSize < 14) fontSize = 14;
     document.querySelector(':root').style.setProperty('--font-size', `${fontSize}px`);
+    saveConfig();
+}
+
+export function applyFontWeight(change = 0) {
+    fontWeight += change;
+    if (fontWeight > 500) fontWeight = 500;
+    else if (fontWeight < 200) fontWeight = 200;
+    document.querySelector(':root').style.setProperty('--font-weight', `${fontWeight}`);
     saveConfig();
 }
 

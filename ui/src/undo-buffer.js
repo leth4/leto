@@ -15,7 +15,11 @@ export function resetBuffers() {
     redoBuffer.length = 0;
 }
 
-export async function addInputToBuffer(inputType) { 
+export async function addInputToBuffer(event) { 
+    if (!event) return;
+    const inputType = event.inputType;
+    console.log(event);
+    
     clearTimeout(bufferTimeout);
     if (inputType == "historyUndo" || inputType == "historyRedo") return;
     redoBuffer.length = 0;
@@ -28,13 +32,15 @@ export async function addInputToBuffer(inputType) {
     else if (inputType != previousUndoType || currentSelection != previousSelection){
         addUndoChain();
     }
+    else if (event.data == " "){
+        addUndoChain();
+    }
     else {
         undoBuffer[undoBuffer.length - 1]++;
     }
 
     previousUndoType = inputType;
-    previousSelection = editor.selectionStart;
-        
+    previousSelection = editor.selectionStart;   
 }
 
 function addUndoChain() {

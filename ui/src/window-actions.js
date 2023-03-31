@@ -1,4 +1,4 @@
-import { saveConfig, currentFont, currentTheme } from "../src/index.js";
+import { saveConfig, currentFont, currentTheme} from "../src/index.js";
 
 const {appWindow} = window.__TAURI__.window;
 export const themes = ["gleam", "aske", "zima", "spirit", "fragment", "patrol", "osen"];

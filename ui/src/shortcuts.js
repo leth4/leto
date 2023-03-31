@@ -1,7 +1,7 @@
 import {closewindow, minimizeWindow, togglePrefs, toggleSidebar, toggleFullscreen} from '../src/window-actions.js'
 import {selectLine, cutLine, moveUp, moveDown, createCheckbox, deselect, copyLineUp, copyLineDown, jumpUp, jumpDown} from '../src/text-actions.js'
 import {selectNewFile, selectNewDirectory, exportActiveFile, createFileInDirectory, createNewFolder} from '../src/file-system.js'
-import {toggleSpellcheck, focused, handleEditorInput, applyFontSize, setNextTheme} from '../src/index.js'
+import {toggleSpellcheck, focused, handleEditorInput, applyFontSize, applyFontWeight, setNextTheme} from '../src/index.js'
 import {undo, redo} from '../src/undo-buffer.js'
 
 window.onkeydown = (e) => {
@@ -16,27 +16,31 @@ window.onkeydown = (e) => {
     else if (e.ctrlKey && e.shiftKey && e.code === 'KeyO') {
         selectNewDirectory();
     }
-    else if (e.ctrlKey && e.code === 'KeyO') {
+    else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyO') {
         selectNewFile();
+    }
+    else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyY') {
+        e.preventDefault();
+        redo();
     }
     else if (e.ctrlKey && e.shiftKey && e.code === 'KeyZ') {
         e.preventDefault();
         redo();
     }
-    else if (e.ctrlKey && e.code === 'KeyZ') {
+    else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyZ') {
         e.preventDefault();
         undo();
     }
     else if (e.ctrlKey && e.shiftKey && e.code === 'KeyS') {
         exportActiveFile();
     }
-    else if (e.ctrlKey && e.code === 'KeyR') {
+    else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyR') {
         toggleSpellcheck();
     }
-    else if (e.ctrlKey && e.code === 'KeyB') {
+    else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyB') {
         toggleSidebar();
     }
-    else if (e.ctrlKey && e.code === 'KeyX') {
+    else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyX') {
         if (document.getElementById("text-editor").selectionStart != document.getElementById("text-editor").selectionEnd) return;
         cutLine();
         handleEditorInput();
@@ -49,57 +53,66 @@ window.onkeydown = (e) => {
         copyLineDown();
         handleEditorInput();
     }
-    else if (e.altKey && e.code === 'ArrowUp') {
+    else if (e.altKey && !e.shiftKey && e.code === 'ArrowUp') {
         moveUp();
         handleEditorInput();
     }
-    else if (e.altKey && e.code === 'ArrowDown') {
+    else if (e.altKey && !e.shiftKey && e.code === 'ArrowDown') {
         moveDown();
         handleEditorInput();
     }
-    else if (e.ctrlKey && e.code === 'ArrowUp') {
+    else if (e.ctrlKey && !e.shiftKey && e.code === 'ArrowUp') {
         jumpUp();
         handleEditorInput();
     }
-    else if (e.ctrlKey && e.code === 'ArrowDown') {
+    else if (e.ctrlKey && !e.shiftKey && e.code === 'ArrowDown') {
         jumpDown();
         handleEditorInput();
     }
-    else if (e.ctrlKey && e.code === 'KeyT') {
+    else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyT') {
         setNextTheme();
     }
-    else if (e.ctrlKey && e.code === "Enter") {
+    else if (e.ctrlKey && !e.shiftKey && e.code === "Enter") {
         createCheckbox();
     }
-    else if (e.ctrlKey && e.code === 'KeyL') {
+    else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyL') {
         selectLine();
     }
-    else if (e.ctrlKey && e.code === 'KeyQ') {
+    else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyQ') {
         closewindow();
     }
-    else if (e.ctrlKey && e.code === 'KeyM') {
+    else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyM') {
         minimizeWindow();
     }
-    else if (!e.ctrlKey && e.code === 'Escape') {
+    else if (!e.ctrlKey && !e.shiftKey && e.code === 'Escape') {
         deselect();
     }
-    else if (e.ctrlKey && e.code === 'Equal') {
-        applyFontSize(+3);
+    else if (e.ctrlKey && !e.shiftKey && e.code === 'Equal') {
+        applyFontSize(+1);
     }
-    else if (e.ctrlKey && e.code === 'Minus') {
-         applyFontSize(-3);
+    else if (e.ctrlKey && !e.shiftKey && e.code === 'Minus') {
+         applyFontSize(-1);
+    }
+    else if (e.ctrlKey && !e.shiftKey && e.code === 'BracketRight') {
+        applyFontWeight(+100);
+    }
+    else if (e.ctrlKey && !e.shiftKey && e.code === 'BracketLeft') {
+        applyFontWeight(-100);
     }
     else if (e.ctrlKey && e.shiftKey && e.code === 'KeyN') {
         createNewFolder();
     }
-    else if (e.ctrlKey && e.code === 'KeyN') {
+    else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyN') {
         createFileInDirectory();
     }
-    else if (e.ctrlKey && e.code === 'KeyP') {
+    else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyP') {
         togglePrefs();
     }
-    else if (e.ctrlKey && e.code === 'KeyF') {
+    else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyF') {
         toggleFullscreen();
+    }
+    else if (e.ctrlKey && e.code === 'KeyW') {
+        
     }
     else if (e.ctrlKey && e.code === 'KeyG') {}
     else if (e.ctrlKey && e.code === 'KeyU') {}

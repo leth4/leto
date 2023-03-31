@@ -10,6 +10,7 @@ fileNameInput.addEventListener('focusout', async () => {
     fileNameInput.parentElement.firstChild.innerHTML = fileNameInput.value;
     fileNameInput.parentElement.firstChild.style.display = "block";
     fileNameInput.parentElement.draggable = "true";
+    fileNameInput.style.display = "none";
     document.getElementById("preferences").append(fileNameInput);
 });
 
@@ -20,6 +21,7 @@ folderNameInput.addEventListener('focusout', async () => {
     renamingFolder.innerHTML = folderNameInput.value;
     renamingFolder.style.display = "block";
     renamingFolder.parentElement.draggable = "true";
+    folderNameInput.style.display = "none";
     document.getElementById("preferences").append(folderNameInput);
 });
 
@@ -232,6 +234,7 @@ document.getElementById("file-tree").addEventListener("mouseup", (event) => {
         if (event.button == 2) {
             fileButton.parentElement.append(fileNameInput);
             fileButton.parentElement.draggable = false;
+            fileNameInput.style.display = "block";
             fileNameInput.focus();
             fileNameInput.value = fileButton.innerHTML;
             fileButton.style.display = "none";
@@ -243,6 +246,7 @@ document.getElementById("file-tree").addEventListener("mouseup", (event) => {
         if (event.button == 2) {
             folderButton.parentElement.insertBefore(folderNameInput, folderButton.parentElement.firstChild);
             folderNameInput.value = folderButton.innerHTML;
+            folderNameInput.style.display = "block";
             folderNameInput.focus();
             renamingFolder = folderButton;
             folderButton.parentElement.draggable = false;

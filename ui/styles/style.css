@@ -4,11 +4,12 @@
     --title-font-size: 20px;
     --sidebar-font-size: 15px;
     --font-family: 'arial', 'arial';
+    --font-weight: 300;
 }
 
 body {
     font-family: var(--font-family);
-    font-weight: 300;
+    font-weight: var(--font-weight);
     scroll-behavior: smooth;
     margin: 0px;
     user-select: none;
