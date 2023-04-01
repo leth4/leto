@@ -1,4 +1,4 @@
-import {showFileTree, highlightSelectedFile, showSingleFile, clearFileTree, setFileToRename} from '../src/file-view.js'
+import {showFileTree, highlightSelectedFile, clearFileTree, setFileToRename} from '../src/file-view.js'
 import { handleEditorInput, saveConfig } from '../src/index.js';
 import { resetBuffers } from '../src/undo-buffer.js'
 
@@ -14,18 +14,6 @@ export var activeDirectory;
 
 var entriesFound = 0;
 var lastDirectoryEditTime = -1;
-
-export async function selectNewFile() {
-    var file = await open({
-        multiple: false,
-        filters: [{name: "", extensions: ['txt', 'md'] }]
-    });
-    if (!file) return;
-
-    activeDirectory = null;
-    activeFile = file;
-    displayActiveDirectory();
-}
 
 export function setActiveDirectory(path) {
     activeDirectory = path;
@@ -56,7 +44,6 @@ async function reloadDirectory() {
 
 export async function displayActiveDirectory() {
     if (!activeDirectory) {
-        if (activeFile) showSingleFile(activeFile);
         return;
     }
 
@@ -132,8 +119,6 @@ async function openActiveFile() {
     handleEditorInput();
 }
 
-
-
 export async function saveActiveFile() {
     if (!activeFile) return;
     await writeTextFile(activeFile, editor.value);
@@ -167,7 +152,6 @@ export async function createNewFolder() {
 
 export async function createFileInDirectory() {
     if (!activeDirectory) {
-        createFileAnywhere();
         return;
     }
     
@@ -184,19 +168,6 @@ export async function createFileInDirectory() {
     setFileToRename(activeFile);
 }
 
-export async function createFileAnywhere() {
-    var exportPath;
-    await save({
-        filters: [{name: "", extensions: ['md', 'txt']}]
-    }).then(function(path) {exportPath = path});
-    if (exportPath == null) return;
-
-    await writeTextFile(exportPath, "");
-    activeFile = exportPath;
-    reloadDirectory();
-    tryOpenActiveFile();
-}
-
 export async function renameFile(filePath, newName) {
     var newFile = `${filePath.substring(0,filePath.lastIndexOf("\\")+1)}${newName}.md`;
     if (newFile == filePath) return;
@@ -205,7 +176,6 @@ export async function renameFile(filePath, newName) {
         newFile = `${filePath.substring(0,filePath.lastIndexOf("\\")+1)}${newName} ${i + 1}.md`;
     }
 
-    
     await invoke('rename', {oldPath: filePath, newPath: newFile});
     if (activeFile == filePath)
     activeFile = newFile;

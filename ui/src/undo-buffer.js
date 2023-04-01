@@ -18,7 +18,6 @@ export function resetBuffers() {
 export async function addInputToBuffer(event) { 
     if (!event) return;
     const inputType = event.inputType;
-    console.log(event);
     
     clearTimeout(bufferTimeout);
     if (inputType == "historyUndo" || inputType == "historyRedo") return;

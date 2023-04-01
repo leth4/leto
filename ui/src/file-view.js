@@ -47,23 +47,6 @@ export function setFileToRename(path) {
     fileElement.style.display = "none";
 }
 
-
-export function showSingleFile(file) {
-    openFolders = null;
-    var name = file.replace(/^.*[\\\/]/, '')
-    name = name.replace(/\.[^/.]+$/, "");
-
-    var fileButton = document.createElement('button');
-    fileButton.className = 'file-button';
-    fileButton.classList.add("selected");
-    fileButton.innerHTML = name;
-
-    var liElement = document.createElement('li');
-    liElement.appendChild(fileButton);
-    clearFileTree();
-    document.getElementById("file-tree").appendChild(liElement);
-}
-
 export function clearFileTree() {
     document.getElementById("file-tree").innerHTML = '';
 }
@@ -227,41 +210,50 @@ document.addEventListener("dragend", () => {
     deleteArea.classList.remove("active");
 });
 
-document.getElementById("file-tree").addEventListener("mouseup", (event) => {
+document.getElementById("file-tree").addEventListener("click", (event) => {
     if (!event.target) return;
     if (event.target.classList.contains("file-button")) {
         const fileButton = event.target;
-        if (event.button == 2) {
-            fileButton.parentElement.append(fileNameInput);
-            fileButton.parentElement.draggable = false;
-            fileNameInput.style.display = "block";
-            fileNameInput.focus();
-            fileNameInput.value = fileButton.innerHTML;
-            fileButton.style.display = "none";
-        }
         setActiveFile(fileButton.getAttribute("data-path"));
     }
     else if (event.target.classList.contains("folder-button")) {
         const folderButton = event.target;
-        if (event.button == 2) {
-            folderButton.parentElement.insertBefore(folderNameInput, folderButton.parentElement.firstChild);
-            folderNameInput.value = folderButton.innerHTML;
-            folderNameInput.style.display = "block";
-            folderNameInput.focus();
-            renamingFolder = folderButton;
-            folderButton.parentElement.draggable = false;
-            folderButton.style.display = "none";
+        const nested = folderButton.parentElement.querySelector('.nested');
+        if (nested.classList.contains("active")) {
+            nested.classList.remove("active");
+            openFolders.filter(item => item !== folderButton.getAttribute("data-path"))
         }
         else {
-            const nested = folderButton.parentElement.querySelector('.nested');
-            if (nested.classList.contains("active")) {
-                nested.classList.remove("active");
-                openFolders.filter(item => item !== folderButton.getAttribute("data-path"))
-            }
-            else {
-                nested.classList.add("active");
-                openFolders.push(folderButton.getAttribute("data-path"));
-            }
+            nested.classList.add("active");
+            openFolders.push(folderButton.getAttribute("data-path"));
         }
+    }
+});
+
+document.getElementById("file-tree").addEventListener("mouseup", (event) => {
+    if (!event.target) return;
+    if (event.target.classList.contains("file-button")) {
+        if (event.button != 2) return;
+        
+        const fileButton = event.target;
+        setActiveFile(fileButton.getAttribute("data-path"));
+        fileButton.parentElement.append(fileNameInput);
+        fileButton.parentElement.draggable = false;
+        fileNameInput.style.display = "block";
+        fileNameInput.focus();
+        fileNameInput.value = fileButton.innerHTML;
+        fileButton.style.display = "none";
+    }
+    else if (event.target.classList.contains("folder-button")) {
+        if (event.button != 2) return;
+        
+        const folderButton = event.target;
+        folderButton.parentElement.insertBefore(folderNameInput, folderButton.parentElement.firstChild);
+        folderNameInput.value = folderButton.innerHTML;
+        folderNameInput.style.display = "block";
+        folderNameInput.focus();
+        renamingFolder = folderButton;
+        folderButton.parentElement.draggable = false;
+        folderButton.style.display = "none";
     }
 });
