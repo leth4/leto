@@ -1,8 +1,8 @@
-import {showFileTree, highlightSelectedFile, clearFileTree, setFileToRename} from '../src/file-view.js'
+import {showFileTree, highlightSelectedFile, clearFileTree} from '../src/file-view.js'
 import { handleEditorInput, handleNewFile, saveConfig } from '../src/index.js';
 import { resetBuffers } from '../src/undo-buffer.js'
 
-const {exists, writeTextFile, readTextFile, readDir, createDir, removeDir} = window.__TAURI__.fs;
+const {exists, writeTextFile, readTextFile, readDir, createDir} = window.__TAURI__.fs;
 const {open, save, message} = window.__TAURI__.dialog;
 const {invoke} = window.__TAURI__.tauri;
 
@@ -150,10 +150,8 @@ export async function createNewFolder() {
     reloadDirectory();
 }
 
-export async function createFileInDirectory() {
-    if (!activeDirectory) {
-        return;
-    }
+export async function createNewFile() {
+    if (!activeDirectory) return;
     
     activeFile = activeDirectory + `\\new.md`;
     for (var i = 0; i < Infinity; i++) {
@@ -163,9 +161,8 @@ export async function createFileInDirectory() {
 
     await writeTextFile(activeFile, "");
 
-    await reloadDirectory();
+    reloadDirectory();
     tryOpenActiveFile();
-    setFileToRename(activeFile);
 }
 
 export async function renameFile(filePath, newName) {
@@ -203,7 +200,7 @@ export async function renameFolder(oldPath, newName) {
     tryOpenActiveFile();
 }
 
-export async function moveFileTo(oldPath, newPath) {
+export async function moveFileTo(oldPath, newPath, open = true) {
     if (newPath == oldPath.substring(0,oldPath.lastIndexOf("\\"))) return;
 
     var fileName = oldPath.replace(/^.*[\\\/]/, '');
@@ -216,7 +213,7 @@ export async function moveFileTo(oldPath, newPath) {
 
     await invoke('move_to', {oldPath: oldPath, newPath: filePath});
 
-    setActiveFile(filePath);
+    if (open) setActiveFile(filePath);
     reloadDirectory();
     tryOpenActiveFile();
 }
@@ -239,13 +236,6 @@ export async function moveFolderTo(oldPath, newPath) {
     reloadDirectory();
 }
 
-export async function deleteFolder(path) {
-    if (!await pathExists(activeFile)) return;
-    await removeDir(path);
-    tryOpenActiveFile();
-    reloadDirectory();
-}
-
 export async function pathExists(path) {
     var pathExists = false;
     await exists(path).then(function(exists) { pathExists = exists });
@@ -253,9 +243,9 @@ export async function pathExists(path) {
 }
 
 export async function moveFolderToTrash(path) {
-    moveFolderTo(path, `${activeDirectory}\\.trash`);
+    moveFolderTo(path, `${activeDirectory}\\.trash`, false);
 }
 
 export async function moveFileToTrash(path) {
-    moveFileTo(path, `${activeDirectory}\\.trash`)
+    moveFileTo(path, `${activeDirectory}\\.trash`, false)
 }

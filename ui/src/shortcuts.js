@@ -1,6 +1,6 @@
 import {closewindow, minimizeWindow, togglePrefs, toggleSidebar, toggleFullscreen} from '../src/window-actions.js'
 import {selectLine, cutLine, moveUp, moveDown, createCheckbox, deselect, copyLineUp, copyLineDown, jumpUp, jumpDown} from '../src/text-actions.js'
-import {selectNewDirectory, exportActiveFile, createFileInDirectory, createNewFolder} from '../src/file-system.js'
+import {selectNewDirectory, exportActiveFile, createNewFile, createNewFolder} from '../src/file-system.js'
 import {toggleSpellcheck, focused, handleEditorInput, applyFontSize, applyFontWeight, setNextTheme} from '../src/index.js'
 import {undo, redo} from '../src/undo-buffer.js'
 
@@ -100,7 +100,7 @@ window.onkeydown = (e) => {
         createNewFolder();
     }
     else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyN') {
-        createFileInDirectory();
+        createNewFile();
     }
     else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyP') {
         togglePrefs();

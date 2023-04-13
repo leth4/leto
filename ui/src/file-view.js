@@ -29,24 +29,6 @@ function sanitizeFilename(name) {
     return name.replace(/[<>:"/\\|?*\x00-\x1F]/g, "")
 }
 
-export function setFileToRename(path) {
-    var files = document.getElementsByClassName("file-button");
-    var fileElement;
-    for (var i = 0; i < files.length; i++) {
-        if (files[i].getAttribute('data-path') == path) {
-            fileElement = files[i];
-            break;
-        }
-    }
-
-    if (fileElement == null) return;
-
-    fileElement.parentElement.append(fileNameInput);
-    fileNameInput.focus();
-    fileElement.parentElement.draggable = false;
-    fileElement.style.display = "none";
-}
-
 export function clearFileTree() {
     document.getElementById("file-tree").innerHTML = '';
 }

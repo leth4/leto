@@ -70,7 +70,6 @@ export async function setPreviewText() {
 
 
 async function handleEditorScroll() {
-    console.log(correctionScroll);
     if (correctionScroll != -1) {
         if (Math.abs(preview.scrollTop - editor.scrollTop) >= 3) 
             editor.scrollTop = correctionScroll; // Hacky fix for a browser bug; scrollbar randomly jumps when inserting a new line
