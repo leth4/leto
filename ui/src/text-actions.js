@@ -15,7 +15,7 @@ export function cutLine() {
 }
 
 export function newLineInserted() {
-    var lineStart = getLineStart();
+    var [ lineStart, lineEnd ] = getLineBorders();
     var insertText = "\n";
 
     if (editor.selectionStart != editor.selectionEnd) {}
@@ -25,6 +25,8 @@ export function newLineInserted() {
         insertText = "\n[ ] ";
     else if (editor.value.slice(lineStart, lineStart + 3) == "[x]")
         insertText = "\n[ ] ";
+    else if (/^\d+\.\s+\S+.*$/.test(editor.value.slice(lineStart, lineEnd)))
+        insertText = "\n" + (parseInt((editor.value.slice(lineStart, lineEnd).match(/^\d+/))[0]) + 1).toString() + ". ";
 
     document.execCommand("insertText", false, insertText);
 }

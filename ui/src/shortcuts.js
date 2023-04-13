@@ -117,6 +117,7 @@ window.onkeydown = (e) => {
     else if (e.ctrlKey && e.code === 'KeyG') {}
     else if (e.ctrlKey && e.code === 'KeyU') {}
     else if (e.ctrlKey && e.code === 'KeyE') {}
+    else if (e.ctrlKey && e.code === 'KeyD') {}
     else { return; }
     e.preventDefault();
 }
