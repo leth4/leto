@@ -1,5 +1,5 @@
 import {showFileTree, highlightSelectedFile, clearFileTree, setFileToRename} from '../src/file-view.js'
-import { handleEditorInput, saveConfig } from '../src/index.js';
+import { handleEditorInput, handleNewFile, saveConfig } from '../src/index.js';
 import { resetBuffers } from '../src/undo-buffer.js'
 
 const {exists, writeTextFile, readTextFile, readDir, createDir, removeDir} = window.__TAURI__.fs;
@@ -116,7 +116,7 @@ async function openActiveFile() {
     if (activeDirectory != null) highlightSelectedFile(activeFile);
     editor.value = await readTextFile(activeFile);
     editor.disabled = false;
-    handleEditorInput();
+    handleNewFile();
 }
 
 export async function saveActiveFile() {

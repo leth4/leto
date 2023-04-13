@@ -65,7 +65,7 @@ body {
     outline: 0px solid transparent;
     border: 0px solid transparent;
     resize: none; 
-    font-weight: inherit;
+    font-weight: inherit; 
 }
 
 ::selection {

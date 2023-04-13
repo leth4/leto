@@ -85,7 +85,7 @@ ul {
 
 .nested li {
     margin: 0;
-    border-left: 1px solid var(--editor-hashtag-color);
+    border-left: 1px solid var(--sidebar-file-color);
 }
 
 .nested.active {

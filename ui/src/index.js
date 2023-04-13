@@ -12,6 +12,7 @@ export var currentTheme = 0;
 export var currentFont = 0;
 var fontSize = 20;
 var fontWeight = 300;
+var correctionScroll = -1;
 
 const editor = document.getElementById("text-editor");
 const preview = document.getElementById("text-preview");
@@ -22,6 +23,7 @@ loadConfig();
 
 document.addEventListener('contextmenu', event => event.preventDefault());
 editor.addEventListener('input', (event) => handleEditorInput(event), false);
+editor.addEventListener('beforeinput', (event) => handleScrollJump(event), false);
 editor.addEventListener('scroll', () => handleEditorScroll(), false);
 themeSelector.addEventListener('change', () => setTheme(themeSelector.value), false);
 fontSelector.addEventListener('change', () => setFont(fontSelector.value), false);
@@ -34,12 +36,28 @@ await appWindow.onFocusChanged(({ payload: hasFocused }) => {
     }
 });
 
+async function handleScrollJump(e) {
+    if (e.inputType != "insertLineBreak") return;
+    correctionScroll = editor.scrollTop;
+}
+
 export async function handleEditorInput(e) {
     saveActiveFile();
     setPreviewText();
     handleEditorScroll();
 
     addInputToBuffer(e);
+
+}
+
+export async function handleNewFile() {
+    setPreviewText();
+    editor.blur();
+    editor.focus();
+    editor.selectionStart = 0;
+    editor.selectionEnd = 0;
+    editor.scrollTop = 1;
+    handleEditorScroll();
 }
 
 export async function setPreviewText() {
@@ -50,7 +68,15 @@ export async function setPreviewText() {
     preview.innerHTML = editorText;
 }
 
-async function handleEditorScroll() { 
+
+async function handleEditorScroll() {
+    console.log(correctionScroll);
+    if (correctionScroll != -1) {
+        if (Math.abs(preview.scrollTop - editor.scrollTop) >= 3) 
+            editor.scrollTop = correctionScroll; // Hacky fix for a browser bug; scrollbar randomly jumps when inserting a new line
+        correctionScroll = -1;
+    }
+
     preview.scrollTop = editor.scrollTop; 
 }
 
