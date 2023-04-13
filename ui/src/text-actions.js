@@ -14,15 +14,35 @@ export function cutLine() {
     document.execCommand(command);
 }
 
+export function newLineInserted() {
+    var lineStart = getLineStart();
+    var insertText = "\n";
+
+    if (editor.selectionStart != editor.selectionEnd) {}
+    else if (editor.selectionEnd && editor.value[lineStart] == "—")
+        insertText = "\n— ";
+    else if (editor.value.slice(lineStart, lineStart + 3) == "[ ]")
+        insertText = "\n[ ] ";
+    else if (editor.value.slice(lineStart, lineStart + 3) == "[x]")
+        insertText = "\n[ ] ";
+
+    document.execCommand("insertText", false, insertText);
+}
+
 export function moveDown() {
     var [ lineStart, lineEnd ] = getLineBorders();
     if (lineEnd - 1 == lineStart) return;
-    if (lineEnd == editor.value.length) return;
+    if (lineEnd > editor.value.length) return;
 
     var positionAtLine = editor.selectionStart - lineStart;
     var lineToMove = editor.value.slice(lineStart, lineEnd);
     var [nextLineStart, nextLineEnd] = getLineBorders(lineEnd);
     var targetLine = editor.value.slice(nextLineStart, nextLineEnd);
+
+    if (targetLine.slice(-1) != "\n") {
+        targetLine += "\n";
+        lineToMove = lineToMove.slice(0, -1);
+    }
 
     editor.setSelectionRange(lineStart, nextLineEnd);
     document.execCommand("insertText", false, targetLine + lineToMove);
@@ -38,6 +58,11 @@ export function moveUp() {
     var lineToMove = editor.value.slice(lineStart, lineEnd);
     var [prevLineStart, prevLineEnd] = getLineBorders(lineStart - 1);
     var targetLine = editor.value.slice(prevLineStart, prevLineEnd);
+
+    if (lineToMove.slice(-1) != "\n") {
+        lineToMove += "\n";
+        targetLine = targetLine.slice(0, -1);
+    }
 
     editor.setSelectionRange(prevLineStart, lineEnd);
     document.execCommand("insertText", false, lineToMove + targetLine);

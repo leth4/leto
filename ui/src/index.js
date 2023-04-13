@@ -50,16 +50,6 @@ export async function handleEditorInput(e) {
 
 }
 
-export async function handleNewFile() {
-    setPreviewText();
-    editor.blur();
-    editor.focus();
-    editor.selectionStart = 0;
-    editor.selectionEnd = 0;
-    editor.scrollTop = 1;
-    handleEditorScroll();
-}
-
 export async function setPreviewText() {
     var editorText = editor.value + ((editor.value.slice(-1) == "\n") ? " " : "");
     editorText = editorText.replace("&", "&amp").replace("<", "&lt;")

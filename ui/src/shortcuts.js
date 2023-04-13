@@ -1,5 +1,5 @@
 import {closewindow, minimizeWindow, togglePrefs, toggleSidebar, toggleFullscreen} from '../src/window-actions.js'
-import {selectLine, cutLine, moveUp, moveDown, createCheckbox, deselect, copyLineUp, copyLineDown, jumpUp, jumpDown} from '../src/text-actions.js'
+import {selectLine, cutLine, moveUp, moveDown, createCheckbox, deselect, copyLineUp, copyLineDown, jumpUp, jumpDown, newLineInserted} from '../src/text-actions.js'
 import {selectNewDirectory, exportActiveFile, createNewFile, createNewFolder} from '../src/file-system.js'
 import {toggleSpellcheck, focused, handleEditorInput, applyFontSize, applyFontWeight, setNextTheme} from '../src/index.js'
 import {undo, redo} from '../src/undo-buffer.js'
@@ -12,6 +12,9 @@ window.onkeydown = (e) => {
     } 
     else if (document.activeElement == document.getElementById("folder-name") && e.code === 'Enter') {
         document.getElementById("folder-name").blur();
+    }
+    else if (!e.ctrlKey && !e.shiftKey && e.code === 'Enter') {
+        newLineInserted();
     }
     else if (e.ctrlKey && e.code === 'KeyO') {
         selectNewDirectory();

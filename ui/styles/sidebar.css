@@ -112,8 +112,10 @@ select {
     background: transparent;
     color: var(--editor-text-color);
     border: 1px solid var(--editor-text-color);
-    border-radius: 4px;
+    border-radius: 3px;
     resize: none; 
+    height: 17px;
+    margin-left: 3px;
     max-width: 134px;
     max-height: 20px;
     outline: none;
