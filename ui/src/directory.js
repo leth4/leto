@@ -1,7 +1,6 @@
 'use strict';
 
-const { exists, writeTextFile, readTextFile, readDir, createDir } =
-  window.__TAURI__.fs;
+const { exists, writeTextFile, readTextFile, readDir, createDir } = window.__TAURI__.fs;
 const { open, save, message } = window.__TAURI__.dialog;
 const { invoke } = window.__TAURI__.tauri;
 
@@ -153,7 +152,7 @@ export default class Directory {
 
     var folderName = this.activeDirectory + '\\New Folder';
     for (var i = 0; i < Infinity; i++) {
-      if (!(await pathExists(folderName))) break;
+      if (!(await this.pathExists(folderName))) break;
       folderName = this.activeDirectory + `\\New Folder ${i + 1}`;
     }
 
@@ -178,19 +177,13 @@ export default class Directory {
   }
 
   async renameFile(filePath, newName) {
-    var newFile = `${filePath.substring(
-      0,
-      filePath.lastIndexOf('\\') + 1
-    )}${newName}.md`;
+    var newFile = `${filePath.substring(0, filePath.lastIndexOf('\\') + 1)}${newName}.md`;
     if (newFile === filePath) return;
+
     for (var i = 0; i < Infinity; i++) {
       if (!(await this.pathExists(newFile))) break;
-      newFile = `${filePath.substring(
-        0,
-        filePath.lastIndexOf('\\') + 1
-      )}${newName} ${i + 1}.md`;
+      newFile = `${filePath.substring(0, filePath.lastIndexOf('\\') + 1)}${newName} ${i + 1}.md`;
     }
-
     await invoke('rename', { oldPath: filePath, newPath: newFile });
     if (this.activeFile === filePath) this.activeFile = newFile;
 
@@ -263,11 +256,11 @@ export default class Directory {
   }
 
   async moveFolderToTrash(path) {
-    moveFolderTo(path, `${this.activeDirectory}\\.trash`, false);
+    this.moveFolderTo(path, `${this.activeDirectory}\\.trash`, false);
   }
 
   async moveFileToTrash(path) {
-    moveFileTo(path, `${this.activeDirectory}\\.trash`, false);
+    this.moveFileTo(path, `${this.activeDirectory}\\.trash`, false);
   }
 
   #getFileExtension = (file) => /[^.]*$/.exec(file)[0];

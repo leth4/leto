@@ -49,8 +49,6 @@ export default class Undo {
         const inputType = event.inputType;
         if (inputType === "historyUndo" || inputType === "historyRedo") return;
 
-        console.log(event);
-
         this.#redoBuffer.length = 0;
         this.#bufferTimeout = setTimeout(this.#addUndoChain.bind(this), BUFFER_TIMEOUT);
 

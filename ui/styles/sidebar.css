@@ -88,11 +88,6 @@ ul {
     border-left: 1px solid var(--sidebar-file-color);
 }
 
-.nested.active {
-    display: block;
-}
-
-
 select {
     display : inline-block;
 }
@@ -108,7 +103,7 @@ select {
 }
 
 
-#file-name, #folder-name {
+#name-input {
     background: transparent;
     color: var(--editor-text-color);
     border: 1px solid var(--editor-text-color);
@@ -163,8 +158,4 @@ option {
     left: 0;
     bottom: 0;
     display: none;
-}
-
-.delete-area.active {
-    display: block;
 }

@@ -13,7 +13,7 @@ export default class Edit {
   }
   
   cutLine() {
-    selectLine();
+    this.selectLine();
     if (editor.selectionEnd - 1 === editor.selectionStart) {
       document.execCommand("delete");
     } else {

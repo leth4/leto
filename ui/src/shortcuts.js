@@ -1,8 +1,7 @@
 'use strict';
 
-const fileNameInput = document.getElementById('file-name');
-const folderNameInput = document.getElementById('folder-name');
 const editor = document.getElementById('text-editor');
+const nameInput = document.getElementById('name-input');
 
 export default class Shortcuts {
 
@@ -22,12 +21,11 @@ export default class Shortcuts {
       } 
 
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyX') {
-        if (editor('text-editor').selectionStart != editor('text-editor').selectionEnd) return;
+        if (editor.selectionStart != editor.selectionEnd) return;
         leto.edit.cutLine();
       }
 
-      else if (document.activeElement === fileNameInput && e.code === 'Enter') fileNameInput.blur();
-      else if (document.activeElement === folderNameInput && e.code === 'Enter') folderNameInput.blur();
+      else if (document.activeElement === nameInput && e.code === 'Enter') nameInput.blur();
 
       else if (!e.ctrlKey && !e.shiftKey && e.code === 'Enter') leto.edit.newLineInserted();
       else if (e.altKey && e.shiftKey && e.code === 'ArrowUp') leto.edit.copyLineUp();
