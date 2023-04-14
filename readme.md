@@ -1,4 +1,4 @@
-leto is a plain text editor. It is intended for use with a specific directory which stores notes, like a personal wiki. All changes are auto-saved; using a version control system like Git is recommended.
+leto is a lightweight plain text editor. It is intended for use with a specific directory which stores notes, like a personal wiki. All changes are auto-saved; using a version control system like Git is recommended.
 
 Headers and *italics* are highlighted. To make a header, start the line with # and an empty space.
 
@@ -17,7 +17,7 @@ Ctrl + B : Fold/unfold the sidebar\
 Ctrl + R : Toggle spellcheck\
 Ctrl + T : Cycle through themes\
 Ctrl + Plus / Minus : Change font size\
-Ctrl + ] / [ : Change font width\
+Ctrl + ] / [ : Change font weight\
 Ctrl + N : Create a new file\
 Ctrl + Shift + N : Create a new folder\
 Ctrl + F : Toggle fullscreen\
