@@ -220,7 +220,7 @@ export default class Directory {
     if (newPath === oldPath.substring(0, oldPath.lastIndexOf('\\'))) return;
 
     var fileName = oldPath.replace(/^.*[\\\/]/, '');
-    var fileExtension = /[^.]*$/.exec(fileName)[0];
+    var fileExtension = this.#getFileExtension(fileName)
     var filePath = newPath + `\\${fileName}`;
     for (var i = 0; i < Infinity; i++) {
       if (!(await this.pathExists(filePath))) break;
@@ -269,4 +269,6 @@ export default class Directory {
   async moveFileToTrash(path) {
     moveFileTo(path, `${this.activeDirectory}\\.trash`, false);
   }
+
+  #getFileExtension = (file) => /[^.]*$/.exec(file)[0];
 }

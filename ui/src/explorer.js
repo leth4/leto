@@ -170,44 +170,29 @@ export default class Explorer {
   showFileTree(directoryElements, directoryPath) {
     this.clearFileTree();
 
-    directoryElements.forEach((child) => {
-      if (child.children != null) {
-        this.showFolder(child, fileTree);
-      }
-    });
-    directoryElements.forEach((child) => {
-      if (child.children == null) {
-        this.showFile(child, fileTree);
-      }
-    });
+    directoryElements.forEach(child => child.children && this.#showFolder(child, fileTree));
+    directoryElements.forEach(child => !child.children && this.#showFile(child, fileTree));
 
     var mainDropArea = document.createElement('li');
     mainDropArea.style.height = '30px';
     mainDropArea.setAttribute('data-tauri-drag-region', '');
     fileTree.appendChild(mainDropArea);
 
-    mainDropArea.addEventListener('dragenter', (event) => {
-      event.preventDefault();
-    });
-    mainDropArea.addEventListener('dragover', (event) => {
-      event.preventDefault();
-    });
+    mainDropArea.addEventListener('dragenter', (event) => { event.preventDefault(); });
+    mainDropArea.addEventListener('dragover', (event) => { event.preventDefault(); });
     mainDropArea.addEventListener('drop', (event) => {
       var path = event.dataTransfer.getData('text');
       if (path.slice(-1) === '/') {
         leto.directory.moveFolderTo(path.slice(0, -1), directoryPath);
       } else {
-        leto.directory.moveFileTo(
-          event.dataTransfer.getData('text'),
-          directoryPath
-        );
+        leto.directory.moveFileTo(event.dataTransfer.getData('text'),directoryPath);
       }
       event.preventDefault();
     });
   }
 
-  showFile(file, parentElement) {
-    var extension = /[^.]*$/.exec(file.name)[0];
+  #showFile(file, parentElement) {
+    var extension = this.#getFileExtension(file.name);
     if (extension != 'md' && extension != 'txt') return;
 
     var fileButton = document.createElement('button');
@@ -217,24 +202,14 @@ export default class Explorer {
     if (fileButton.innerHTML.replace(/\s/g, '').length === 0)
       fileButton.innerHTML = '--';
 
-    fileButton.addEventListener('dragenter', (event) => {
-      event.preventDefault();
-    });
-    fileButton.addEventListener('dragover', (event) => {
-      event.preventDefault();
-    });
+    fileButton.addEventListener('dragenter', (event) => { event.preventDefault(); });
+    fileButton.addEventListener('dragover', (event) => { event.preventDefault(); });
     fileButton.addEventListener('drop', (event) => {
       var path = event.dataTransfer.getData('text');
       if (path.slice(-1) === '/') {
-        leto.directory.moveFolderTo(
-          path.slice(0, -1),
-          file.path.substring(0, file.path.lastIndexOf('\\'))
-        );
+        leto.directory.moveFolderTo(path.slice(0, -1), file.path.substring(0, file.path.lastIndexOf('\\')));
       } else {
-        leto.directory.moveFileTo(
-          event.dataTransfer.getData('text'),
-          file.path.substring(0, file.path.lastIndexOf('\\'))
-        );
+        leto.directory.moveFileTo(event.dataTransfer.getData('text'), file.path.substring(0, file.path.lastIndexOf('\\')));
       }
       event.preventDefault();
     });
@@ -249,7 +224,7 @@ export default class Explorer {
     });
   }
 
-  showFolder(folder, parentElement) {
+  #showFolder(folder, parentElement) {
     if (folder.name.substring(0, 1) === '.') return;
 
     var folderButton = document.createElement('button');
@@ -266,12 +241,8 @@ export default class Explorer {
     var liElement = document.createElement('li');
     liElement.appendChild(folderButton);
 
-    folderButton.addEventListener('dragenter', (event) => {
-      event.preventDefault();
-    });
-    folderButton.addEventListener('dragover', (event) => {
-      event.preventDefault();
-    });
+    folderButton.addEventListener('dragenter', (event) => { event.preventDefault(); });
+    folderButton.addEventListener('dragover', (event) => { event.preventDefault(); });
     folderButton.addEventListener('drop', (event) => {
       var path = event.dataTransfer.getData('text/path');
       if (path.slice(-1) === '/') {
@@ -287,19 +258,14 @@ export default class Explorer {
     ulElement.className = 'nested';
     liElement.appendChild(ulElement);
 
-    folder.children.forEach((child) => {
-      if (child.children != null) {
-        this.showFolder(child, ulElement);
-      }
-    });
-    folder.children.forEach((child) => {
-      if (child.children == null) {
-        this.showFile(child, ulElement);
-      }
-    });
+
+    folder.children.forEach(child => child.children && this.#showFolder(child, ulElement));
+    folder.children.forEach(child => !child.children && this.#showFile(child, ulElement));
 
     if (this.openFolders.includes(folder.path)) {
       liElement.querySelector('.nested').classList.add('active');
     }
   }
+
+  #getFileExtension = (file) => /[^.]*$/.exec(file)[0];
 }

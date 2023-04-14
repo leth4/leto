@@ -6,7 +6,8 @@ const { appConfigDir } = window.__TAURI__.path;
 export default class Config {
   async save() {
     const configPath = await appConfigDir();
-    var configObject = {
+
+    const configObject = {
       selectedFile: leto.directory.activeFile,
       selectedDirectory: leto.directory.activeDirectory,
       currentTheme: leto.windowManager.currentTheme,
@@ -14,27 +15,17 @@ export default class Config {
       fontSize: leto.windowManager.fontSize,
       fontWeight: leto.windowManager.fontWeight,
     };
-    await writeTextFile(
-      `${configPath}config.json`,
-      JSON.stringify(configObject)
-    );
+
+    await writeTextFile(`${configPath}config.json`, JSON.stringify(configObject));
   }
 
   async load() {
     const configPath = await appConfigDir();
     if (!(await leto.directory.pathExists(`${configPath}config.json`))) {
-      if (!(await leto.directory.pathExists(configPath))) {
-        await createDir(configPath, { recursive: true });
-      }
-      await writeTextFile(`${configPath}config.json`, ``);
-      leto.windowManager.currentTheme = 0;
-      leto.windowManager.applyTheme();
-      leto.windowManager.currentFont = 0;
-      leto.windowManager.tempWindow.applyFont();
-      leto.windowManager.fontWeight = 300;
-      leto.windowManager.applyFontSize();
+      await this.#create();
       return;
     }
+
     var config = await readTextFile(`${configPath}config.json`);
     var configObject = JSON.parse(config);
     leto.windowManager.currentTheme = configObject.currentTheme;
@@ -50,5 +41,19 @@ export default class Config {
 
     leto.windowManager.populateFonts();
     leto.windowManager.populateThemes();
+  }
+
+  async #create() {
+    if (!(await leto.directory.pathExists(configPath))) {
+      await createDir(configPath, { recursive: true });
+    }
+    await writeTextFile(`${configPath}config.json`, ``);
+    leto.windowManager.currentTheme = 0;
+    leto.windowManager.applyTheme();
+    leto.windowManager.currentFont = 0;
+    leto.windowManager.tempWindow.applyFont();
+    leto.windowManager.fontWeight = 300;
+    leto.windowManager.applyFontSize();
+    this.save();
   }
 }

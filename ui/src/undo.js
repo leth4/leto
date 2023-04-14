@@ -1,79 +1,72 @@
 'use strict';
 
 const editor = document.getElementById("text-editor");
+const chainableInputs = ["insertText", "deleteContentBackward", "deleteContentForward"];
 const BUFFER_TIMEOUT = 2500;
 
 export default class Undo {
 
+    #undoBuffer = [];
+    #redoBuffer = [];
+    #previousUndoType;
+    #previousSelection;
+    #currentSelection;
+    #bufferTimeout;
+
     constructor() {
-        this.undoBuffer = [];
-        this.redoBuffer = [];
-
-        this.previousUndoType;
-        this.previousSelection;
-        this.currentSelection;
-        
-        this.bufferTimeout;
-
-        editor.addEventListener('beforeinput', this.#setSelection.bind(this), false);      
+        editor.addEventListener('beforeinput', this.#setCurrentSelection.bind(this), false);      
     }
 
-    #setSelection() {
-        this.currentSelection = editor.selectionStart;
+    #setCurrentSelection() {
+        this.#currentSelection = editor.selectionStart;
+    }
+
+    undo() {
+        const length = this.#undoBuffer.pop();
+        if (!length) return;
+        
+        for (var i = 0; i < length; i++) document.execCommand("undo");
+        this.#redoBuffer.push(length);
+    }
+
+    redo() {
+        const length = this.#redoBuffer.pop();
+        if (!length) return;
+        
+        for (var i = 0; i < length; i++) document.execCommand("redo");
+        this.#undoBuffer.push(length);
     }
 
     resetBuffers() {
-        this.undoBuffer.length = 0;
-        this.redoBuffer.length = 0;
+        this.#undoBuffer.length = 0;
+        this.#redoBuffer.length = 0;
     };
 
     pushToBuffer(event) {
         if (!event) return;
+        clearTimeout(this.#bufferTimeout);
+
         const inputType = event.inputType;
-        
-        clearTimeout(this.bufferTimeout);
         if (inputType === "historyUndo" || inputType === "historyRedo") return;
-        this.redoBuffer.length = 0;
 
-        this.bufferTimeout = setTimeout(this.#addUndoChain.bind(this), BUFFER_TIMEOUT);
+        console.log(event);
 
-        if (inputType != "insertText" && inputType != "deleteContentBackward" && inputType != "deleteContentForward") {
+        this.#redoBuffer.length = 0;
+        this.#bufferTimeout = setTimeout(this.#addUndoChain.bind(this), BUFFER_TIMEOUT);
+
+        if (!chainableInputs.includes(inputType) || inputType != this.#previousUndoType) {
             this.#addUndoChain();
-        } else if (inputType != this.previousUndoType || this.currentSelection != this.previousSelection){
-            this.#addUndoChain();
-        } else if (event.data === " "){
+        } else if (this.#currentSelection != this.#previousSelection || event.data === " ") {
             this.#addUndoChain();
         } else {
-            this.undoBuffer[this.undoBuffer.length - 1]++;
+            this.#undoBuffer[this.#undoBuffer.length - 1]++;
         }
 
-        this.previousUndoType = inputType;
-        this.previousSelection = editor.selectionStart;   
+        this.#previousUndoType = inputType;
+        this.#previousSelection = editor.selectionStart;
     }
 
     #addUndoChain() {
-        this.undoBuffer.push(1);
-    }
-
-    undo() {
-        var length = this.undoBuffer.pop();
-        if (!length) return;
-        
-        for (var i = 0; i < length; i++) {
-            document.execCommand("undo");
-        }
-        
-        this.redoBuffer.push(length);
-    }
-
-    redo() {
-        var length = this.redoBuffer.pop();
-        if (!length) return;
-        
-        for (var i = 0; i < length; i++) {
-            document.execCommand("redo");
-        }
-
-        this.undoBuffer.push(length);
+        this.#undoBuffer.push(1);
     }
 }

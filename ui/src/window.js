@@ -5,31 +5,32 @@ const { appWindow } = window.__TAURI__.window;
 const themeSelector = document.getElementById('theme-selector');
 const fontSelector = document.getElementById('font-selector');
 const editor = document.getElementById('text-editor')
+const root = document.querySelector(':root');
+
+const themes = [
+  'gleam',
+  'aske',
+  'zima',
+  'spirit',
+  'fragment',
+  'patrol',
+  'osen',
+];
+
+const fonts = [
+  'arial',
+  'cascadia mono',
+  'helvetica neue',
+  'segoe ui',
+  'inter',
+  'raleway',
+  'poppins',
+  'roboto',
+];
 
 export default class Window {
+
   constructor() {
-    this.themes = [
-      'gleam',
-      'aske',
-      'zima',
-      'spirit',
-      'fragment',
-      'patrol',
-      'osen',
-    ];
-
-    this.fonts = [
-      'arial',
-      'georgia',
-      'cascadia mono',
-      'helvetica neue',
-      'segoe ui',
-      'inter',
-      'raleway',
-      'poppins',
-      'roboto',
-    ];
-
     this.prefsToggled = false;
     this.sidebarToggled = true;
     this.fullscreenToggled = true;
@@ -39,29 +40,20 @@ export default class Window {
     this.fontSize = 20;
     this.fontWeight = 300;
 
-    themeSelector.addEventListener(
-      'change',
-      () => this.setTheme(themeSelector.value),
-      false
-    );
-    fontSelector.addEventListener(
-      'change',
-      () => this.setFont(fontSelector.value),
-      false
-    );
+    themeSelector.addEventListener('change', () => this.setTheme(themeSelector.value), false);
+    fontSelector.addEventListener('change', () => this.setFont(fontSelector.value), false);
   }
 
-  async closewindow() {
-    await appWindow.close();
+  closewindow() {
+    appWindow.close();
   }
 
-  async minimizeWindow() {
-    await appWindow.minimize();
+  minimizeWindow() {
+    appWindow.minimize();
   }
 
   toggleSpellcheck() {
-    var newValue =
-      editor.getAttribute('spellcheck') === 'true' ? 'false' : 'true';
+    var newValue = editor.getAttribute('spellcheck') === 'true' ? 'false' : 'true';
     editor.setAttribute('spellcheck', newValue);
   }
 
@@ -71,12 +63,7 @@ export default class Window {
   }
 
   applyFont() {
-    document
-      .querySelector(':root')
-      .style.setProperty(
-        '--font-family',
-        `"${this.fonts[this.currentFont]}", "Arial"`
-      );
+    root.style.setProperty('--font-family', `"${fonts[this.currentFont]}", "Arial"`);
     leto.config.save();
   }
 
@@ -84,9 +71,8 @@ export default class Window {
     this.fontSize += change;
     if (this.fontSize > 40) this.fontSize = 40;
     else if (this.fontSize < 14) this.fontSize = 14;
-    document
-      .querySelector(':root')
-      .style.setProperty('--font-size', `${this.fontSize}px`);
+
+    root.style.setProperty('--font-size', `${this.fontSize}px`);
     leto.config.save();
   }
 
@@ -104,15 +90,13 @@ export default class Window {
     this.fontWeight += change;
     if (this.fontWeight > 500) this.fontWeight = 500;
     else if (this.fontWeight < 200) this.fontWeight = 200;
-    document
-      .querySelector(':root')
-      .style.setProperty('--font-weight', `${this.fontWeight}`);
+    root.style.setProperty('--font-weight', `${this.fontWeight}`);
     leto.config.save();
   }
 
   setNextTheme() {
     this.currentTheme++;
-    if (this.currentTheme >= this.themes.length) this.currentTheme = 0;
+    if (this.currentTheme >= themes.length) this.currentTheme = 0;
     themeSelector.value = this.currentTheme;
     this.applyTheme();
   }
@@ -120,7 +104,7 @@ export default class Window {
   applyTheme() {
     document
       .getElementById('theme-link')
-      .setAttribute('href', `themes/${this.themes[this.currentTheme]}.css`);
+      .setAttribute('href', `themes/${themes[this.currentTheme]}.css`);
     leto.config.save();
   }
 
@@ -151,9 +135,9 @@ export default class Window {
   }
 
   populateThemes() {
-    for (var i = 0; i < this.themes.length; i++) {
+    for (var i = 0; i < themes.length; i++) {
       var option = document.createElement('option');
-      option.innerHTML = this.themes[i];
+      option.innerHTML = themes[i];
       option.value = i;
       document.getElementById('theme-selector').appendChild(option);
     }
@@ -161,9 +145,9 @@ export default class Window {
   }
 
   populateFonts() {
-    for (var i = 0; i < this.fonts.length; i++) {
+    for (var i = 0; i < fonts.length; i++) {
       var option = document.createElement('option');
-      option.innerHTML = this.fonts[i];
+      option.innerHTML = fonts[i];
       option.value = i;
       document.getElementById('font-selector').appendChild(option);
     }

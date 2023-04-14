@@ -27,16 +27,8 @@ class Leto {
     this.correctionScroll = -1;
 
     document.addEventListener('contextmenu', (event) => event.preventDefault());
-    editor.addEventListener(
-      'input',
-      (event) => this.handleEditorInput(event),
-      false
-    );
-    editor.addEventListener(
-      'beforeinput',
-      (event) => this.handleScrollJump(event),
-      false
-    );
+    editor.addEventListener('input', (event) => this.handleEditorInput(event), false);
+    editor.addEventListener('beforeinput', (event) => this.handleScrollJump(event), false);
     editor.addEventListener('scroll', () => this.handleEditorScroll(), false);
 
     this.config.load();
@@ -62,14 +54,8 @@ class Leto {
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(
-        /(?<!# )(\*)(.*?)(\*)/g,
-        "<mark class='hashtag'>$1</mark><mark class='bold'>$2</mark><mark class='hashtag'>$3</mark>"
-      )
-      .replace(
-        /(^#{1,4})( .*)/gm,
-        "<mark class='hashtag'>$1</mark><mark class='header'>$2</mark>"
-      );
+      .replace(/(?<!# )(\*)(.*?)(\*)/g, "<mark class='hashtag'>$1</mark><mark class='bold'>$2</mark><mark class='hashtag'>$3</mark>")
+      .replace(/(^#{1,4})( .*)/gm, "<mark class='hashtag'>$1</mark><mark class='header'>$2</mark>");
     preview.innerHTML = editorText;
   }
 

@@ -14,9 +14,11 @@ export default class Edit {
   
   cutLine() {
     selectLine();
-    var command =
-      editor.selectionEnd - 1 === editor.selectionStart ? "delete" : "cut";
-    document.execCommand(command);
+    if (editor.selectionEnd - 1 === editor.selectionStart) {
+      document.execCommand("delete");
+    } else {
+      document.execCommand("cut");
+    }
   }
   
   newLineInserted() {
@@ -31,12 +33,7 @@ export default class Edit {
     else if (editor.value.slice(lineStart, lineStart + 3) === "[x]")
       insertText = "\n[ ] ";
     else if (/^\d+\.\s+\S+.*$/.test(editor.value.slice(lineStart, lineEnd)))
-      insertText =
-        "\n" +
-        (
-          parseInt(editor.value.slice(lineStart, lineEnd).match(/^\d+/)[0]) + 1
-        ).toString() +
-        ". ";
+      insertText = "\n" + ( parseInt(editor.value.slice(lineStart, lineEnd).match(/^\d+/)[0]) + 1 ).toString() + ". ";
 
     document.execCommand("insertText", false, insertText);
   }
@@ -152,6 +149,7 @@ export default class Edit {
     editor.setSelectionRange(position, position);
     editor.blur();
     editor.focus();
+    leto.handleEditorInput();
   }
 
   #getLineBorders(position = editor.selectionEnd) {
