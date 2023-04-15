@@ -228,8 +228,6 @@ export default class Directory {
       finalPath = `${newPath}\\${name} ${i + 1}${isFile ? `.${extension}` : ""}`;
     }
 
-    console.log(name, this.#getFileExtension(name), finalPath);
-
     await invoke('move_to', { oldPath: oldPath, newPath: finalPath });
 
     if (this.activeFile === oldPath) this.activeFile = newPath;

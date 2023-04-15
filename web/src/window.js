@@ -3,9 +3,10 @@
 const { appWindow } = window.__TAURI__.window;
 
 const themeSelector = document.getElementById('theme-selector');
-const fontSelector = document.getElementById('font-selector');
 const editor = document.getElementById('text-editor')
 const root = document.querySelector(':root');
+
+const fontInput = document.getElementById('font-input');
 
 const themes = [
   'gleam',
@@ -17,17 +18,6 @@ const themes = [
   'osen',
 ];
 
-const fonts = [
-  'arial',
-  'cascadia mono',
-  'helvetica neue',
-  'segoe ui',
-  'inter',
-  'raleway',
-  'poppins',
-  'roboto',
-];
-
 export default class Window {
 
   #prefsToggled = false;
@@ -36,12 +26,14 @@ export default class Window {
 
   constructor() {
     this.currentTheme = 0;
-    this.currentFont = 0;
+    this.currentFont = "inter";
     this.fontSize = 20;
     this.fontWeight = 300;
 
     themeSelector.addEventListener('change', () => this.setTheme(themeSelector.value), false);
-    fontSelector.addEventListener('change', () => this.setFont(fontSelector.value), false);
+    fontInput.addEventListener('input', () => this.setFont(fontInput.value), false);
+
+    this.populateThemes();
   }
   
   closewindow() {
@@ -83,7 +75,7 @@ export default class Window {
   }
 
   setFontSize(size, save = true) {
-    this.fontSize = size;
+    this.fontSize = size ?? 20;
     root.style.setProperty('--font-size', `${this.fontSize}px`);
     if (save) leto.config.save();
   }
@@ -96,19 +88,20 @@ export default class Window {
   }
 
   setFontWeight(weight, save = true) {
-    this.fontWeight = weight;
+    this.fontWeight = weight ?? 300;
     root.style.setProperty('--font-weight', `${this.fontWeight}`);
     if (save) leto.config.save();
   }
 
   setFont(font, save = true) {
-    this.currentFont = font;
-    root.style.setProperty('--font-family', `"${fonts[this.currentFont]}", "Arial"`);
+    this.currentFont = font ?? "inter";
+    root.style.setProperty('--font-family', `"${this.currentFont}", "arial"`);
+    fontInput.value = this.currentFont;
     if (save) leto.config.save();
   }
-
+  
   setTheme(theme, save = true) {
-    this.currentTheme = theme;
+    this.currentTheme = theme ?? 0;
     themeSelector.value = this.currentTheme;
     document.getElementById('theme-link').setAttribute('href', `themes/${themes[this.currentTheme]}.css`);
     if (save) leto.config.save();
@@ -126,16 +119,5 @@ export default class Window {
       option.value = i;
       themeSelector.appendChild(option);
     }
-    themeSelector.value = this.currentTheme;
-  }
-
-  populateFonts() {
-    for (var i = 0; i < fonts.length; i++) {
-      var option = document.createElement('option');
-      option.innerHTML = fonts[i];
-      option.value = i;
-      fontSelector.appendChild(option);
-    }
-    fontSelector.value = this.currentFont;
   }
 }

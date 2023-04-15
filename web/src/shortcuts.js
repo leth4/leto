@@ -1,6 +1,7 @@
 'use strict';
 
 const editor = document.getElementById('text-editor');
+const fontInput = document.getElementById('font-input');
 const nameInput = document.getElementById('name-input');
 
 export default class Shortcuts {
@@ -26,6 +27,7 @@ export default class Shortcuts {
       }
 
       else if (document.activeElement === nameInput && e.code === 'Enter') nameInput.blur();
+      else if (document.activeElement === fontInput && e.code === 'Enter') fontInput.blur();
 
       else if (!e.ctrlKey && !e.shiftKey && e.code === 'Enter') leto.edit.handleNewLine();
       else if (e.altKey && e.shiftKey && e.code === 'ArrowUp') leto.edit.copyLineUp();

@@ -6,6 +6,7 @@ const { appConfigDir } = window.__TAURI__.path;
 export default class Config {
 
   async save() {
+
     const configObject = {
       selectedFile: leto.directory.activeFile,
       selectedDirectory: leto.directory.activeDirectory,
@@ -16,23 +17,24 @@ export default class Config {
     };
 
     const configPath = await appConfigDir();
-    await writeTextFile(`${configPath}config.json`, JSON.stringify(configObject));
+    await writeTextFile(`${configPath}config.json`, JSON.stringify(configObject, null, 2));
   }
 
   async load() {
     const configPath = await appConfigDir();
 
-    if (!(await exists(`${configPath}config.json`))) { this.#create(); return; }
-
-    var config = await readTextFile(`${configPath}config.json`);
-    var configObject = JSON.parse(config);
+    try {
+      var config = await readTextFile(`${configPath}config.json`);
+      var configObject = JSON.parse(config);
+    } catch {
+      this.#create();
+      return;
+    }
 
     leto.windowManager.setTheme(configObject.currentTheme, false)
     leto.windowManager.setFont(configObject.currentFont, false)
     leto.windowManager.setFontSize(configObject.fontSize, false);
     leto.windowManager.setFontWeight(configObject.fontWeight, false);
-    leto.windowManager.populateFonts();
-    leto.windowManager.populateThemes();
     
     leto.directory.setActiveDirectory(configObject.selectedDirectory);
     leto.directory.setActiveFile(configObject.selectedFile);
@@ -44,6 +46,6 @@ export default class Config {
       await createDir(configPath, { recursive: true });
     }
     await writeTextFile(`${configPath}config.json`, '');
-    this.save();
+    this.save().then(this.load);
   }
 }
