@@ -22,8 +22,8 @@ const themes = [
 export default class Window {
 
   #prefsToggled = false;
+  #fullscreenToggled = false;
   #sidebarToggled = true;
-  #fullscreenToggled = true;
 
   constructor() {
     this.currentTheme = 0;

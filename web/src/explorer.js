@@ -54,7 +54,7 @@ export default class Explorer {
       if (!event.target.classList.contains('file-button') && !event.target.classList.contains('folder-button')) return;
 
       const button = event.target;
-      button.parentElement.append(nameInput);
+      button.parentElement.insertBefore(nameInput, button.parentElement.firstChild);
       button.parentElement.draggable = false;
       button.style.display = 'none';
       nameInput.style.display = 'block';
