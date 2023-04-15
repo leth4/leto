@@ -2,9 +2,9 @@ leto is a lightweight plain text editor. It is intended for use with a specific 
 
 Headers and *italics* are highlighted. To make a header, start the line with # and an empty space.
 
-The default font is Arial. For selected fonts to work, you will need them installed locally.
+The default font is Inter, but you can input any locally installed font.
 
-Right-click on files and folders to rename them, drag their names to move or delete them. Deleted files and folders are kept in a ".trash" folder in the working directory.
+Right-click on files and folders to rename them; drag their names to move or delete them. Deleted files and folders are kept in a ".trash" folder in the working directory.
 
 ### Shortcuts supported:
 
