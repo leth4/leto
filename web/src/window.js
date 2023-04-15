@@ -16,6 +16,7 @@ const themes = [
   'fragment',
   'patrol',
   'osen',
+  'perlin'
 ];
 
 export default class Window {
@@ -95,13 +96,14 @@ export default class Window {
 
   setFont(font, save = true) {
     this.currentFont = font ?? "inter";
-    root.style.setProperty('--font-family', `"${this.currentFont}", "arial"`);
+    root.style.setProperty('--font-family', `"${this.currentFont}", "inter", "arial"`);
     fontInput.value = this.currentFont;
     if (save) leto.config.save();
   }
   
   setTheme(theme, save = true) {
     this.currentTheme = theme ?? 0;
+    if (theme >= themes.length) this.currentTheme = 0;
     themeSelector.value = this.currentTheme;
     document.getElementById('theme-link').setAttribute('href', `themes/${themes[this.currentTheme]}.css`);
     if (save) leto.config.save();

@@ -1,12 +1,12 @@
 :root {
-    --editor-background-color: #f0efe9;
+    --editor-background-color: #e3e2dd;
     --editor-text-color: #515050;
     --editor-header-color: #b6160a;
     --editor-hashtag-color: #c2c1b9;
     --selection-color: #dedcd4;
     --scrollbar-color: #a1a09c;
 
-    --sidebar-background-color: #f0efe9;
+    --sidebar-background-color: #e3e2dd;
     --sidebar-folder-color: #515050;
     --sidebar-file-color: #a1a09c;
     --sidebar-selection-color: #dedcd4;
