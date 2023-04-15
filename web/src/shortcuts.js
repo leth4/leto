@@ -27,7 +27,7 @@ export default class Shortcuts {
 
       else if (document.activeElement === nameInput && e.code === 'Enter') nameInput.blur();
 
-      else if (!e.ctrlKey && !e.shiftKey && e.code === 'Enter') leto.edit.newLineInserted();
+      else if (!e.ctrlKey && !e.shiftKey && e.code === 'Enter') leto.edit.handleNewLine();
       else if (e.altKey && e.shiftKey && e.code === 'ArrowUp') leto.edit.copyLineUp();
       else if (e.altKey && e.shiftKey && e.code === 'ArrowDown') leto.edit.copyLineDown();
       else if (e.altKey && !e.shiftKey && e.code === 'ArrowUp') leto.edit.moveUp();
@@ -50,10 +50,10 @@ export default class Shortcuts {
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyM') leto.windowManager.minimizeWindow();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyP') leto.windowManager.togglePrefs();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyF') leto.windowManager.toggleFullscreen();
-      else if (e.ctrlKey && !e.shiftKey && e.code === 'Equal') leto.windowManager.applyFontSize(+1);
-      else if (e.ctrlKey && !e.shiftKey && e.code === 'Minus') leto.windowManager.applyFontSize(-1);
-      else if (e.ctrlKey && !e.shiftKey && e.code === 'BracketRight') leto.windowManager.applyFontWeight(+100);
-      else if (e.ctrlKey && !e.shiftKey && e.code === 'BracketLeft') leto.windowManager.applyFontWeight(-100);
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'Equal') leto.windowManager.changeFontSize(+1);
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'Minus') leto.windowManager.changeFontSize(-1);
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'BracketRight') leto.windowManager.changeFontWeight(+100);
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'BracketLeft') leto.windowManager.changeFontWeight(-100);
       else return;
 
       e.preventDefault();

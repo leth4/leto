@@ -11,7 +11,7 @@ use std::path::PathBuf;
 
 fn main() {
   tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![get_edit_time, move_to, rename])
+    .invoke_handler(tauri::generate_handler![get_edit_time, move_to, rename, is_dir])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
@@ -19,6 +19,11 @@ fn main() {
 #[tauri::command]
 fn rename(old_path : &str, new_path : &str) {
     _ = fs::rename(old_path, new_path);
+}
+
+#[tauri::command]
+fn is_dir(path: &str) -> bool {
+    Path::new(path).is_dir()
 }
 
 #[tauri::command]

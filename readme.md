@@ -6,7 +6,7 @@ The default font is Arial. For selected fonts to work, you will need them instal
 
 Right-click on files and folders to rename them, drag their names to move or delete them. Deleted files and folders are kept in a ".trash" folder in the working directory.
 
-# Shortcuts supported:
+### Shortcuts supported:
 
 Ctrl + O  : Open a new directory\
 Ctrl + Shift + S : Save active file as new (leto will stay in current directory)\
@@ -23,7 +23,7 @@ Ctrl + Shift + N : Create a new folder\
 Ctrl + F : Toggle fullscreen\
 Tab : Scroll through files
 
-# Editor shortcuts:
+### Editor shortcuts:
 
 Ctrl + Arrow Up / Down : Jump between headers\
 Alt + Arrow Up / Down : Move the current line\

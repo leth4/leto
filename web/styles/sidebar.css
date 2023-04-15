@@ -55,10 +55,6 @@
     transform: scale(1, 0.95);
 }
 
-.selected {
-    text-decoration: underline;
-}
-
 .folder-button:hover {
     background: var(--sidebar-selection-color);
 }
@@ -66,6 +62,10 @@
 .folder-button:focus {
     outline: none;
     background: var(--sidebar-selection-color);
+}
+
+.selected {
+    text-decoration: underline;
 }
 
 li {
@@ -88,10 +88,6 @@ ul {
     border-left: 1px solid var(--sidebar-file-color);
 }
 
-select {
-    display : inline-block;
-}
-
 #preferences {
     display: none;
 }
@@ -101,7 +97,6 @@ select {
     padding-top: 3px;
     white-space: nowrap;
 }
-
 
 #name-input {
     background: transparent;
@@ -120,6 +115,7 @@ select {
 }
 
 select {
+    display : inline-block;
     background: var(--sidebar-background-color);
     border: 1px solid var(--editor-text-color);
     border-radius: 4px;
@@ -142,7 +138,7 @@ option {
     font-size: var(--sidebar-font-size);
 }
 
-.delete-area {
+#delete-area {
     border-top: calc(1px - var(--shadow)) solid var(--divider-color);
     box-shadow: 0 0 calc(var(--shadow) * 20) var(--divider-color);
     color: var(--sidebar-folder-color);

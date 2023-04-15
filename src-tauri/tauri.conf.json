@@ -2,13 +2,13 @@
   "build": {
     "beforeBuildCommand": "",
     "beforeDevCommand": "",
-    "devPath": "../ui",
-    "distDir": "../ui",
+    "devPath": "../web",
+    "distDir": "../web",
     "withGlobalTauri": true
   },
   "package": {
     "productName": "leto",
-    "version": "0.8.0"
+    "version": "0.9.0"
   },
   "tauri": {
     "allowlist": {

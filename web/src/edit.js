@@ -21,19 +21,17 @@ export default class Edit {
     }
   }
   
-  newLineInserted() {
-    var [lineStart, lineEnd] = this.#getLineBorders();
+  handleNewLine() {
+    var lineStart = this.#getLineStart();
     var insertText = "\n";
 
     if (editor.selectionStart != editor.selectionEnd) {
-    } else if (editor.selectionEnd && editor.value[lineStart] === "—")
+    } else if (editor.selectionEnd && editor.value[lineStart] === "—" && editor.selectionEnd - lineStart > 1)
       insertText = "\n— ";
-    else if (editor.value.slice(lineStart, lineStart + 3) === "[ ]")
+    else if (editor.value.slice(lineStart, lineStart + 3) === "[ ]" && editor.selectionEnd - lineStart > 3)
       insertText = "\n[ ] ";
-    else if (editor.value.slice(lineStart, lineStart + 3) === "[x]")
+    else if (editor.value.slice(lineStart, lineStart + 3) === "[x]" && editor.selectionEnd - lineStart > 3)
       insertText = "\n[ ] ";
-    else if (/^\d+\.\s+\S+.*$/.test(editor.value.slice(lineStart, lineEnd)))
-      insertText = "\n" + ( parseInt(editor.value.slice(lineStart, lineEnd).match(/^\d+/)[0]) + 1 ).toString() + ". ";
 
     document.execCommand("insertText", false, insertText);
   }
@@ -108,11 +106,11 @@ export default class Edit {
     var lineStart = this.#getLineStart();
     var positionAtLine = editor.selectionEnd - lineStart;
 
-    if (editor.value.slice(lineStart, lineStart + 4) === "[x] ") {
+    if (editor.value.slice(lineStart, lineStart + 3) === "[x]") {
       editor.setSelectionRange(lineStart + 1, lineStart + 2);
       document.execCommand("insertText", false, " ");
       this.#setCursorAndFocus(lineStart + positionAtLine);
-    } else if (editor.value.slice(lineStart, lineStart + 4) === "[ ] ") {
+    } else if (editor.value.slice(lineStart, lineStart + 3) === "[ ]") {
       editor.setSelectionRange(lineStart + 1, lineStart + 2);
       document.execCommand("insertText", false, "x");
       this.#setCursorAndFocus(lineStart + positionAtLine);

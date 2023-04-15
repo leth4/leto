@@ -34,11 +34,7 @@ export default class Explorer {
     this.#makeDroppable(deleteArea);
     deleteArea.addEventListener('drop', (event) => {
       const path = event.dataTransfer.getData('text/path');
-      if (path.slice(-1) === '/') {
-        leto.directory.moveFolderToTrash(path.slice(0, -1));
-      } else {
-        leto.directory.moveFileToTrash(path);
-      }
+      leto.directory.moveToTrash(path);
       event.preventDefault();
     });
 
@@ -165,9 +161,9 @@ export default class Explorer {
 
     folderButton.draggable = true;
     folderButton.addEventListener('dragstart', (event) => {
-      event.dataTransfer.setData('text/oldpath', folder.path + '/');
-      event.dataTransfer.setData('text/path', folder.path + '/');
-      event.dataTransfer.setData('text', folder.path + '/');
+      event.dataTransfer.setData('text/oldpath', folder.path);
+      event.dataTransfer.setData('text/path', folder.path);
+      event.dataTransfer.setData('text', folder.path);
     });
 
     var liElement = document.createElement('li');
@@ -191,11 +187,7 @@ export default class Explorer {
 
   #handleElementDrop(event, newPath) {
     var path = event.dataTransfer.getData('text/path');
-    if (path.slice(-1) === '/') {
-      leto.directory.moveFolderTo(path.slice(0, -1), newPath);
-    } else {
-      leto.directory.moveFileTo(path, newPath);
-    }
+    leto.directory.moveTo(path, newPath);
     event.preventDefault();
   }
 

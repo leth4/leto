@@ -4,33 +4,31 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>leto</title>
         <link rel="stylesheet" id="theme-link" href="themes/invisible.css">
-        <link rel="stylesheet" href="styles/style.css">
+        <link rel="stylesheet" href="styles/main.css">
         <link rel="stylesheet" href="styles/sidebar.css">
     </head>
 
     <body>
-        <div id="main">
+        <main>
             <div id="sidebar" data-tauri-drag-region>
                 <div id="sidebar-content">
                     <ul id="file-tree" data-tauri-drag-region> </ul>
                     <ul id="preferences" data-tauri-drag-region>
                         <li class="pref" data-tauri-drag-region><input spellcheck="false" type="text" id="name-input"
                                 autocomplete="false"> </input></li>
-                        <li class=" pref" data-tauri-drag-region><select name="font" id="font-selector"> </select></li>
-                        <li class=" pref" data-tauri-drag-region><select name="theme" id="theme-selector"></select>
+                        <li class="pref" data-tauri-drag-region><select name="font" id="font-selector"> </select></li>
+                        <li class="pref" data-tauri-drag-region><select name="theme" id="theme-selector"></select>
                         </li>
                     </ul>
                 </div>
-                <div id="delete-area" class="delete-area">delete</div>
+                <div id="delete-area">delete</div>
             </div>
             <div id="text-area">
                 <textarea id="text-editor" disabled="true" spellcheck="false" autofocus></textarea>
                 <div id="text-preview"></div>
             </div>
-
-        </div>
+        </main>
         <script type="module" src="src/leto.js"></script>
     </body>
 

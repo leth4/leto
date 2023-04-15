@@ -17,7 +17,7 @@ body {
     overflow: hidden;
 }
 
-#main {
+main {
     display: flex;
     height: 100vh;
     width: 100wh;
@@ -74,12 +74,8 @@ body {
 }
 
 ::-webkit-scrollbar {
-    width: 3px;
-}
-
-.sidebar::-webkit-scrollbar {
     background: transparent;
-    width: 2px;
+    width: 3px;
 }
 
 ::-webkit-scrollbar-thumb {
