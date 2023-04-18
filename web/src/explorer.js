@@ -5,9 +5,9 @@ const nameInput = document.getElementById('name-input');
 
 export default class Explorer {
 
-  constructor() {
-    this.openFolders = [];
+  #openFolders = [];
 
+  constructor() {
     nameInput.addEventListener('input', () => this.#sanitizeNameInput());
     nameInput.addEventListener('focusout', async () => {
       var element;
@@ -34,6 +34,11 @@ export default class Explorer {
         this.#handleFolderClick(event);
       }
     });
+  }
+
+  updateFolderPath(oldPath, newPath) {
+    this.#openFolders.filter(item => item != oldPath);
+    if (newPath) this.#openFolders.push(newPath);
   }
 
   #sanitizeNameInput() {
@@ -73,10 +78,10 @@ export default class Explorer {
     const nested = folderButton.parentElement.querySelector('.nested');
     if (nested.style.display == 'block') {
       nested.style.display = 'none';
-      this.openFolders = this.openFolders.filter(item => item != folderButton.getAttribute('data-path'));
+      this.#openFolders = this.#openFolders.filter(item => item != folderButton.getAttribute('data-path'));
     } else {
       nested.style.display = 'block';
-      this.openFolders.push(folderButton.getAttribute('data-path'));
+      this.#openFolders.push(folderButton.getAttribute('data-path'));
     }
   }
 
@@ -176,7 +181,7 @@ export default class Explorer {
     folder.children.forEach(child => child.children && this.#showFolder(child, ulElement));
     folder.children.forEach(child => !child.children && this.#showFile(child, ulElement));
 
-    if (this.openFolders.includes(folder.path)) {
+    if (this.#openFolders.includes(folder.path)) {
       liElement.querySelector('.nested').style.display = 'block';
     }
   }

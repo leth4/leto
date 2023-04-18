@@ -206,8 +206,10 @@ export default class Directory {
     await invoke('rename', { oldPath: oldPath, newPath: newPath });
 
     if (this.activeFile && this.activeFile.includes(oldPath)) {
-      this.activeFile.replace(oldPath, newPath);
+      this.activeFile = this.activeFile.replace(oldPath, newPath);
     }
+
+    leto.explorer.updateFolderPath(oldPath, newPath);
 
     this.#reloadDirectory();
     this.tryOpenActiveFile();
@@ -232,8 +234,10 @@ export default class Directory {
     }
 
     await invoke('move_to', { oldPath: oldPath, newPath: finalPath });
-
+    
     if (this.activeFile === oldPath) this.activeFile = newPath;
+    if (!isFile) leto.explorer.updateFolderPath(oldPath);
+
     this.#reloadDirectory();
     this.tryOpenActiveFile();
   }

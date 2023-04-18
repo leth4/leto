@@ -115,7 +115,7 @@ ul {
 
 #font-input {
     background: transparent;
-    color: var(--editor-text-color);
+    color: var(--sidebar-folder-color);
     border: 1px solid var(--editor-text-color);
     border-radius: 4px;
     resize: none; 

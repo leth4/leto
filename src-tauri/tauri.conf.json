@@ -92,7 +92,7 @@
         "center" : true,
         "focus": true,
         "decorations": false,
-        "transparent": false
+        "transparent": true
       }
     ]
   }

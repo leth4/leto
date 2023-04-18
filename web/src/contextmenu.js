@@ -6,7 +6,7 @@ const { readText } = window.__TAURI__.clipboard;
 const contextMenu = document.getElementById('context-menu');
 const editor = document.getElementById('text-editor');
 const explorerElementActions = ['Rename', 'Delete'];
-const explorerActions = ['New File', 'New Folder']; // Select directory
+const explorerActions = ['New File', 'New Folder'];
 const editorActions = ['Copy', 'Paste', 'Cut'];
 
 export default class ContextMenu {
@@ -32,20 +32,22 @@ export default class ContextMenu {
   }
 
   hide() {
-    contextMenu.style.display = 'none';
+    contextMenu.style.top = -10000 + 'px';
+    contextMenu.classList.remove('show');
   }
 
   async #show(event) {
     const size = await appWindow.innerSize();
-    contextMenu.style.display = 'block';
+    contextMenu.classList.add('show');
+
+    if (event.target === editor) this.#createEditorMenu();
+    else this.#createFileSystemMenu();
 
     const deltaX = size.width > event.clientX + contextMenu.clientWidth + 5 ? 0 :  contextMenu.clientWidth;
     const deltaY = size.height > event.clientY + contextMenu.clientHeight + 5 ? 0 : contextMenu.clientHeight;
     contextMenu.style.left = event.clientX - deltaX + 'px';
     contextMenu.style.top = event.clientY - deltaY + 'px';
 
-    if (event.target === editor) this.#createEditorMenu();
-    else this.#createFileSystemMenu();
   }
 
   async #handleClick(action) {

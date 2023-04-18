@@ -1,5 +1,4 @@
 #context-menu {
-    display: none;
     position: absolute;
     z-index: 100;
     background-color: #2a2a2a;
@@ -9,10 +8,15 @@
     border: 1px solid #888888;
     min-width: 120px;
     font-family: var(--font-family);
-
     padding: 5px 0 5px 0;
+
+    opacity: 0;
+    transition: opacity 0.15s ease-out;
 }
 
+#context-menu.show {
+    opacity: 1;
+}
 
 #context-menu li {
     padding: 8px 10px;
