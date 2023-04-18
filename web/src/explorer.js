@@ -2,7 +2,6 @@
 
 const fileTree = document.getElementById('file-tree');
 const nameInput = document.getElementById('name-input');
-const deleteArea = document.getElementById('delete-area');
 
 export default class Explorer {
 
@@ -12,30 +11,19 @@ export default class Explorer {
     nameInput.addEventListener('input', () => this.#sanitizeNameInput());
     nameInput.addEventListener('focusout', async () => {
       var element;
-      if (nameInput.parentElement.querySelector('.file-button')) {
-        element = nameInput.parentElement.querySelector('.file-button');
-        await leto.directory.renameFile(element.getAttribute('data-path'), nameInput.value);
-      }
-      else if (nameInput.parentElement.querySelector('.folder-button')) {
+      if (nameInput.parentElement.querySelector('.folder-button')) {
         element = nameInput.parentElement.querySelector('.folder-button');
         await leto.directory.renameFolder(element.getAttribute('data-path'), nameInput.value);
+      }
+      else if (nameInput.parentElement.querySelector('.file-button')) {
+        element = nameInput.parentElement.querySelector('.file-button');
+        await leto.directory.renameFile(element.getAttribute('data-path'), nameInput.value);
       }
       
       element.parentElement.draggable = true;
       element.innerHTML = nameInput.value;
       element.style.display = 'block';
       nameInput.style.display = 'none';
-    });
-
-    document.addEventListener('dragstart', (event) => {
-      if (event.dataTransfer.getData('text/path')) deleteArea.style.display = 'block' });
-    document.addEventListener('dragend', () => { deleteArea.style.display = 'none' });
-
-    this.#makeDroppable(deleteArea);
-    deleteArea.addEventListener('drop', (event) => {
-      const path = event.dataTransfer.getData('text/path');
-      leto.directory.moveToTrash(path);
-      event.preventDefault();
     });
 
     fileTree.addEventListener('click', (event) => {
@@ -46,25 +34,33 @@ export default class Explorer {
         this.#handleFolderClick(event);
       }
     });
-
-    fileTree.addEventListener('mouseup', (event) => {
-      if (!event.target) return;
-      if (event.button != 2) return;
-
-      if (!event.target.classList.contains('file-button') && !event.target.classList.contains('folder-button')) return;
-
-      const button = event.target;
-      button.parentElement.insertBefore(nameInput, button.parentElement.firstChild);
-      button.parentElement.draggable = false;
-      button.style.display = 'none';
-      nameInput.style.display = 'block';
-      nameInput.value = button.innerHTML;
-      nameInput.focus();
-    });
   }
 
   #sanitizeNameInput() {
     nameInput.value = nameInput.value.replace(/[<>:"/\\|?*\x00-\x1F]/g, '');
+  }
+
+  isExpolorerElement(element) {
+    return element.classList.contains('file-button') || element.classList.contains('folder-button');
+  }
+
+  deleteItem(target) {
+    if (!target) return;
+    if (!this.isExpolorerElement(target)) return;
+    leto.directory.moveToTrash(target.getAttribute('data-path'));
+  }
+
+  renameItem(target) {
+    if (!target) return;
+    if (!this.isExpolorerElement(target)) return;
+
+    const button = target;
+    button.parentElement.insertBefore(nameInput, button.parentElement.firstChild);
+    button.parentElement.draggable = false;
+    button.style.display = 'none';
+    nameInput.style.display = 'block';
+    nameInput.value = button.innerHTML;
+    nameInput.focus();
   }
 
   #handleFileClick(event) {

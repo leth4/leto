@@ -42,6 +42,7 @@ export default class Directory {
     try {
       await this.#openActiveFile();
       leto.undo.resetBuffers();
+      editor.focus();
     } catch {
       this.#removeActiveFile();
     }

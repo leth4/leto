@@ -7,6 +7,7 @@ import Window from './window.js';
 import Explorer from './explorer.js';
 import Shortcuts from './shortcuts.js';
 import Config from './config.js';
+import ContextMenu from './contextmenu.js';
 
 const { appWindow } = window.__TAURI__.window;
 
@@ -25,10 +26,10 @@ class Leto {
     this.explorer = new Explorer();
     this.shortcuts = new Shortcuts();
     this.config = new Config();
+    this.contextMenu = new ContextMenu();
 
     this.focused = true;
 
-    document.addEventListener('contextmenu', (event) => event.preventDefault());
     editor.addEventListener('input', (event) => this.handleEditorInput(event), false);
     editor.addEventListener('beforeinput', (event) => this.#handleNewLine(event), false);
     editor.addEventListener('scroll', () => this.#handleEditorScroll(), false);
@@ -70,6 +71,7 @@ globalThis.leto = new Leto();
 leto.config.load();
 
 await appWindow.onFocusChanged(({ payload: hasFocused }) => {
+  leto.contextMenu.hide();
   leto.focused = hasFocused;
   if (hasFocused) {
     leto.directory.tryDisplayActiveDirectory();

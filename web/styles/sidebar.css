@@ -6,7 +6,6 @@
     max-width: 200px;
     overflow-y: auto;
     overflow-x: hidden;
-    border-radius: var(--border-radius) 0 0 var(--border-radius);    
     transition: max-width 0.4s ease-in-out;
 }
 
@@ -150,22 +149,4 @@ option {
     color: var(--sidebar-folder-color);
     font-family: var(--font-family);
     font-size: var(--sidebar-font-size);
-}
-
-#delete-area {
-    border-top: calc(1px - var(--shadow)) solid var(--divider-color);
-    box-shadow: 0 0 calc(var(--shadow) * 20) var(--divider-color);
-    color: var(--sidebar-folder-color);
-    box-sizing: border-box;
-    height: 40px;
-    text-align: center;
-    margin: auto;
-    padding: 10px;
-    z-index: 10;
-    background-color: var(--sidebar-background-color);
-    width: 200px;
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    display: none;
 }

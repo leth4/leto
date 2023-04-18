@@ -12,6 +12,9 @@
   },
   "tauri": {
     "allowlist": {
+      "clipboard": {
+        "readText": true
+      },
       "window" : {
         "all" : true
       },
@@ -89,7 +92,7 @@
         "center" : true,
         "focus": true,
         "decorations": false,
-        "transparent": true
+        "transparent": false
       }
     ]
   }

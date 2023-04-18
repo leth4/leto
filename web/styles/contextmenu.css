@@ -1,0 +1,32 @@
+#context-menu {
+    display: none;
+    position: absolute;
+    z-index: 100;
+    background-color: #2a2a2a;
+    box-shadow: 0 2px 5px #0000001a;
+    padding: 0;
+    list-style: none;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    min-width: 200px;
+    font-family: var(--font-family);
+}
+
+#context-menu li {
+    padding: 8px 16px;
+    cursor: pointer;
+    color: #fff;
+    transition: background-color 0.3s ease;
+}
+
+#context-menu li:hover {
+    background-color: #aeaeae;
+    color: #333;
+}
+
+#context-menu li.separator {
+  height: 1px;
+  background-color: #4c4c4c;
+  margin: 4px 0;
+  padding: 0 0;
+}
