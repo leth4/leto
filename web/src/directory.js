@@ -148,13 +148,14 @@ export default class Directory {
     await writeTextFile(exportPath, editor.value);
   }
 
-  async createNewFolder() {
+  async createNewFolder(directory) {
     if (!this.activeDirectory) return;
+    directory = directory ?? this.activeDirectory;
 
-    var folderName = this.activeDirectory + '\\New Folder';
+    var folderName = directory + '\\New Folder';
     for (var i = 0; i < Infinity; i++) {
       if (!(await exists(folderName))) break;
-      folderName = this.activeDirectory + `\\New Folder ${i + 1}`;
+      folderName = directory + `\\New Folder ${i + 1}`;
     }
 
     await createDir(folderName);
@@ -162,13 +163,14 @@ export default class Directory {
     this.#reloadDirectory();
   }
 
-  async createNewFile() {
+  async createNewFile(directory) {
     if (!this.activeDirectory) return;
+    directory = directory ?? this.activeDirectory;
 
-    var newFile = this.activeDirectory + `\\new.md`;
+    var newFile = directory + `\\new.md`;
     for (var i = 0; i < Infinity; i++) {
       if (!(await exists(newFile))) break;
-      newFile = this.activeDirectory + `\\new ${i + 1}.md`;
+      newFile = directory + `\\new ${i + 1}.md`;
     }
 
     await writeTextFile(newFile, '');
