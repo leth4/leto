@@ -41,8 +41,6 @@ export default class Directory {
     editor.disabled = true;
     try {
       await this.#openActiveFile();
-      leto.undo.resetBuffers();
-      editor.focus();
     } catch {
       this.#removeActiveFile();
     }
@@ -54,10 +52,21 @@ export default class Directory {
       return;
     }
 
-    if (this.activeDirectory != null)
-      leto.explorer.highlightSelectedFile(this.activeFile);
-    editor.value = await readTextFile(this.activeFile);
+    if (this.activeDirectory) leto.explorer.highlightSelectedFile(this.activeFile);
+
+    var newEditorValue = await readTextFile(this.activeFile);
+    var isNewValue = editor.value != newEditorValue;
+    var scrollBuffer = editor.scrollTop;
     editor.disabled = false;
+    editor.style.cursor = 'auto';
+    editor.focus();
+    editor.value = newEditorValue;
+    if (isNewValue) {
+      editor.setSelectionRange(0, 0);
+      leto.undo.resetBuffers();
+    } else {
+      editor.scrollTop = scrollBuffer;
+    }
     leto.handleEditorInput();
   }
 

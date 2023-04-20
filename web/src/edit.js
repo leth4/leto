@@ -18,8 +18,13 @@ export default class Edit {
     editor.selectionStart = editor.selectionEnd;
   }
 
-  insertTab() {
-    document.execCommand('insertText', false, '\t');
+  handleTab() {
+    if (editor.selectionStart !== editor.selectionEnd)
+      document.execCommand('insertText', false, '\t');
+    else if (editor.value[editor.selectionStart] !== "\"" && editor.value[editor.selectionStart] !== ")" && editor.value[editor.selectionStart] !== "*")
+      document.execCommand('insertText', false, '\t');
+    else 
+      this.#setCursorAndFocus(editor.selectionStart + 1);
   }
   
   cutLine() {
