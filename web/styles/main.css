@@ -69,12 +69,7 @@ main {
 }
 
 ::-webkit-scrollbar {
-    background: transparent;
-    width: 3px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--scrollbar-color);
+    display: none;
 }
 
 mark.header {
@@ -90,4 +85,27 @@ mark.bold {
 mark.hashtag {
     color: var(--editor-hashtag-color);
     background-color: transparent;
+}
+
+#circularScroll {
+    z-index: 100 !important;
+    position: absolute;
+    background-color: var(--editor-hashtag-color);
+    opacity: 1;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    left: 15px;
+    bottom: 15px;
+    display: grid;
+    place-items: center;
+}
+
+#circularScroll::before {
+    content: "";
+    position: absolute;
+    height: 70%;
+    width: 70%;
+    background-color: var(--sidebar-background-color);
+    border-radius: 50%;
 }

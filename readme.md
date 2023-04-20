@@ -6,6 +6,8 @@ The default font is Inter, but you can input any locally installed font.
 
 Right-click on files and folders to rename them; drag their names to move or delete them. Deleted files and folders are kept in a ".trash" folder in the working directory.
 
+Drag the circle in bottom left corner to scroll the file.
+
 ### Shortcuts supported:
 
 Ctrl + O  : Open a new directory\
@@ -21,7 +23,7 @@ Ctrl + ] / [ : Change font weight\
 Ctrl + N : Create a new file\
 Ctrl + Shift + N : Create a new folder\
 Ctrl + F : Toggle fullscreen\
-Tab : Scroll through files
+Ctrl + Tab: Switch to the previous file
 
 ### Editor shortcuts:
 

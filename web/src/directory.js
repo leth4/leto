@@ -12,6 +12,7 @@ const NO_DIRECTORY_MESSAGE = `Press <Ctrl+O> to open a directory.`
 export default class Directory {
 
   #lastDirectoryEditTime = -1;
+  #previousActiveFile;
 
   constructor() {
     this.activeFile;
@@ -23,7 +24,13 @@ export default class Directory {
     this.#displayActiveDirectory();
   }
 
+  setPreviousActiveFile() {
+    if (!this.#previousActiveFile) return;
+    this.setActiveFile(this.#previousActiveFile);
+  }
+
   setActiveFile(path) {
+    this.#previousActiveFile = this.activeFile;
     this.activeFile = path;
     this.tryOpenActiveFile();
     leto.config.save();

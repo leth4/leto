@@ -8,6 +8,7 @@ import Explorer from './explorer.js';
 import Shortcuts from './shortcuts.js';
 import Config from './config.js';
 import ContextMenu from './contextmenu.js';
+import Scroll from './scroll.js';
 
 const { appWindow } = window.__TAURI__.window;
 
@@ -15,8 +16,6 @@ const editor = document.getElementById('text-editor');
 const preview = document.getElementById('text-preview');
 
 class Leto {
-
-  #correctionScroll = -1;
 
   constructor() {
     this.undo = new Undo();
@@ -27,27 +26,21 @@ class Leto {
     this.shortcuts = new Shortcuts();
     this.config = new Config();
     this.contextMenu = new ContextMenu();
+    this.scroll = new Scroll();
 
     this.focused = true;
 
     editor.addEventListener('input', (event) => this.handleEditorInput(event), false);
-    editor.addEventListener('beforeinput', (event) => this.#handleNewLine(event), false);
-    editor.addEventListener('scroll', () => this.#handleEditorScroll(), false);
   }
 
   async handleEditorInput(e) {
     this.directory.saveActiveFile();
     this.#setPreviewText();
-    this.#handleEditorScroll();
+    this.scroll.handleEditorScroll();
 
     this.undo.pushToBuffer(e);
   }
-
-  async #handleNewLine(e) {
-    if (e.inputType != 'insertLineBreak') return;
-    this.#correctionScroll = editor.scrollTop;
-  }
-
+  
   #setPreviewText() {
     var editorText = editor.value + (editor.value.slice(-1) === '\n' ? ' ' : '');
     preview.innerHTML = editorText
@@ -56,14 +49,6 @@ class Leto {
       .replace(/>/g, '&gt;')
       .replace(/(?<!# )(\*)(.*?)(\*)/g, "<mark class='hashtag'>$1</mark><mark class='bold'>$2</mark><mark class='hashtag'>$3</mark>")
       .replace(/(^#{1,4})( .*)/gm, "<mark class='hashtag'>$1</mark><mark class='header'>$2</mark>");
-  }
-
-  #handleEditorScroll() {
-    if (this.#correctionScroll != -1 && Math.abs(preview.scrollTop - editor.scrollTop) >= 3) {
-        editor.scrollTop = this.#correctionScroll; // Hacky fix for a browser bug; scrollbar randomly jumps when inserting a new line
-    }
-    this.#correctionScroll = -1;
-    preview.scrollTop = editor.scrollTop;
   }
 }
 
