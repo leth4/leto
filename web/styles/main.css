@@ -91,14 +91,15 @@ mark.hashtag {
     z-index: 100 !important;
     position: absolute;
     background-color: var(--editor-hashtag-color);
-    opacity: 1;
+    opacity: 0;
     border-radius: 50%;
     width: 20px;
     height: 20px;
-    left: 15px;
+    right: 15px;
     bottom: 15px;
     display: grid;
     place-items: center;
+    transition: opacity 0.3s ease-in-out;
 }
 
 #circularScroll::before {
@@ -106,6 +107,6 @@ mark.hashtag {
     position: absolute;
     height: 70%;
     width: 70%;
-    background-color: var(--sidebar-background-color);
+    background-color: var(--editor-background-color);
     border-radius: 50%;
 }

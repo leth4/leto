@@ -18,14 +18,15 @@ export default class Edit {
     editor.selectionStart = editor.selectionEnd;
   }
 
-  handleTab() {
-    if (editor.selectionStart !== editor.selectionEnd)
-      document.execCommand('insertText', false, '\t');
-    else if (editor.value[editor.selectionStart] !== "\"" && editor.value[editor.selectionStart] !== ")" && editor.value[editor.selectionStart] !== "*")
-      document.execCommand('insertText', false, '\t');
-    else 
-      this.#setCursorAndFocus(editor.selectionStart + 1);
-  }
+  // handleTab() {
+  //   if (editor.selectionStart !== editor.selectionEnd)
+  //     document.execCommand('insertText', false, '\t');
+  //   else if (editor.value[editor.selectionStart] !== "\"" && editor.value[editor.selectionStart] !== ")" && editor.value[editor.selectionStart] !== "*")
+  //     document.execCommand('insertText', false, '\t');
+  //   else 
+  //     this.#setCursorAndFocus(editor.selectionStart + 1);
+  //   leto.handleEditorInput();
+  // }
   
   cutLine() {
     this.selectLine();
@@ -49,6 +50,9 @@ export default class Edit {
       (/^\[x\][\s]*$/.test(editor.value.slice(lineStart, lineEnd))) ?  this.cutLine() : insertText = '\n[ ] ';
 
     document.execCommand('insertText', false, insertText);
+    editor.blur();
+    editor.focus();
+    leto.handleEditorInput();
   }
 
   moveDown() {

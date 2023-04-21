@@ -36,7 +36,7 @@ class Leto {
   async handleEditorInput(e) {
     this.directory.saveActiveFile();
     this.#setPreviewText();
-    this.scroll.handleEditorScroll();
+    this.scroll.handleEditorInput();
 
     this.undo.pushToBuffer(e);
   }
