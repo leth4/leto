@@ -13,20 +13,24 @@ export default class Edit {
   }
 
   insertDoubleSymbol(symbol) {
-    document.execCommand('insertText', false, symbol+symbol);
+    const nextSymbol = editor.value[editor.selectionStart];
+    if (editor.selectionEnd == editor.selectionStart && nextSymbol && nextSymbol !== '\n' && nextSymbol !== ' ') {
+      document.execCommand('insertText', false, symbol);
+      return;
+    }
+    const insideValue = editor.value.slice(editor.selectionStart, editor.selectionEnd);
+    document.execCommand('insertText', false, symbol + insideValue + symbol);
+    if (insideValue) return;
     editor.selectionEnd = editor.selectionEnd - 1;
     editor.selectionStart = editor.selectionEnd;
   }
 
-  // handleTab() {
-  //   if (editor.selectionStart !== editor.selectionEnd)
-  //     document.execCommand('insertText', false, '\t');
-  //   else if (editor.value[editor.selectionStart] !== "\"" && editor.value[editor.selectionStart] !== ")" && editor.value[editor.selectionStart] !== "*")
-  //     document.execCommand('insertText', false, '\t');
-  //   else 
-  //     this.#setCursorAndFocus(editor.selectionStart + 1);
-  //   leto.handleEditorInput();
-  // }
+  handleTab() {
+    if (editor.value[editor.selectionEnd] !== '\"' && editor.value[editor.selectionEnd] !== ')' && editor.value[editor.selectionEnd] !== '*')
+      return;
+    this.#setCursorAndFocus(editor.selectionEnd + 1);
+    leto.handleEditorInput();
+  }
   
   cutLine() {
     this.selectLine();
@@ -144,7 +148,10 @@ export default class Edit {
     var position = editor.selectionEnd - 1;
 
     for (; position >= 0 && editor.value[position] != '\n'; position--);
-    for (; position >= 0 && editor.value[position] != '#'; position--);
+    for (; position > 0; position--) {
+      if (editor.value[position] != '#') continue;
+      if (position == 1 || editor.value[position - 1] == `\n`) break; 
+    }
 
     position = Math.max(0, position);
 
@@ -156,7 +163,10 @@ export default class Edit {
     var position = editor.selectionEnd;
 
     for (; position < editor.value.length && editor.value[position] != '\n'; position++);
-    for (; position < editor.value.length && editor.value[position] != '#'; position++);
+    for (; position < editor.value.length; position++) {
+      if (editor.value[position] != '#') continue;
+      if (position == 1 || editor.value[position - 1] == `\n`) break; 
+    }
 
     editor.setSelectionRange(position, position);
     this.#setCursorAndFocus(this.#getLineEnd() - 1);

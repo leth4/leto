@@ -36,7 +36,7 @@ class Leto {
   async handleEditorInput(e) {
     this.directory.saveActiveFile();
     this.#setPreviewText();
-    this.scroll.handleEditorInput();
+    preview.scrollTop = editor.scrollTop;
 
     this.undo.pushToBuffer(e);
   }
@@ -47,8 +47,8 @@ class Leto {
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/(?<!# )(\*)(.*?)(\*)/g, "<mark class='hashtag'>$1</mark><mark class='bold'>$2</mark><mark class='hashtag'>$3</mark>")
-      .replace(/(^#{1,4})( .*)/gm, "<mark class='hashtag'>$1</mark><mark class='header'>$2</mark>");
+      .replace(/(?<!# )(\*)(.*?)(\*)/g, `<mark class='hashtag'>$1</mark><mark class='bold'>$2</mark><mark class='hashtag'>$3</mark>`)
+      .replace(/(^#{1,4})( .*)/gm, `<mark class='hashtag'>$1</mark><mark class='header'>$2</mark>`);
   }
 }
 

@@ -27,7 +27,7 @@ export default class Window {
 
   constructor() {
     this.currentTheme = 0;
-    this.currentFont = "inter";
+    this.currentFont = 'inter';
     this.fontSize = 20;
     this.fontWeight = 300;
 
@@ -95,8 +95,8 @@ export default class Window {
   }
 
   setFont(font, save = true) {
-    this.currentFont = font ?? "inter";
-    root.style.setProperty('--font-family', `"${this.currentFont}", "inter", "arial"`);
+    this.currentFont = font ?? 'inter';
+    root.style.setProperty('--font-family', `'${this.currentFont}', 'inter', 'arial'`);
     fontInput.value = this.currentFont;
     if (save) leto.config.save();
   }

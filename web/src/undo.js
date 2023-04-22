@@ -1,7 +1,7 @@
 'use strict';
 
-const editor = document.getElementById("text-editor");
-const chainableInputs = ["insertText", "deleteContentBackward", "deleteContentForward"];
+const editor = document.getElementById('text-editor');
+const chainableInputs = ['insertText', 'deleteContentBackward', 'deleteContentForward'];
 const BUFFER_TIMEOUT = 2500;
 
 export default class Undo {
@@ -25,7 +25,7 @@ export default class Undo {
         const length = this.#undoBuffer.pop();
         if (!length) return;
         
-        for (var i = 0; i < length; i++) document.execCommand("undo");
+        for (var i = 0; i < length; i++) document.execCommand('undo');
         this.#redoBuffer.push(length);
     }
 
@@ -33,7 +33,7 @@ export default class Undo {
         const length = this.#redoBuffer.pop();
         if (!length) return;
         
-        for (var i = 0; i < length; i++) document.execCommand("redo");
+        for (var i = 0; i < length; i++) document.execCommand('redo');
         this.#undoBuffer.push(length);
     }
 
@@ -47,14 +47,14 @@ export default class Undo {
         clearTimeout(this.#bufferTimeout);
 
         const inputType = event.inputType;
-        if (inputType === "historyUndo" || inputType === "historyRedo") return;
+        if (inputType === 'historyUndo' || inputType === 'historyRedo') return;
 
         this.#redoBuffer.length = 0;
         this.#bufferTimeout = setTimeout(this.#addUndoChain.bind(this), BUFFER_TIMEOUT);
 
         if (!chainableInputs.includes(inputType) || inputType != this.#previousUndoType) {
             this.#addUndoChain();
-        } else if (this.#currentSelection != this.#previousSelection || event.data === " ") {
+        } else if (this.#currentSelection != this.#previousSelection || event.data === ' ') {
             this.#addUndoChain();
         } else {
             this.#undoBuffer[this.#undoBuffer.length - 1]++;

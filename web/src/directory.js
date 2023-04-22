@@ -243,10 +243,10 @@ export default class Directory {
     await invoke('is_dir', { path: oldPath }).then((response) => (isFile = !response), () => {});
     if (isFile) name = this.#removeFileExtension(name);
     
-    var finalPath = `${newPath}\\${name}${isFile ? `.${extension}` : ""}`;
+    var finalPath = `${newPath}\\${name}${isFile ? `.${extension}` : ''}`;
     for (var i = 0; i < Infinity; i++) {
       if (!(await exists(finalPath))) break;
-      finalPath = `${newPath}\\${name} ${i + 1}${isFile ? `.${extension}` : ""}`;
+      finalPath = `${newPath}\\${name} ${i + 1}${isFile ? `.${extension}` : ''}`;
     }
 
     await invoke('move_to', { oldPath: oldPath, newPath: finalPath });

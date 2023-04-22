@@ -28,7 +28,8 @@ export default class Shortcuts {
 
       else if (!e.ctrlKey && e.shiftKey && e.code === 'Digit8') leto.edit.insertDoubleSymbol('*');
       else if (!e.ctrlKey && e.shiftKey && e.code === 'Quote') leto.edit.insertDoubleSymbol('\"');
-      else if (e.ctrlKey && !e.shiftKey && e.code === "Tab") leto.directory.setPreviousActiveFile();
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'Tab') leto.directory.setPreviousActiveFile();
+      else if (!e.ctrlKey && !e.shiftKey && e.code === 'Tab') leto.edit.handleTab();
 
       else if (document.activeElement === nameInput && e.code === 'Enter') nameInput.blur();
       else if (document.activeElement === fontInput && e.code === 'Enter') fontInput.blur();

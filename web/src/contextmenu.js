@@ -52,14 +52,14 @@ export default class ContextMenu {
 
   async #handleClick(action) {
     editor.focus();
-    if (action == 'Copy') document.execCommand("copy", false);
-    else if (action == 'Paste') document.execCommand("insertText", false, await readText());
-    else if (action == 'Cut') document.execCommand("cut", false);
+    if (action === 'Copy') document.execCommand('copy', false);
+    else if (action === 'Paste') document.execCommand('insertText', false, await readText());
+    else if (action === 'Cut') document.execCommand('cut', false);
 
-    else if (action == 'Rename') leto.explorer.renameItem(this.#initialClickTarget);
-    else if (action == 'Delete') leto.explorer.deleteItem(this.#initialClickTarget);
-    else if (action == 'New File') this.#createFile(this.#initialClickTarget);
-    else if (action == 'New Folder') this.#createFolder(this.#initialClickTarget);
+    else if (action === 'Rename') leto.explorer.renameItem(this.#initialClickTarget);
+    else if (action === 'Delete') leto.explorer.deleteItem(this.#initialClickTarget);
+    else if (action === 'New File') this.#createFile(this.#initialClickTarget);
+    else if (action === 'New Folder') this.#createFolder(this.#initialClickTarget);
   }
 
   #createFile(target) {
