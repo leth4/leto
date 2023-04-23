@@ -107,22 +107,28 @@ span.inline-code {
     position: relative;
 }
 
-span.code::before, span.inline-code::before {
+span.code::before {
     z-index: -10;
     content: "";
     display: block;
     position: absolute; 
-    top: 0px; 
+    top: 0; 
     right: 0;
-    bottom: 0px; 
+    bottom: 0; 
     left: 0; 
     background-color: var(--editor-code-background-color);
-    border-radius: 2px;
+    border-radius: 3px;
 }
 
 mark {
     display: inline;
     background-color: transparent;
+}
+
+mark.inline-code {
+    background-color: var(--editor-code-background-color);
+    color: var(--editor-text-color);
+    border-radius: 3px;
 }
 
 mark.header {
@@ -138,7 +144,7 @@ mark.hashtag {
 }
 
 mark.string, mark.string .keyword-main, mark.string .keyword-secondary {
-    color: var(--editor-hashtag-color);
+    color: var(--editor-header-color);
 }
 
 mark.keyword-main {
@@ -146,7 +152,7 @@ mark.keyword-main {
 }
 
 mark.keyword-secondary {
-    color: var(--editor-header-color);   
+    color: var(--editor-header-color);
 }
 
 mark.comment, mark.comment .string, mark.comment .keyword-main, mark.comment .keyword-secondary {
