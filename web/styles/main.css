@@ -143,18 +143,14 @@ mark.hashtag {
     color: var(--editor-hashtag-color);
 }
 
-mark.string, mark.string .keyword-main, mark.string .keyword-secondary {
+mark.variable, mark.variable .keyword {
     color: var(--editor-header-color);
 }
 
-mark.keyword-main {
+mark.keyword {
     color: var(--editor-header-color);
 }
 
-mark.keyword-secondary {
-    color: var(--editor-header-color);
-}
-
-mark.comment, mark.comment .string, mark.comment .keyword-main, mark.comment .keyword-secondary {
+mark.comment, mark.comment .variable, mark.comment .keyword {
     color: var(--editor-hashtag-color);
 }
