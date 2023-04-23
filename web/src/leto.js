@@ -9,11 +9,11 @@ import Shortcuts from './shortcuts.js';
 import Config from './config.js';
 import ContextMenu from './contextmenu.js';
 import Scroll from './scroll.js';
+import Preview from './preview.js';
 
 const { appWindow } = window.__TAURI__.window;
 
 const editor = document.getElementById('text-editor');
-const preview = document.getElementById('text-preview');
 
 class Leto {
 
@@ -27,6 +27,7 @@ class Leto {
     this.config = new Config();
     this.contextMenu = new ContextMenu();
     this.scroll = new Scroll();
+    this.preview = new Preview();
 
     this.focused = true;
 
@@ -35,20 +36,8 @@ class Leto {
 
   async handleEditorInput(e) {
     this.directory.saveActiveFile();
-    this.#setPreviewText();
-    preview.scrollTop = editor.scrollTop;
-
+    this.preview.setPreviewText();
     this.undo.pushToBuffer(e);
-  }
-  
-  #setPreviewText() {
-    var editorText = editor.value + (editor.value.slice(-1) === '\n' ? ' ' : '');
-    preview.innerHTML = editorText
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/(?<!# )(\*)(.*?)(\*)/g, `<mark class='hashtag'>$1</mark><mark class='bold'>$2</mark><mark class='hashtag'>$3</mark>`)
-      .replace(/(^#{1,4})( .*)/gm, `<mark class='hashtag'>$1</mark><mark class='header'>$2</mark>`);
   }
 }
 

@@ -38,8 +38,6 @@ main {
     position: absolute;
     left: 0; top: 0; right: 0; bottom: 0;
     color: var(--editor-text-color);
-    white-space: pre-wrap;
-    word-wrap: break-word;
     content:  var(--preview-text);
 }
 
@@ -56,35 +54,14 @@ main {
 }
 
 #text-preview, #text-editor {
+    tab-size : 4;
+    word-wrap: break-word;
+    white-space: break-spaces;
     overflow-y : auto;
     overflow-x : hidden;
     padding: 20px;
     font-size: var(--font-size);
     font-family: var(--font-family);
-}
-
-::selection {
-    background-color: var(--selection-color);
-    color: var(--editor-text-color);
-}
-
-::-webkit-scrollbar {
-    display: none;
-}
-
-mark.header {
-    color: var(--editor-header-color);
-    background-color: transparent;
-}
-
-mark.bold {
-    color: var(--editor-header-color);
-    background-color: transparent;
-}
-
-mark.hashtag {
-    color: var(--editor-hashtag-color);
-    background-color: transparent;
 }
 
 #circularScroll {
@@ -109,4 +86,69 @@ mark.hashtag {
     width: 70%;
     background-color: var(--editor-background-color);
     border-radius: 50%;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+::selection {
+    background-color: var(--selection-color);
+    color: var(--editor-text-color);
+}
+
+span.code, span.inline-code {
+    display: block;
+    position: relative;
+}
+
+span.inline-code {
+    display: inline-block;
+    position: relative;
+}
+
+span.code::before, span.inline-code::before {
+    z-index: -10;
+    content: "";
+    display: block;
+    position: absolute; 
+    top: 0px; 
+    right: 0;
+    bottom: 0px; 
+    left: 0; 
+    background-color: var(--editor-code-background-color);
+    border-radius: 2px;
+}
+
+mark {
+    display: inline;
+    background-color: transparent;
+}
+
+mark.header {
+    color: var(--editor-header-color);
+}
+
+mark.italic {
+    color: var(--editor-header-color);
+}
+
+mark.hashtag {
+    color: var(--editor-hashtag-color);
+}
+
+mark.string, mark.string .keyword-main, mark.string .keyword-secondary {
+    color: var(--editor-hashtag-color);
+}
+
+mark.keyword-main {
+    color: var(--editor-header-color);
+}
+
+mark.keyword-secondary {
+    color: var(--editor-header-color);   
+}
+
+mark.comment, mark.comment .string, mark.comment .keyword-main, mark.comment .keyword-secondary {
+    color: var(--editor-hashtag-color);
 }

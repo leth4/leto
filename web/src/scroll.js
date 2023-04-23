@@ -16,6 +16,9 @@ export default class Scroll {
   constructor() {
     editor.addEventListener('scroll', () => this.#handleScroll(), false);
 
+    scrollCircle.addEventListener('mouseover', () => {scrollCircle.style.opacity = '1'; clearTimeout(this.#displayTimeout);});
+    scrollCircle.addEventListener('mouseleave', () => scrollCircle.style.opacity = '0');
+
     scrollCircle.addEventListener('mousedown', () => this.#startScrollDrag());
     document.addEventListener('mouseup', () => this.#scrollDragStart = -1);
     document.addEventListener('mousemove', (event) => this.#currentMousePosition = event.clientX);
@@ -42,9 +45,11 @@ export default class Scroll {
   }
 
   #updateScrollDrag() {
-    editor.scrollTop += (this.#currentMousePosition - this.#lastFrameScroll) * editor.scrollHeight / editor.clientHeight - 1;
-    this.#handleScroll();
-    this.#lastFrameScroll = this.#currentMousePosition;
+    if (this.#currentMousePosition !=  this.#lastFrameScroll) {
+      editor.scrollTop += (this.#currentMousePosition - this.#lastFrameScroll) * editor.scrollHeight / editor.clientHeight - 1;
+      this.#handleScroll();
+      this.#lastFrameScroll = this.#currentMousePosition;
+    }
     if (this.#scrollDragStart != -1) requestAnimationFrame(this.#updateScrollDrag.bind(this));
   }
 }

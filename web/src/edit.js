@@ -13,6 +13,7 @@ export default class Edit {
   }
 
   insertDoubleSymbol(symbol) {
+    console.log(symbol);
     const nextSymbol = editor.value[editor.selectionStart];
     if (editor.selectionEnd == editor.selectionStart && nextSymbol && nextSymbol !== '\n' && nextSymbol !== ' ') {
       document.execCommand('insertText', false, symbol);
@@ -27,8 +28,11 @@ export default class Edit {
 
   handleTab() {
     if (editor.value[editor.selectionEnd] !== '\"' && editor.value[editor.selectionEnd] !== ')' && editor.value[editor.selectionEnd] !== '*')
-      return;
-    this.#setCursorAndFocus(editor.selectionEnd + 1);
+      document.execCommand('insertText', false, '\t');
+    else if (editor.selectionEnd != editor.selectionStart)
+      document.execCommand('insertText', false, '\t');
+    else 
+      this.#setCursorAndFocus(editor.selectionEnd + 1);
     leto.handleEditorInput();
   }
   
