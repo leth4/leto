@@ -1,3 +1,5 @@
+![image](https://user-images.githubusercontent.com/44412176/236443484-568cc6eb-9187-4aea-9540-d01781c9a405.png)
+
 leto is a lightweight plain text editor. It is intended for use with a specific directory which stores notes, like a personal wiki. All changes are auto-saved; using a version control system like Git is recommended.
 
 Headers and italics are highlighted. To make a header, start the line with # and an empty space. Wrap code blocks with \`\`\` for basic syntax highlighting; one of the available languages can be specified right after the first \`\`\`. You can also create inline code blocks without highlighting by putting it inside of \` symbols.
