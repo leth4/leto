@@ -1,4 +1,4 @@
-![image](https://user-images.githubusercontent.com/44412176/236443484-568cc6eb-9187-4aea-9540-d01781c9a405.png)
+![image](https://user-images.githubusercontent.com/44412176/236444916-ca598da3-26cc-4626-9f15-d8a02ba269eb.png)
 
 leto is a lightweight plain text editor. It is intended for use with a specific directory which stores notes, like a personal wiki. All changes are auto-saved; using a version control system like Git is recommended.
 
