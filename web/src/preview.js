@@ -32,7 +32,7 @@ export default class Preview {
     var strReg = /('.*?')|(".*?")/g;
     var numberReg = /\b[-+]?\d+(\.\d+)?f?\b/g;
 
-    var language = csharp;
+    var language = null;
 
     var languageName = code.match(/(?<=```)[^\s]+/);
     if (!languageName) {}
@@ -46,12 +46,13 @@ export default class Preview {
     else if (languageName == 'java') language = java;
     else if (languageName == 'hlsl') language = hlsl;
 
-    code = code.replace(strReg,`<mark class='variable'>$&</mark>`);
-    code = code.replace(numberReg, `<mark class='variable'>$&</mark>`);
+    if (language) {
+      code = code.replace(strReg,`<mark class='variable'>$&</mark>`);
+      code = code.replace(numberReg, `<mark class='variable'>$&</mark>`);
+      code = code.replace(language.keywordReg, `<mark class='keyword'>$1</mark>`);
+      code = code.replace(language.commentReg,`<mark class='comment'>$&</mark>`);
+    }
 
-    code = code.replace(language.keywordReg, `<mark class='keyword'>$1</mark>`);
-    code = code.replace(language.commentReg,`<mark class='comment'>$&</mark>`);
-    
     code = code.replace(/^(.*)/, `<mark class='comment'>$&</mark>`);
     code = code.replace(/(.*$)/, `<mark class='comment'>$&</mark>`);
     
@@ -108,6 +109,6 @@ const javascript = new Language(
 );
 
 const csharp = new Language(
-  /(?<=[\s|\n|^|.|\(|-])(#if|#else|abstract|as|base|bool|break|byte|case|catch|char|checked|class|const|continue|decimal|default|delegate|do|double|else|enum|event|explicit|extern|false|finally|fixed|float|for|foreach|goto|if|implicit|in|int|interface|internal|is|lock|long|namespace|new|null|object|operator|out|override|params|private|protected|public|readonly|ref|return|sbyte|sealed|short|sizeof|stackalloc|static|string|struct|switch|this|throw|true|try|typeof|uint|ulong|unchecked|unsafe|ushort|using|virtual|void|volatile|while|add|alias|ascending|async|await|by|descending|dynamic|equals|from|get|global|group|into|join|let|nameof|notnull|on|orderby|partial|remove|select|set|unmanaged|value|var|when|where|yield)(?=[$|\s|\n|\.|;|\(])/g,
+  /(?<=[\s|\n|^|.|\(|-])(#if|#else|abstract|as|not|base|bool|break|byte|case|catch|char|checked|class|const|continue|decimal|default|delegate|do|double|else|enum|event|explicit|extern|false|finally|fixed|float|for|foreach|goto|if|implicit|in|int|interface|internal|is|lock|long|namespace|new|null|object|operator|out|override|params|private|protected|public|readonly|ref|return|sbyte|sealed|short|sizeof|stackalloc|static|string|struct|switch|this|throw|true|try|typeof|uint|ulong|unchecked|unsafe|ushort|using|virtual|void|volatile|while|add|alias|ascending|async|await|by|descending|dynamic|equals|from|get|global|group|into|join|let|nameof|notnull|on|orderby|partial|remove|select|set|unmanaged|value|var|when|where|yield)(?=[$|\s|\n|\.|;|\(])/g,
   /(\/\/.*)|(\/\*[\s\S]*?\*\/)/g
 );

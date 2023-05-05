@@ -110,8 +110,7 @@ export default class Window {
   }
 
   setNextTheme() {
-    var newTheme = this.currentTheme + 1;
-    this.setTheme(newTheme < themes.length ? newTheme : 0)
+    this.setTheme(parseInt(this.currentTheme) + 1)
   }
 
   populateThemes() {

@@ -7,6 +7,7 @@ const contextMenu = document.getElementById('context-menu');
 const editor = document.getElementById('text-editor');
 const explorerElementActions = ['Rename', 'Delete'];
 const explorerActions = ['New File', 'New Folder'];
+const directoryActions = ['Reload'];
 const editorActions = ['Copy', 'Paste', 'Cut'];
 
 export default class ContextMenu {
@@ -60,6 +61,8 @@ export default class ContextMenu {
     else if (action === 'Delete') leto.explorer.deleteItem(this.#initialClickTarget);
     else if (action === 'New File') this.#createFile(this.#initialClickTarget);
     else if (action === 'New Folder') this.#createFolder(this.#initialClickTarget);
+   
+    else if (action === 'Reload') leto.directory.tryDisplayActiveDirectory();
   }
 
   #createFile(target) {
@@ -95,6 +98,16 @@ export default class ContextMenu {
     for (var i in explorerActions) {
       var action = document.createElement('li');
       action.innerHTML = explorerActions[i];
+      contextMenu.appendChild(action);
+    }
+
+    var separator = document.createElement('li');
+    separator.className = 'separator';
+    contextMenu.appendChild(separator);
+    
+    for (var i in directoryActions) {
+      var action = document.createElement('li');
+      action.innerHTML = directoryActions[i];
       contextMenu.appendChild(action);
     }
   }

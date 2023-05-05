@@ -11,7 +11,6 @@ const NO_DIRECTORY_MESSAGE = `Press <Ctrl+O> to open a directory.`
 
 export default class Directory {
 
-  #lastDirectoryEditTime = -1;
   #previousActiveFile;
 
   constructor() {
@@ -77,11 +76,6 @@ export default class Directory {
     leto.handleEditorInput();
   }
 
-  async #reloadDirectory() {
-    this.#lastDirectoryEditTime = -1;
-    await this.tryDisplayActiveDirectory();
-  }
-
   async tryDisplayActiveDirectory() {
     try {
       await this.#displayActiveDirectory();
@@ -97,11 +91,6 @@ export default class Directory {
       this.#removeActiveDirectory();
       return;
     }
-
-    var editTime;
-    await invoke('get_edit_time', { path: this.activeDirectory }).then((response) => (editTime = response), () => {});
-    if (editTime === this.#lastDirectoryEditTime) return;
-    this.#lastDirectoryEditTime = editTime;
 
     const directories = await this.#getDirectories();
 
@@ -139,7 +128,7 @@ export default class Directory {
     editor.value = this.activeDirectory ? '' : NO_DIRECTORY_MESSAGE;
     editor.disabled = true;
     leto.handleEditorInput();
-    this.#reloadDirectory();
+    this.tryDisplayActiveDirectory();
     leto.config.save();
   }
 
@@ -176,7 +165,7 @@ export default class Directory {
 
     await createDir(folderName);
 
-    this.#reloadDirectory();
+    this.tryDisplayActiveDirectory();
   }
 
   async createNewFile(directory) {
@@ -192,7 +181,7 @@ export default class Directory {
     await writeTextFile(newFile, '');
 
     this.activeFile = newFile;
-    this.#reloadDirectory();
+    this.tryDisplayActiveDirectory();
     this.tryOpenActiveFile();
   }
 
@@ -207,7 +196,7 @@ export default class Directory {
     await invoke('rename', { oldPath: filePath, newPath: newFile });
     if (this.activeFile === filePath) this.activeFile = newFile;
 
-    this.#reloadDirectory();
+    this.tryDisplayActiveDirectory();
     this.tryOpenActiveFile();
   }
 
@@ -227,7 +216,7 @@ export default class Directory {
 
     leto.explorer.updateFolderPath(oldPath, newPath);
 
-    this.#reloadDirectory();
+    this.tryDisplayActiveDirectory();
     this.tryOpenActiveFile();
   }
 
@@ -254,7 +243,7 @@ export default class Directory {
     if (this.activeFile === oldPath) this.activeFile = newPath;
     if (!isFile) leto.explorer.updateFolderPath(oldPath);
 
-    this.#reloadDirectory();
+    this.tryDisplayActiveDirectory();
     this.tryOpenActiveFile();
   }
 

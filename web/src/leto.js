@@ -47,8 +47,5 @@ leto.config.load();
 await appWindow.onFocusChanged(({ payload: hasFocused }) => {
   leto.contextMenu.hide();
   leto.focused = hasFocused;
-  if (hasFocused) {
-    leto.directory.tryDisplayActiveDirectory();
-    leto.directory.tryOpenActiveFile();
-  }
+  if (hasFocused) leto.directory.tryOpenActiveFile();
 });

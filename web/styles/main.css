@@ -88,6 +88,42 @@ main {
     border-radius: 50%;
 }
 
+#context-menu {
+    position: absolute;
+    z-index: 100;
+    background-color: #2a2a2a;
+    box-shadow: 1px 1px 5px #0000008a;
+    list-style: none;
+    font-size: 14px;
+    border: 1px solid #888888;
+    min-width: 120px;
+    font-family: var(--font-family);
+    padding: 5px 0 5px 0;
+    opacity: 0;
+    transition: opacity 0.15s ease-out;
+}
+
+#context-menu.show {
+    opacity: 1;
+}
+
+#context-menu li {
+    padding: 8px 10px;
+    cursor: pointer;
+    color: #ebebeb;
+}
+
+#context-menu li:hover {
+    background-color: #4a4a4a;
+}
+
+#context-menu li.separator {
+  height: 1px;
+  background-color: #737373;
+  margin: 4px 0;
+  padding: 0;
+}
+
 ::-webkit-scrollbar {
     display: none;
 }
@@ -154,3 +190,5 @@ mark.keyword {
 mark.comment, mark.comment .variable, mark.comment .keyword {
     color: var(--editor-hashtag-color);
 }
+
+

@@ -5,15 +5,13 @@
 
 use tauri::Manager;
 use std::fs;
-use std::fs::metadata;
-use std::time::SystemTime;
 use std::path::Path;
 use std::path::PathBuf;
 use window_shadows::set_shadow;
 
 fn main() {
   tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![get_edit_time, move_to, rename, is_dir])
+    .invoke_handler(tauri::generate_handler![move_to, rename, is_dir])
     .setup(|app| {
       let window = app.get_window("main").unwrap();
       set_shadow(&window, true).expect("Unsupported platform!");
@@ -67,12 +65,4 @@ fn move_dir_recursive(src: &Path, dst: &Path) -> std::io::Result<()> {
 
   fs::remove_dir_all(src)?;
   Ok(())
-}
-
-#[tauri::command]
-fn get_edit_time(path : &str) -> i32 {
-  let metadata = metadata(path).expect("Error while trying to get metadata");
-  let time_modified = metadata.modified().expect("Error while parcing metadata");
-  let since_the_epoch = time_modified.duration_since(SystemTime::UNIX_EPOCH).expect("Error while parsing duration");
-  since_the_epoch.as_secs() as i32
 }
