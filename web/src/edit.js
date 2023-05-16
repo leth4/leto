@@ -12,10 +12,24 @@ export default class Edit {
     editor.selectionStart = editor.selectionEnd;
   }
 
+  handleHyphen() {
+    const previousSymbol = editor.value[editor.selectionStart - 1];
+    if (editor.selectionEnd == editor.selectionStart && previousSymbol && previousSymbol == '-') {
+      editor.selectionStart -= 1;
+      document.execCommand('insertText', false, '—');
+    } else {
+      document.execCommand('insertText', false, '-');
+    }
+  }
+
   insertDoubleSymbol(symbol) {
-    console.log(symbol);
     const nextSymbol = editor.value[editor.selectionStart];
+    const previousSymbol = editor.value[editor.selectionStart - 1];
     if (editor.selectionEnd == editor.selectionStart && nextSymbol && nextSymbol !== '\n' && nextSymbol !== ' ') {
+      document.execCommand('insertText', false, symbol);
+      return;
+    }
+    if (editor.selectionEnd == editor.selectionStart && previousSymbol && previousSymbol !== '\n' && previousSymbol !== ' ') {
       document.execCommand('insertText', false, symbol);
       return;
     }

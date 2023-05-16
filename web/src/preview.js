@@ -27,8 +27,6 @@ export default class Preview {
   #replaceCodeBlock(code) {
     if (code.at(-1) == '\n') code = code.slice(0, -1);
 
-    console.log(' #if '.replace(/\b(#if|#else|#endif)/g, 'NICE'));
-
     var strReg = /('.*?')|(".*?")/g;
     var numberReg = /\b[-+]?\d+(\.\d+)?f?\b/g;
 

@@ -140,6 +140,7 @@ export default class Directory {
 
   async saveActiveFile() {
     if (!this.activeFile) return;
+    if (editor.disabled) return;
     await writeTextFile(this.activeFile, editor.value);
   }
 

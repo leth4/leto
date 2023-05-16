@@ -2,6 +2,8 @@
 
 leto is a lightweight plain text editor. It is intended for use with a specific directory which stores notes, like a personal wiki. All changes are auto-saved; using a version control system like Git is recommended.
 
+Visually inspired by [Left](https://github.com/hundredrabbits/Left), functionally by [Obsidian](https://obsidian.md). Made using [Tauri](https://github.com/tauri-apps/tauri).
+
 Headers and italics are highlighted. To make a header, start the line with # and an empty space. Wrap code blocks with \`\`\` for basic syntax highlighting; one of the available languages can be specified right after the first \`\`\`. You can also create inline code blocks without highlighting by putting it inside of \` symbols.
 
 The default font is Inter, but you can input any locally installed font.
@@ -10,28 +12,36 @@ Right-click on files and folders to rename them; drag their names to move or del
 
 Drag the circle in the bottom right corner to scroll the file.
 
-### Shortcuts supported:
+## Install & Build
 
-Ctrl + O  : Open a new directory\
-Ctrl + Shift + S : Save active file as new (leto will stay in current directory)\
-Ctrl + Q : Exit leto\
-Ctrl + M : Minimize leto\
-Ctrl + P : Show/hide preferences\
-Ctrl + B : Fold/unfold the sidebar\
-Ctrl + R : Toggle spellcheck\
-Ctrl + T : Cycle through themes\
-Ctrl + Plus / Minus : Change font size\
-Ctrl + ] / [ : Change font weight\
-Ctrl + N : Create a new file\
-Ctrl + Shift + N : Create a new folder\
-Ctrl + F : Toggle fullscreen\
-Ctrl + Tab: Switch to the previous file
+You can download the latest Windows [release](https://github.com/letharqic/leto/releases) or you can build the app yourself by following these steps:
 
-### Editor shortcuts:
+1. Install the [Rust Programming Language](https://www.rust-lang.org).
+2. Clone the repository and navigate to its directory.
+3. Run `cargo add tauri`.
+4. Run `cargo tauri build`.
 
-Ctrl + Arrow Up / Down : Jump between headers\
-Alt + Arrow Up / Down : Move the current line\
-Alt + Shift + Arrow Up / Down : Duplicate the current line\
-Ctrl + Enter : Create or check/uncheck a to-do task\
-Ctrl + L : Select the current line\
-Ctrl + X: Cut the current line
+## Shortcuts
+
+Shortcut | Action
+:-|:-
+`Ctrl + O` | Open a new directory
+`Ctrl + Shift + S` | Save active file as new (leto will stay in current directory)
+`Ctrl + Q` | Exit leto
+`Ctrl + M` | Minimize leto
+`Ctrl + P` | Show/hide preferences
+`Ctrl + B` | Fold/unfold the sidebar
+`Ctrl + R` | Toggle spellcheck
+`Ctrl + T` | Cycle through themes
+`Ctrl + Plus / Minus` | Change font size
+`Ctrl + ] / [` | Change font weight
+`Ctrl + N` | Create a new file
+`Ctrl + Shift + N` | Create a new folder
+`Ctrl + F` | Toggle fullscreen
+`Ctrl + Tab` | Switch to the previous file
+`Ctrl + Arrow Up / Down` | Jump between headers
+`Alt + Arrow Up / Down` | Move the current line
+`Alt + Shift + Arrow Up / Down` |Duplicate the current line
+`Ctrl + Enter` |Create or check/uncheck a to-do task
+`Ctrl + L` |Select the current line
+`Ctrl + X` |Cut the current line
