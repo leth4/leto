@@ -14,8 +14,6 @@ const themes = [
   'zima',
   'spirit',
   'fragment',
-  'patrol',
-  'osen',
   'perlin'
 ];
 

@@ -1,25 +1,16 @@
 ![image](https://user-images.githubusercontent.com/44412176/236444916-ca598da3-26cc-4626-9f15-d8a02ba269eb.png)
 
-leto is a lightweight plain text editor. It is intended for use with a specific directory which stores notes, like a personal wiki. All changes are auto-saved; using a version control system like Git is recommended.
+leto is a minimal lightweight plain text editor for Windows.
 
 Visually inspired by [Left](https://github.com/hundredrabbits/Left), functionally by [Obsidian](https://obsidian.md). Made using [Tauri](https://github.com/tauri-apps/tauri).
 
-Headers and italics are highlighted. To make a header, start the line with # and an empty space. Wrap code blocks with \`\`\` for basic syntax highlighting; one of the available languages can be specified right after the first \`\`\`. You can also create inline code blocks without highlighting by putting it inside of \` symbols.
+## Usage
 
-The default font is Inter, but you can input any locally installed font.
+Create a file directory to store your notes. Open the app, press `Ctrl + O` and select the directory. You can browse, open, create, delete and move files and folders via the sidebar. Deleted files and folders are kept in a `.trash` folder in the working directory. All your changes are auto-saved.
 
-Right-click on files and folders to rename them; drag their names to move or delete them. Deleted files and folders are kept in a ".trash" folder in the working directory.
+Markdown `# headers`, `*italics*` and `` `inline code` `` are highlighted. There's also syntax highlighting for code blocks wrapped between `` ``` `` symbols — you can specify the language in the first line, like `` ```csharp ``. Languages that support highlighting are *C#*, *C++*, *C*, *JavaScript*, *Python*, *Go*, *Rust*, *Java* and *HLSL*. 
 
-Drag the circle in the bottom right corner to scroll the file.
-
-## Install & Build
-
-You can download the latest Windows [release](https://github.com/letharqic/leto/releases) or you can build the app yourself by following these steps:
-
-1. Install the [Rust Programming Language](https://www.rust-lang.org).
-2. Clone the repository and navigate to its directory.
-3. Run `cargo add tauri`.
-4. Run `cargo tauri build`.
+The default font is [Inter](https://fonts.google.com/specimen/Inter), but you can input any font via the Preferences menu (opened with `Ctrl+P`). Note that you need the font installed locally.
 
 ## Shortcuts
 

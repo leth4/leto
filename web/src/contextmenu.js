@@ -1,6 +1,6 @@
 'use strict';
 
-const{ appWindow } = window.__TAURI__.window;
+const { appWindow } = window.__TAURI__.window;
 const { readText } = window.__TAURI__.clipboard;
 
 const contextMenu = document.getElementById('context-menu');

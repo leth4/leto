@@ -29,7 +29,8 @@ export default class Directory {
   }
 
   setActiveFile(path) {
-    this.#previousActiveFile = this.activeFile;
+    if (this.activeFile != path)
+      this.#previousActiveFile = this.activeFile;
     this.activeFile = path;
     this.tryOpenActiveFile();
     leto.config.save();
