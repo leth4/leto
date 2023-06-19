@@ -14,6 +14,7 @@ export default class Config {
       currentFont: leto.windowManager.currentFont,
       fontSize: leto.windowManager.fontSize,
       fontWeight: leto.windowManager.fontWeight,
+      pins: leto.explorer.pins
     };
 
     const configPath = await appConfigDir();
@@ -38,6 +39,7 @@ export default class Config {
     
     leto.directory.setActiveDirectory(configObject.selectedDirectory);
     leto.directory.setActiveFile(configObject.selectedFile);
+    leto.explorer.setPins(configObject.pins);
   }
 
   async #create() {

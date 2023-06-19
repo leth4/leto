@@ -5,10 +5,6 @@ const { readText } = window.__TAURI__.clipboard;
 
 const contextMenu = document.getElementById('context-menu');
 const editor = document.getElementById('text-editor');
-const explorerElementActions = ['Rename', 'Delete'];
-const explorerActions = ['New File', 'New Folder'];
-const directoryActions = ['Reload'];
-const editorActions = ['Copy', 'Paste', 'Cut'];
 
 export default class ContextMenu {
   
@@ -57,6 +53,9 @@ export default class ContextMenu {
     else if (action === 'Paste') document.execCommand('insertText', false, await readText());
     else if (action === 'Cut') document.execCommand('cut', false);
 
+    else if (action === 'Pin') leto.explorer.pinItem(this.#initialClickTarget);
+    else if (action === 'Unpin') leto.explorer.unpinItem(this.#initialClickTarget);
+    else if (action === 'Unpin All') leto.explorer.setPins(null);
     else if (action === 'Rename') leto.explorer.renameItem(this.#initialClickTarget);
     else if (action === 'Delete') leto.explorer.deleteItem(this.#initialClickTarget);
     else if (action === 'New File') this.#createFile(this.#initialClickTarget);
@@ -66,58 +65,62 @@ export default class ContextMenu {
   }
 
   #createFile(target) {
-    if (!target || !leto.explorer.isExpolorerElement(target)) leto.directory.createNewFile();
-    else if (target.classList.contains('file-button')) 
+    if (!target || !leto.explorer.isFile(target) && !leto.explorer.isFolder(target)) leto.directory.createNewFile();
+    else if (leto.explorer.isFile(target)) 
       leto.directory.createNewFile(target.getAttribute('data-path').substring(0, target.getAttribute('data-path').lastIndexOf('\\')));
-    else if (target.classList.contains('folder-button')) 
+    else if (leto.explorer.isFolder(target)) {
       leto.directory.createNewFile(target.getAttribute('data-path'));
+    }
   }
 
   #createFolder(target) {
-    if (!target || !leto.explorer.isExpolorerElement(target)) leto.directory.createNewFolder();
-    else if (target.classList.contains('file-button')) 
+    if (!target || !leto.explorer.isFile(target) && !leto.explorer.isFolder(target)) leto.directory.createNewFolder();
+    else if (leto.explorer.isFile(target)) 
       leto.directory.createNewFolder(target.getAttribute('data-path').substring(0, target.getAttribute('data-path').lastIndexOf('\\')));
-    else if (target.classList.contains('folder-button')) 
+    else if (leto.explorer.isFolder(target)) 
       leto.directory.createNewFolder(target.getAttribute('data-path'));
   }
 
   #createFileSystemMenu() {
     contextMenu.innerHTML = '';
 
-     if (leto.explorer.isExpolorerElement(this.#initialClickTarget)) {
-      for (var i in explorerElementActions) {
-        var action = document.createElement('li');
-        action.innerHTML = explorerElementActions[i];
-        contextMenu.appendChild(action);
-      }
-      var separator = document.createElement('li');
-      separator.className = 'separator';
-      contextMenu.appendChild(separator);
+    if (leto.explorer.isFile(this.#initialClickTarget)) {
+      this.#addAction('Rename');
+      this.#addAction('Delete');
+      this.#addAction(leto.explorer.isPinned(this.#initialClickTarget) ? 'Unpin' : 'Pin');
+      this.#addSeparator();
+    } else if (leto.explorer.isFolder(this.#initialClickTarget)) {
+      this.#addAction('Rename');
+      this.#addAction('Delete');
+      this.#addSeparator();
+    } else if (leto.explorer.isPinned(this.#initialClickTarget)) {
+      this.#addAction('Unpin');
+      this.#addSeparator();
+      this.#addAction('Unpin All');
+      return;
     }
-
-    for (var i in explorerActions) {
-      var action = document.createElement('li');
-      action.innerHTML = explorerActions[i];
-      contextMenu.appendChild(action);
-    }
-
-    var separator = document.createElement('li');
-    separator.className = 'separator';
-    contextMenu.appendChild(separator);
-    
-    for (var i in directoryActions) {
-      var action = document.createElement('li');
-      action.innerHTML = directoryActions[i];
-      contextMenu.appendChild(action);
-    }
+    this.#addAction('New File');
+    this.#addAction('New Folder');
+    this.#addSeparator();
+    this.#addAction('Reload');
   }
 
   #createEditorMenu() {
     contextMenu.innerHTML = '';
-    for (var i in editorActions) {
-      var action = document.createElement('li');
-      action.innerHTML = editorActions[i];
-      contextMenu.appendChild(action);
-    }
+    this.#addAction('Copy');
+    this.#addAction('Paste');
+    this.#addAction('Cut');
+  }
+
+  #addAction(name) {
+    var action = document.createElement('li');
+    action.innerHTML = name;
+    contextMenu.appendChild(action);
+  }
+
+  #addSeparator() {
+    var separator = document.createElement('li');
+    separator.className = 'separator';
+    contextMenu.appendChild(separator);
   }
 }

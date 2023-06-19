@@ -64,6 +64,16 @@ export default class Shortcuts {
       else if (e.ctrlKey && !e.shiftKey && e.code === 'Minus') leto.windowManager.changeFontSize(-1);
       else if (e.ctrlKey && !e.shiftKey && e.code === 'BracketRight') leto.windowManager.changeFontWeight(+100);
       else if (e.ctrlKey && !e.shiftKey && e.code === 'BracketLeft') leto.windowManager.changeFontWeight(-100);
+
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'Digit1') leto.explorer.openPin(0);
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'Digit2') leto.explorer.openPin(1);
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'Digit3') leto.explorer.openPin(2);
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'Digit4') leto.explorer.openPin(3);
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'Digit5') leto.explorer.openPin(4);
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'Digit6') leto.explorer.openPin(5);
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'Digit7') leto.explorer.openPin(6);
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'Digit8') leto.explorer.openPin(7);
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'Digit9') leto.explorer.openPin(8);
       
       else if (e.ctrlKey && e.code === 'KeyG') {}
       else return;

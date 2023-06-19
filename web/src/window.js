@@ -13,7 +13,6 @@ const themes = [
   'aske',
   'zima',
   'spirit',
-  'fragment',
   'perlin'
 ];
 

@@ -13,7 +13,7 @@
     transition: opacity 0.3s ease-in;
 }
 
-.file-button {
+.file-button, .pin-button {
     background: none;
     border: none;
     color: var(--sidebar-file-color);
@@ -27,11 +27,15 @@
     font-family: var(--font-family);
 }
 
-.file-button:hover {
+.pin-button::before {
+    content: "→ ";
+}
+
+.file-button:hover, .pin-button:hover {
     background: var(--sidebar-selection-color);
 }
 
-.file-button:focus {
+.file-button:focus, .pin-button:focus {
     outline: none;
     background: none;
     text-decoration: underline;

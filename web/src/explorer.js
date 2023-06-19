@@ -1,13 +1,17 @@
 'use strict';
 
+const pinsList = document.getElementById('pins-list');
 const fileTree = document.getElementById('file-tree');
 const nameInput = document.getElementById('name-input');
 
 export default class Explorer {
 
   #openFolders = [];
+  #pinsBeforeCheck = [];
 
   constructor() {
+    this.pins = [];
+    
     nameInput.addEventListener('input', () => this.#sanitizeNameInput());
     nameInput.addEventListener('focusout', async () => {
       var element;
@@ -26,10 +30,17 @@ export default class Explorer {
       nameInput.style.display = 'none';
     });
 
+    pinsList.addEventListener('click', (event) => {
+      if (!event.target) return;
+      if (event.target.classList.contains('pin-button')) {
+        this.#handleFileClick(event.target.getAttribute('data-path'));
+      }
+    })
+
     fileTree.addEventListener('click', (event) => {
       if (!event.target) return;
       if (event.target.classList.contains('file-button')) {
-        this.#handleFileClick(event);
+        this.#handleFileClick(event.target.getAttribute('data-path'));
       } else if (event.target.classList.contains('folder-button')) {
         this.#handleFolderClick(event);
       }
@@ -45,19 +56,75 @@ export default class Explorer {
     nameInput.value = nameInput.value.replace(/[<>:"/\\|?*\x00-\x1F]/g, '');
   }
 
-  isExpolorerElement(element) {
-    return element.classList.contains('file-button') || element.classList.contains('folder-button');
+  isPinned(element) {
+    const path = element.getAttribute('data-path');
+    for (var i = 0; i < this.pins.length; i++) {
+      if (this.pins[i] === path) return true;
+    }
+    return false;
+  }
+
+  isFile(element) {
+    return element.classList.contains('file-button');
+  }
+  
+  isFolder(element) {
+    return element.classList.contains('folder-button');
+  }
+
+  openPin(index) {
+    if (index >= this.pins.length) return;
+    this.#handleFileClick(this.pins[index]);
+  }
+
+  pinItem(target) {
+    if (!target) return;
+    if (!this.isFile(target)) return;
+    if (this.pins.includes(target.getAttribute('data-path'))) return;
+    this.pins.unshift(target.getAttribute('data-path'));
+    leto.config.save();
+    this.#showPins();
+  }
+  
+  unpinItem(target) {
+    if (!target) return;
+    const index = this.pins.indexOf(target.getAttribute('data-path'));
+    if (index < 0) return;
+    this.pins.splice(index, 1);
+    leto.config.save();
+    this.#showPins();
+  }
+
+  setPins(pins) {
+    this.pins = pins ?? [];
+    this.#showPins();
+    if (this.pins.length == 0) leto.config.save();
+  }
+
+  #showPins() {
+    pinsList.innerHTML = '';
+
+    this.pins.forEach(pin => {
+      var pinButton = document.createElement('button');
+      pinButton.className = 'pin-button';
+      pinButton.setAttribute('data-path', pin);
+      pinButton.innerHTML = this.#removeFileExtension(this.#getNameFromPath(pin));
+      if (pinButton.innerHTML.replace(/\s/g, '').length === 0) pinButton.innerHTML = '--';
+      var liElement = document.createElement('li');
+      liElement.appendChild(pinButton);
+      pinsList.appendChild(liElement);
+    });
   }
 
   deleteItem(target) {
     if (!target) return;
-    if (!this.isExpolorerElement(target)) return;
+    if (!this.isFile(target) && !this.isFolder(target)) return;
     leto.directory.moveToTrash(target.getAttribute('data-path'));
   }
 
   renameItem(target) {
     if (!target) return;
-    if (!this.isExpolorerElement(target)) return;
+    if (!this.isFile(target) && !this.isFolder(target)) return;
 
     const button = target;
     button.parentElement.insertBefore(nameInput, button.parentElement.firstChild);
@@ -68,9 +135,8 @@ export default class Explorer {
     nameInput.focus();
   }
 
-  #handleFileClick(event) {
-    const fileButton = event.target;
-    leto.directory.setActiveFile(fileButton.getAttribute('data-path'));
+  #handleFileClick(path) {
+    leto.directory.setActiveFile(path);
   }
 
   #handleFolderClick(event) {
@@ -90,6 +156,13 @@ export default class Explorer {
   }
 
   highlightSelectedFile(path) {
+    const pins = document.getElementsByClassName('pin-button');
+    for (var i = 0; i < pins.length; i++) {
+      pins[i].classList.remove('selected');
+      if (pins[i].getAttribute('data-path') === path)
+        pins[i].classList.add('selected');
+    }
+
     const files = document.getElementsByClassName('file-button');
     var highlightedElement;
 
@@ -115,6 +188,9 @@ export default class Explorer {
   }
 
   showFileTree(directoryElements, directoryPath) {
+    this.#pinsBeforeCheck = [...this.pins];
+    this.pins = [];
+
     this.clearFileTree();
 
     directoryElements.forEach(child => child.children && this.#showFolder(child, fileTree));
@@ -126,11 +202,15 @@ export default class Explorer {
     fileTree.appendChild(rootDropArea);
     this.#makeDroppable(rootDropArea);
     rootDropArea.addEventListener('drop', (event) => this.#handleElementDrop(event, directoryPath));
+
+    this.#showPins();
   }
 
   #showFile(file, parentElement) {
     var extension = this.#getFileExtension(file.name);
     if (extension != 'md' && extension != 'txt') return;
+
+    if (this.#pinsBeforeCheck.includes(file.path)) this.pins.push(file.path);
 
     var fileButton = document.createElement('button');
     fileButton.className = 'file-button';
@@ -203,5 +283,9 @@ export default class Explorer {
   #makeDroppable(element) {
     element.addEventListener('dragenter', (event) => { event.preventDefault(); });
     element.addEventListener('dragover', (event) => { event.preventDefault(); });
+  }
+
+  #getNameFromPath(path) {
+    return path.replace(/^.*[\\\/]/, '');
   }
 }

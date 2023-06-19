@@ -1,6 +1,6 @@
 ![image](https://user-images.githubusercontent.com/44412176/236444916-ca598da3-26cc-4626-9f15-d8a02ba269eb.png)
 
-leto is a minimal lightweight plain text editor for Windows.
+leto is a minimalistic lightweight plain text editor for Windows.
 
 Visually inspired by [Left](https://github.com/hundredrabbits/Left), functionally by [Obsidian](https://obsidian.md). Made using [Tauri](https://github.com/tauri-apps/tauri).
 
@@ -29,10 +29,11 @@ Shortcut | Action
 `Ctrl + N` | Create a new file
 `Ctrl + Shift + N` | Create a new folder
 `Ctrl + F` | Toggle fullscreen
+`Ctrl + Number` |Open pinned file
 `Ctrl + Tab` | Switch to the previous file
-`Ctrl + Arrow Up / Down` | Jump between headers
-`Alt + Arrow Up / Down` | Move the current line
-`Alt + Shift + Arrow Up / Down` |Duplicate the current line
+`Ctrl + ↑ / ↓` | Jump between headers
+`Alt + ↑ / ↓` | Move the current line
+`Alt + Shift + ↑ / ↓` |Duplicate the current line
 `Ctrl + Enter` |Create or check/uncheck a to-do task
 `Ctrl + L` |Select the current line
 `Ctrl + X` |Cut the current line
