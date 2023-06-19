@@ -98,7 +98,7 @@ export default class Explorer {
   setPins(pins) {
     this.pins = pins ?? [];
     this.#showPins();
-    if (this.pins.length == 0) leto.config.save();
+    leto.config.save();
   }
 
   #showPins() {
