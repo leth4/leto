@@ -44,7 +44,6 @@ export default class ContextMenu {
     const deltaY = size.height > event.clientY + contextMenu.clientHeight + 5 ? 0 : contextMenu.clientHeight;
     contextMenu.style.left = event.clientX - deltaX + 'px';
     contextMenu.style.top = event.clientY - deltaY + 'px';
-
   }
 
   async #handleClick(action) {

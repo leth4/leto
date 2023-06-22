@@ -10,6 +10,7 @@ import Config from './config.js';
 import ContextMenu from './contextmenu.js';
 import Scroll from './scroll.js';
 import Preview from './preview.js';
+import Search from './search.js';
 
 const { appWindow } = window.__TAURI__.window;
 
@@ -28,6 +29,7 @@ class Leto {
     this.contextMenu = new ContextMenu();
     this.scroll = new Scroll();
     this.preview = new Preview();
+    this.search = new Search();
 
     this.focused = true;
 

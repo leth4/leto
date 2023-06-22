@@ -2,13 +2,12 @@
 
 const editor = document.getElementById('text-editor');
 const preview = document.getElementById('text-preview');
+const search = document.getElementById('search-preview');
 
 export default class Preview {
 
   setPreviewText() {
     var editorText = editor.value + (editor.value.slice(-1) === '\n' ? ' ' : '');
-    editorText = editorText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
     const chunks = editorText.split(/(?<=(?:\n|^))(```[\s\S]*?```(?:$|\n))/g);
     for (var i in chunks) {
       if (i % 2 === 0) {
@@ -22,6 +21,13 @@ export default class Preview {
     }
     preview.innerHTML = chunks.join('');
     preview.scrollTop = editor.scrollTop;
+    
+    search.innerHTML = '';
+    if (!leto.search.toggled) return;
+    search.scrollTop = editor.scrollTop;
+    
+    if (leto.search.text == "") return;
+    search.innerHTML = editorText.replace(new RegExp(`(${leto.search.text})`, 'gmi'), `<mark class='search'>$1</mark>`)
   }
 
   #replaceCodeBlock(code) {
@@ -37,7 +43,6 @@ export default class Preview {
     else if (languageName == 'cs' || languageName == 'csharp') language = csharp;
     else if (languageName == 'js' || languageName == 'javascript') language = javascript;
     else if (languageName == 'python' || languageName == 'py') language = python;
-    else if (languageName == 'go' || languageName == 'golang') language = golang;
     else if (languageName == 'rust') language = rust;
     else if (languageName == 'cpp') language = cpp;
     else if (languageName == 'c') language = c;
@@ -83,11 +88,6 @@ const python = new Language(
 
 const java = new Language(
   /(?<=[\s|\n|^|.|\(|-])(abstract|assert|boolean|break|byte|case|catch|char|class|const|continue|default|do|double|else|enum|extends|final|finally|float|for|if|goto|implements|import|instanceof|int|interface|long|native|new|package|private|protected|public|return|short|static|strictfp|super|switch|synchronized|this|throw|throws|transient|try|void|volatile|while|_|exports|module|non-sealed|open|opens|permits|provides|record|requires|sealed|to|transitive|uses|var|with|yield)(?=[$|\s|\n|\.|;|\(])/g,
-  /(\/\/.*)|(\/\*[\s\S]*?\*\/)/g
-);
-
-const golang = new Language(
-  /(?<=[\s|\n|^|.|\(|-])(break|case|chan|const|continue|default|defer|else|fallthrough|for|func|go|goto|if|import|interface|map|package|range|return|select|struct|switch|type|var)(?=[$|\s|\n|\.|;|\(])/g,
   /(\/\/.*)|(\/\*[\s\S]*?\*\/)/g
 );
 

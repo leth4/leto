@@ -46,7 +46,8 @@ export default class Shortcuts {
       else if (e.ctrlKey && !e.shiftKey && e.code === 'ArrowDown') leto.edit.jumpDown();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'Enter') leto.edit.createCheckbox();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyL') leto.edit.selectLine();
-      else if (!e.ctrlKey && !e.shiftKey && e.code === 'Escape') leto.edit.deselect();
+
+      else if (!e.ctrlKey && !e.shiftKey && e.code === 'Escape') {leto.edit.deselect(); leto.search.disable();}
       
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyO') leto.directory.selectNewDirectory();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyN') leto.directory.createNewFile();
@@ -59,7 +60,7 @@ export default class Shortcuts {
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyQ') leto.windowManager.closewindow();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyM') leto.windowManager.minimizeWindow();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyP') leto.windowManager.togglePrefs();
-      else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyF') leto.windowManager.toggleFullscreen();
+      else if (!e.ctrlKey && !e.shiftKey && e.code === 'F11') leto.windowManager.toggleFullscreen();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'Equal') leto.windowManager.changeFontSize(+1);
       else if (e.ctrlKey && !e.shiftKey && e.code === 'Minus') leto.windowManager.changeFontSize(-1);
       else if (e.ctrlKey && !e.shiftKey && e.code === 'BracketRight') leto.windowManager.changeFontWeight(+100);
@@ -75,6 +76,8 @@ export default class Shortcuts {
       else if (e.ctrlKey && !e.shiftKey && e.code === 'Digit8') leto.explorer.openPin(7);
       else if (e.ctrlKey && !e.shiftKey && e.code === 'Digit9') leto.explorer.openPin(8);
       
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyF') leto.search.toggle();
+
       else if (e.ctrlKey && e.code === 'KeyG') {}
       else return;
 

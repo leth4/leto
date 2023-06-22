@@ -33,12 +33,16 @@ main {
     background: var(--editor-background-color);
 }
 
-#text-preview {
+#text-preview, #search-preview {
     z-index: 3;
     position: absolute;
     left: 0; top: 0; right: 0; bottom: 0;
     color: var(--editor-text-color);
     content:  var(--preview-text);
+}
+
+#search-preview {
+    color: transparent;
 }
 
 #text-editor {
@@ -53,7 +57,7 @@ main {
     font-weight: inherit; 
 }
 
-#text-preview, #text-editor {
+#search-preview, #text-preview, #text-editor {
     tab-size : 4;
     word-wrap: break-word;
     white-space: break-spaces;
@@ -66,7 +70,7 @@ main {
 }
 
 @media (max-width: 1150px) {
-    #text-preview, #text-editor {
+    #search-preview, #text-preview, #text-editor {
         padding: 20px;
     }
 }
@@ -93,6 +97,31 @@ main {
     width: 70%;
     background-color: var(--editor-background-color);
     border-radius: 50%;
+}
+
+#search-box {
+    z-index: 99;
+    position: absolute;
+    top: -50px;
+    right: 10px;
+    padding: 7px;
+    background-color: #2a2a2a;
+    box-shadow: 1px 1px 5px #0000008a;
+    border: 1px solid #888888;
+    transition: top 0.15s ease-out;
+}
+
+#search-input {
+    color: #f1f1f1;
+    border-radius: 2px;
+    border: none;
+    resize: none; 
+    outline: none;
+    background-color: #3f3f3f;
+    max-height: 22px;
+    max-width: 150px;
+    font-size: var(--sidebar-font-size);
+    font-family: var(--font-family);
 }
 
 #context-menu {
@@ -186,6 +215,7 @@ mark.italic {
 
 mark.hashtag {
     color: var(--editor-hashtag-color);
+    cursor: pointer;
 }
 
 mark.variable, mark.variable .keyword {
@@ -200,4 +230,7 @@ mark.comment, mark.comment .variable, mark.comment .keyword {
     color: var(--editor-hashtag-color);
 }
 
-
+mark.search {
+    background-color: var(--editor-hashtag-color);
+    color: var(--editor-text-color);
+}

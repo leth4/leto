@@ -3,6 +3,7 @@
 const scrollCircle = document.getElementById('circularScroll');
 const editor = document.getElementById('text-editor');
 const preview = document.getElementById('text-preview');
+const search = document.getElementById('search-preview');
 
 const SCROLL_DISPLAY_TIMEOUT = 1000;
 
@@ -32,6 +33,7 @@ export default class Scroll {
     const scroll = (editor.scrollTop / (editor.scrollHeight - editor.clientHeight)) * 360;
     scrollCircle.style.background = `conic-gradient(var(--editor-text-color) ${scroll}deg, var(--editor-hashtag-color) ${scroll}deg)`;
     preview.scrollTop = editor.scrollTop;
+    search.scrollTop = editor.scrollTop;
   }
 
   #hideScrollCircle() {
