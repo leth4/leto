@@ -46,17 +46,13 @@ export default class Edit {
     else if (editor.selectionEnd != editor.selectionStart)
       document.execCommand('insertText', false, '\t');
     else 
-      this.#setCursorAndFocus(editor.selectionEnd + 1);
+      this.#setSelectionAndFocus(editor.selectionEnd + 1);
     leto.handleEditorInput();
   }
   
   cutLine() {
     this.selectLine();
-    if (editor.selectionEnd - 1 === editor.selectionStart) {
-      document.execCommand('delete');
-    } else {
-      document.execCommand('cut');
-    }
+    document.execCommand(editor.selectionEnd - 1 === editor.selectionStart ? 'delete' : 'cut');
   }
   
   handleNewLine() {
@@ -72,17 +68,17 @@ export default class Edit {
       (/^\[x\][\s]*$/.test(editor.value.slice(lineStart, lineEnd))) ?  this.cutLine() : insertText = '\n[ ] ';
 
     document.execCommand('insertText', false, insertText);
-    editor.blur();
-    editor.focus();
-    leto.handleEditorInput();
+    this.#setSelectionAndFocus(editor.selectionStart);
   }
 
   moveDown() {
-    var [lineStart, lineEnd] = this.#getLineBorders();
+    var lineStart = this.#getLineStart(editor.selectionStart);
+    var lineEnd = this.#getLineEnd(editor.selectionEnd);
     if (lineEnd - 1 === lineStart) return;
     if (lineEnd > editor.value.length) return;
 
-    var positionAtLine = editor.selectionEnd - lineStart;
+    var startSelectionPosition = editor.selectionStart - lineStart;
+    var endSelectionPosition = editor.selectionEnd - lineStart;
     var lineToMove = editor.value.slice(lineStart, lineEnd);
     var [nextLineStart, nextLineEnd] = this.#getLineBorders(lineEnd);
     var targetLine = editor.value.slice(nextLineStart, nextLineEnd);
@@ -94,15 +90,17 @@ export default class Edit {
 
     editor.setSelectionRange(lineStart, nextLineEnd);
     document.execCommand('insertText', false, targetLine + lineToMove);
-    this.#setCursorAndFocus(lineStart + targetLine.length + positionAtLine);
+    this.#setSelectionAndFocus(lineStart + targetLine.length + startSelectionPosition, lineStart + targetLine.length + endSelectionPosition);
   }
 
   moveUp() {
-    var [lineStart, lineEnd] = this.#getLineBorders();
+    var lineStart = this.#getLineStart(editor.selectionStart);
+    var lineEnd = this.#getLineEnd(editor.selectionEnd);
     if (lineEnd - 1 === lineStart) return;
     if (lineStart === 0) return;
 
-    var positionAtLine = editor.selectionEnd - lineStart;
+    var startSelectionPosition = editor.selectionStart - lineStart;
+    var endSelectionPosition = editor.selectionEnd - lineStart;
     var lineToMove = editor.value.slice(lineStart, lineEnd);
     var [prevLineStart, prevLineEnd] = this.#getLineBorders(lineStart - 1);
     var targetLine = editor.value.slice(prevLineStart, prevLineEnd);
@@ -114,33 +112,37 @@ export default class Edit {
 
     editor.setSelectionRange(prevLineStart, lineEnd);
     document.execCommand('insertText', false, lineToMove + targetLine);
-    this.#setCursorAndFocus(prevLineStart + positionAtLine);
+    this.#setSelectionAndFocus(prevLineStart + startSelectionPosition, prevLineStart + endSelectionPosition);
   }
 
   copyLineDown() {
-    var [lineStart, lineEnd] = this.#getLineBorders();
+    var lineStart = this.#getLineStart(editor.selectionStart);
+    var lineEnd = this.#getLineEnd(editor.selectionEnd);
     if (lineEnd - 1 === lineStart) return;
 
-    var positionAtLine = editor.selectionEnd - lineStart;
+    var startSelectionPosition = editor.selectionStart - lineStart;
+    var endSelectionPosition = editor.selectionEnd - lineStart;
     var lineToCopy = editor.value.slice(lineStart, lineEnd);
     if (lineEnd > editor.value.length) lineToCopy = '\n' + lineToCopy;
 
     editor.setSelectionRange(lineEnd, lineEnd);
     document.execCommand('insertText', false, lineToCopy);
-    this.#setCursorAndFocus(lineEnd + positionAtLine);
+    this.#setSelectionAndFocus(lineEnd + startSelectionPosition, lineEnd + endSelectionPosition);
   }
 
   copyLineUp() {
-    var [lineStart, lineEnd] = this.#getLineBorders();
+    var lineStart = this.#getLineStart(editor.selectionStart);
+    var lineEnd = this.#getLineEnd(editor.selectionEnd);
     if (lineEnd - 1 === lineStart) return;
 
-    var positionAtLine = editor.selectionEnd - lineStart;
+    var startSelectionPosition = editor.selectionStart - lineStart;
+    var endSelectionPosition = editor.selectionEnd - lineStart;
     var lineToCopy = editor.value.slice(lineStart, lineEnd);
     if (lineEnd > editor.value.length) lineToCopy += '\n';
 
     editor.setSelectionRange(lineStart, lineStart);
     document.execCommand('insertText', false, lineToCopy);
-    this.#setCursorAndFocus(lineStart + positionAtLine);
+    this.#setSelectionAndFocus(lineStart + startSelectionPosition, lineStart + endSelectionPosition);
   }
 
   createCheckbox() {
@@ -150,15 +152,15 @@ export default class Edit {
     if (editor.value.slice(lineStart, lineStart + 3) === '[x]') {
       editor.setSelectionRange(lineStart + 1, lineStart + 2);
       document.execCommand('insertText', false, ' ');
-      this.#setCursorAndFocus(lineStart + positionAtLine);
+      this.#setSelectionAndFocus(lineStart + positionAtLine);
     } else if (editor.value.slice(lineStart, lineStart + 3) === '[ ]') {
       editor.setSelectionRange(lineStart + 1, lineStart + 2);
       document.execCommand('insertText', false, 'x');
-      this.#setCursorAndFocus(lineStart + positionAtLine);
+      this.#setSelectionAndFocus(lineStart + positionAtLine);
     } else {
       editor.setSelectionRange(lineStart, lineStart);
       document.execCommand('insertText', false, '[ ] ');
-      this.#setCursorAndFocus(lineStart + positionAtLine + 4);
+      this.#setSelectionAndFocus(lineStart + positionAtLine + 4);
     }
   }
 
@@ -174,7 +176,7 @@ export default class Edit {
     position = Math.max(0, position);
 
     editor.setSelectionRange(position, position);
-    this.#setCursorAndFocus(this.#getLineEnd() - 1);
+    this.#setSelectionAndFocus(this.#getLineEnd() - 1);
   }
 
   jumpDown() {
@@ -187,11 +189,11 @@ export default class Edit {
     }
 
     editor.setSelectionRange(position, position);
-    this.#setCursorAndFocus(this.#getLineEnd() - 1);
+    this.#setSelectionAndFocus(this.#getLineEnd() - 1);
   }
 
-  #setCursorAndFocus(position) {
-    editor.setSelectionRange(position, position);
+  #setSelectionAndFocus(start, end) {
+    editor.setSelectionRange(start, end ?? start);
     editor.blur();
     editor.focus();
     leto.handleEditorInput();
