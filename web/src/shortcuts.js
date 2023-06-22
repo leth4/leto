@@ -9,6 +9,7 @@ export default class Shortcuts {
   constructor() {
     window.onkeydown = (e) => {
       if (!leto.focused) return;
+      var inEditor = document.activeElement === editor;
 
       if (e.ctrlKey && !e.shiftKey && e.code === 'KeyY') {
         e.preventDefault();
@@ -25,29 +26,28 @@ export default class Shortcuts {
         if (editor.selectionStart != editor.selectionEnd) return;
         leto.edit.cutLine();
       }
-
-      else if (!e.ctrlKey && e.shiftKey && e.code === 'Digit8') leto.edit.insertDoubleSymbol('*');
-      else if (!e.ctrlKey && e.shiftKey && e.code === 'Quote') leto.edit.insertDoubleSymbol('\"');
-      else if (!e.ctrlKey && !e.shiftKey && e.code === 'Backquote') leto.edit.insertDoubleSymbol('`');
-      else if (!e.ctrlKey && !e.shiftKey && e.code === 'Minus') leto.edit.handleHyphen();
       
-      else if (e.ctrlKey && !e.shiftKey && e.code === 'Tab') leto.directory.setPreviousActiveFile();
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'Tab' && inEditor) leto.directory.setPreviousActiveFile();
       else if (!e.ctrlKey && !e.shiftKey && e.code === 'Tab') leto.edit.handleTab();
 
       else if (document.activeElement === nameInput && e.code === 'Enter') nameInput.blur();
       else if (document.activeElement === fontInput && e.code === 'Enter') fontInput.blur();
 
-      else if (!e.ctrlKey && !e.shiftKey && e.code === 'Enter') leto.edit.handleNewLine();
-      else if (e.altKey && e.shiftKey && e.code === 'ArrowUp') leto.edit.copyLineUp();
-      else if (e.altKey && e.shiftKey && e.code === 'ArrowDown') leto.edit.copyLineDown();
-      else if (e.altKey && !e.shiftKey && e.code === 'ArrowUp') leto.edit.moveUp();
-      else if (e.altKey && !e.shiftKey && e.code === 'ArrowDown') leto.edit.moveDown();
-      else if (e.ctrlKey && !e.shiftKey && e.code === 'ArrowUp') leto.edit.jumpUp();
-      else if (e.ctrlKey && !e.shiftKey && e.code === 'ArrowDown') leto.edit.jumpDown();
-      else if (e.ctrlKey && !e.shiftKey && e.code === 'Enter') leto.edit.createCheckbox();
-      else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyL') leto.edit.selectLine();
+      else if (!e.ctrlKey && e.shiftKey && e.code === 'Digit8' && inEditor) leto.edit.insertDoubleSymbol('*');
+      else if (!e.ctrlKey && e.shiftKey && e.code === 'Quote' && inEditor) leto.edit.insertDoubleSymbol('\"');
+      else if (!e.ctrlKey && !e.shiftKey && e.code === 'Backquote' && inEditor) leto.edit.insertDoubleSymbol('`');
+      else if (!e.ctrlKey && !e.shiftKey && e.code === 'Minus' && inEditor) leto.edit.handleHyphen();
+      else if (!e.ctrlKey && !e.shiftKey && e.code === 'Enter' && inEditor) leto.edit.handleNewLine();
+      else if (e.altKey && e.shiftKey && e.code === 'ArrowUp' && inEditor) leto.edit.copyLineUp();
+      else if (e.altKey && e.shiftKey && e.code === 'ArrowDown' && inEditor) leto.edit.copyLineDown();
+      else if (e.altKey && !e.shiftKey && e.code === 'ArrowUp' && inEditor) leto.edit.moveUp();
+      else if (e.altKey && !e.shiftKey && e.code === 'ArrowDown' && inEditor) leto.edit.moveDown();
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'ArrowUp' && inEditor) leto.edit.jumpUp();
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'ArrowDown' && inEditor) leto.edit.jumpDown();
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'Enter' && inEditor) leto.edit.createCheckbox();
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyL' && inEditor) leto.edit.selectLine();
 
-      else if (!e.ctrlKey && !e.shiftKey && e.code === 'Escape') {leto.edit.deselect(); leto.search.disable();}
+      else if (!e.ctrlKey && !e.shiftKey && e.code === 'Escape') {leto.search.toggled ? leto.search.toggle() : leto.edit.deselect();}
       
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyO') leto.directory.selectNewDirectory();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyN') leto.directory.createNewFile();

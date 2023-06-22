@@ -27,7 +27,7 @@ export default class Preview {
     search.scrollTop = editor.scrollTop;
     
     if (leto.search.text == "") return;
-    search.innerHTML = editorText.replace(new RegExp(`(${leto.search.text})`, 'gmi'), `<mark class='search'>$1</mark>`)
+    search.innerHTML = editorText.replace(new RegExp(`(${leto.search.text.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gmi'), `<mark class='search'>$1</mark>`)
   }
 
   #replaceCodeBlock(code) {

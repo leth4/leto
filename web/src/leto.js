@@ -40,6 +40,7 @@ class Leto {
     this.directory.saveActiveFile();
     this.preview.setPreviewText();
     this.undo.pushToBuffer(e);
+    this.search.find();
   }
 }
 

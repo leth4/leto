@@ -3,6 +3,7 @@
 const editor = document.getElementById('text-editor');
 const searchBox = document.getElementById('search-box');
 const searchInput = document.getElementById('search-input');
+const searchResults = document.getElementById('search-results');
 
 export default class Search {
 
@@ -10,11 +11,7 @@ export default class Search {
   text = "";
 
   constructor() {
-    searchInput.addEventListener('input', () => this.#find(), false);
-  }
-
-  disable() {
-    if (this.toggled) this.toggle();
+    searchInput.addEventListener('input', () => this.find(), false);
   }
   
   toggle() {
@@ -25,9 +22,10 @@ export default class Search {
     leto.preview.setPreviewText();
   }
 
-  #find() {
+  find() {
     if (!this.toggled) return;
     this.text = searchInput.value;
     leto.preview.setPreviewText();
+    searchResults.innerHTML = this.text != "" ? editor.value.toLowerCase().split(this.text).length - 1 : "";
   }
 }

@@ -111,6 +111,13 @@ main {
     transition: top 0.15s ease-out;
 }
 
+#search-results {
+    color: #f1f1f1;
+    display: inline-block;
+    width:3ch;
+    padding-left: 3px;
+}
+
 #search-input {
     color: #f1f1f1;
     border-radius: 2px;
