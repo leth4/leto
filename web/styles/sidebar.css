@@ -13,7 +13,7 @@
     transition: opacity 0.3s ease-in;
 }
 
-.file-button, .pin-button {
+.file-button, .pin-button, .folder-button {
     background: none;
     border: none;
     color: var(--sidebar-file-color);
@@ -42,17 +42,7 @@
 }
 
 .folder-button {
-    background: none;
-    border: none;
-    width: 95%;
-    text-align: left;
-    border-radius: 3px;
-    font-family: var(--font-family);
-    white-space: nowrap;
-    text-overflow: ellipsis;
     color: var(--sidebar-folder-color);
-    font-size: var(--sidebar-font-size);
-    overflow: hidden;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     transform: scale(1, 0.95);

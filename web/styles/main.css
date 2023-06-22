@@ -59,9 +59,16 @@ main {
     white-space: break-spaces;
     overflow-y : auto;
     overflow-x : hidden;
-    padding: 20px;
+    padding: 6vh 18vw 20px 18vw;
     font-size: var(--font-size);
     font-family: var(--font-family);
+    transition: padding 0.15s ease;
+}
+
+@media (max-width: 1150px) {
+    #text-preview, #text-editor {
+        padding: 20px;
+    }
 }
 
 #circularScroll {
@@ -148,11 +155,13 @@ span.code::before {
     content: "";
     display: block;
     position: absolute; 
-    top: 0; 
+    top: -1px;
     right: 0;
-    bottom: 0; 
-    left: 0; 
+    bottom: 0;
+    left: -5px;
     background-color: var(--editor-code-background-color);
+    border: 0.5px solid var(--editor-hashtag-color);
+    box-shadow: 0 0 calc(var(--shadow) * 5) var(--editor-hashtag-color);
     border-radius: 3px;
 }
 
