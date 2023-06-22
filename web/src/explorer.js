@@ -149,6 +149,7 @@ export default class Explorer {
       nested.style.display = 'block';
       this.#openFolders.push(folderButton.getAttribute('data-path'));
     }
+    this.highlightSelectedFile(leto.directory.activeFile);
   }
 
   clearFileTree() {
@@ -179,13 +180,15 @@ export default class Explorer {
       folders[i].classList.remove('selected');
     }
 
+    highlightedElement.classList.add('selected');
+    
     while (true) {
-      highlightedElement.classList.add('selected');
       var folder = highlightedElement.parentElement.parentElement.parentElement.firstChild;
       if (folder == null || folder.className != 'folder-button') break;
       highlightedElement = folder;
+      if (!this.#openFolders.includes(highlightedElement.getAttribute('data-path'))) highlightedElement.classList.add('selected');
     }
-  }
+}
 
   showFileTree(directoryElements, directoryPath) {
     this.#pinsBeforeCheck = [...this.pins];

@@ -25,6 +25,7 @@
     border-radius: 3px;
     font-size: var(--sidebar-font-size);
     font-family: var(--font-family);
+    cursor: pointer;
 }
 
 .pin-button::before {
@@ -35,16 +36,10 @@
     background: var(--sidebar-selection-color);
 }
 
-.file-button:focus, .pin-button:focus {
-    outline: none;
-    background: none;
-    text-decoration: underline;
-}
-
 .folder-button {
     color: var(--sidebar-folder-color);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
     transform: scale(1, 0.95);
 }
 
@@ -77,8 +72,7 @@ ul {
 }
 
 .nested li {
-    margin: 0;
-    border-left: 1px solid var(--sidebar-file-color);
+    border-left: 1px solid var(--divider-color);
 }
 
 #preferences {
