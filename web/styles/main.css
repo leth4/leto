@@ -1,13 +1,16 @@
 :root {
     --font-size: 15px;
-    --title-font-size: 20px;
     --sidebar-font-size: 15px;
     --font-family: 'inter', 'arial';
     --font-weight: 300;
 }
 
-body {
+* {
+    outline: none;
     font-family: var(--font-family);
+}
+
+body {
     font-weight: var(--font-weight);
     scroll-behavior: smooth;
     margin: 0px;
@@ -51,7 +54,6 @@ main {
     background: transparent;
     color: transparent;
     caret-color: var(--editor-text-color);
-    outline: 0px solid transparent;
     border: 0px solid transparent;
     resize: none; 
     font-weight: inherit; 
@@ -65,8 +67,7 @@ main {
     overflow-x : hidden;
     padding: 6vh 18vw 20px 18vw;
     font-size: var(--font-size);
-    font-family: var(--font-family);
-    transition: padding 0.15s ease;
+    transition: padding .15s ease;
 }
 
 @media (max-width: 1150px) {
@@ -87,7 +88,7 @@ main {
     bottom: 15px;
     display: grid;
     place-items: center;
-    transition: opacity 0.3s ease-in-out;
+    transition: opacity .3s ease-in-out;
 }
 
 #circularScroll::before {
@@ -108,7 +109,7 @@ main {
     background-color: #2a2a2a;
     box-shadow: 1px 1px 5px #0000008a;
     border: 1px solid #888888;
-    transition: top 0.15s ease-out;
+    transition: top .15s ease-out;
 }
 
 #search-results {
@@ -123,12 +124,10 @@ main {
     border-radius: 2px;
     border: none;
     resize: none; 
-    outline: none;
     background-color: #3f3f3f;
     max-height: 22px;
     max-width: 150px;
     font-size: var(--sidebar-font-size);
-    font-family: var(--font-family);
 }
 
 #context-menu {
@@ -140,10 +139,9 @@ main {
     font-size: 14px;
     border: 1px solid #888888;
     min-width: 120px;
-    font-family: var(--font-family);
     padding: 5px 0 5px 0;
     opacity: 0;
-    transition: opacity 0.15s ease-out;
+    transition: opacity .15s ease-out;
 }
 
 #context-menu.show {
@@ -190,13 +188,13 @@ span.code::before {
     z-index: -10;
     content: "";
     display: block;
-    position: absolute; 
+    position: absolute;
     top: -1px;
     right: 0;
     bottom: 0;
     left: -5px;
     background-color: var(--editor-code-background-color);
-    border: 0.5px solid var(--editor-hashtag-color);
+    border: .5px solid var(--editor-hashtag-color);
     box-shadow: 0 0 calc(var(--shadow) * 5) var(--editor-hashtag-color);
     border-radius: 3px;
 }
@@ -212,28 +210,11 @@ mark.inline-code {
     border-radius: 3px;
 }
 
-mark.header {
+mark.header, mark.italic, mark.keyword {
     color: var(--editor-header-color);
 }
 
-mark.italic {
-    color: var(--editor-header-color);
-}
-
-mark.hashtag {
-    color: var(--editor-hashtag-color);
-    cursor: pointer;
-}
-
-mark.variable, mark.variable .keyword {
-    color: var(--editor-header-color);
-}
-
-mark.keyword {
-    color: var(--editor-header-color);
-}
-
-mark.comment, mark.comment .variable, mark.comment .keyword {
+mark.hashtag, mark.comment, mark.comment .keyword {
     color: var(--editor-hashtag-color);
 }
 

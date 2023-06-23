@@ -50,8 +50,8 @@ export default class Preview {
     else if (languageName == 'hlsl') language = hlsl;
 
     if (language) {
-      code = code.replace(strReg,`<mark class='variable'>$&</mark>`);
-      code = code.replace(numberReg, `<mark class='variable'>$&</mark>`);
+      code = code.replace(strReg,`<mark class='keyword'>$&</mark>`);
+      code = code.replace(numberReg, `<mark class='keyword'>$&</mark>`);
       code = code.replace(language.keywordReg, `<mark class='keyword'>$1</mark>`);
       code = code.replace(language.commentReg,`<mark class='comment'>$&</mark>`);
     }

@@ -6,14 +6,14 @@
     max-width: 200px;
     overflow-y: auto;
     overflow-x: hidden;
-    transition: max-width 0.4s ease-in-out;
+    transition: max-width .4s ease-in-out;
 }
 
 #sidebar-content {
-    transition: opacity 0.3s ease-in;
+    transition: opacity .3s ease-in;
 }
 
-.file-button, .pin-button, .folder-button {
+.folder-button, .file-button, .pin-button {
     background: none;
     border: none;
     color: var(--sidebar-file-color);
@@ -24,32 +24,22 @@
     text-align: left;
     border-radius: 3px;
     font-size: var(--sidebar-font-size);
-    font-family: var(--font-family);
     cursor: pointer;
+}
+
+.folder-button:hover, .file-button:hover, .pin-button:hover, select:hover {
+    background: var(--sidebar-selection-color);
 }
 
 .pin-button::before {
     content: "→ ";
 }
 
-.file-button:hover, .pin-button:hover {
-    background: var(--sidebar-selection-color);
-}
-
 .folder-button {
     color: var(--sidebar-folder-color);
     text-transform: uppercase;
-    letter-spacing: 0.3px;
-    transform: scale(1, 0.95);
-}
-
-.folder-button:hover {
-    background: var(--sidebar-selection-color);
-}
-
-.folder-button:focus {
-    outline: none;
-    background: var(--sidebar-selection-color);
+    letter-spacing: .3px;
+    transform: scale(1, .95);
 }
 
 .selected {
@@ -85,34 +75,28 @@ ul {
     white-space: nowrap;
 }
 
-#name-input {
+#name-input, #font-input {
     background: transparent;
-    color: var(--editor-text-color);
+    font-size: var(--sidebar-font-size);
     border: 1px solid var(--editor-text-color);
-    border-radius: 3px;
     resize: none; 
+    max-height: 20px;
+}
+
+#name-input {
+    color: var(--editor-text-color);
+    border-radius: 3px;
     height: 17px;
     margin-left: 3px;
     max-width: 134px;
-    max-height: 20px;
-    outline: none;
-    font-size: var(--sidebar-font-size);
-    font-family: var(--font-family);
     display: none;
 }
 
 #font-input {
-    background: transparent;
     color: var(--sidebar-folder-color);
-    border: 1px solid var(--editor-text-color);
     border-radius: 4px;
-    resize: none; 
     max-width: 131px;
     padding-left: 5px;
-    max-height: 20px;
-    outline: none;
-    font-size: var(--sidebar-font-size);
-    font-family: var(--font-family);
 }
 
 select {
@@ -120,21 +104,14 @@ select {
     background: var(--sidebar-background-color);
     border: 1px solid var(--editor-text-color);
     border-radius: 4px;
-    outline: none;
     padding-bottom: 0px;
     color: var(--sidebar-folder-color);
-    font-family: var(--font-family);
     font-size: var(--sidebar-font-size);
     width: 140px;
-}
-
-select:hover {
-    background: var(--sidebar-selection-color);
 }
 
 option {
     background-color: var(--sidebar-background-color);
     color: var(--sidebar-folder-color);
-    font-family: var(--font-family);
     font-size: var(--sidebar-font-size);
 }
