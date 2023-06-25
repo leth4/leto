@@ -26,6 +26,6 @@ export default class Search {
     if (!this.toggled) return;
     this.text = searchInput.value;
     leto.preview.setPreviewText();
-    searchResults.innerHTML = this.text != "" ? editor.value.toLowerCase().split(this.text).length - 1 : "";
+    searchResults.innerHTML = this.text != "" ? editor.value.toLowerCase().split(this.text.toLowerCase()).length - 1 : "";
   }
 }

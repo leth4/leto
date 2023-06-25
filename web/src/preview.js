@@ -14,7 +14,7 @@ export default class Preview {
         chunks[i] = chunks[i]
           .replace(/(?<!# )(\*)(.*?)(\*)/g, `<mark class='hashtag'>$1</mark><mark class='italic'>$2</mark><mark class='hashtag'>$3</mark>`)
           .replace(/(^#{1,4})( .*)/gm, `<mark class='hashtag'>$1</mark><mark class='header'>$2</mark>`)
-          .replace(/((?<!`)`(?!`)[^\n]*?(?<!`)`(?!`))/gm, `<mark class='inline-code'>$1</mark>`);
+          .replace(/((?<!`)`(?!`))([^\n]*?)((?<!`)`(?!`))/gm, `<mark class='inline-code'><mark class='hashtag'>$1</mark>$2<mark class='hashtag'>$3</mark></mark>`);
       } else {
         chunks[i] = this.#replaceCodeBlock(chunks[i]);
       }
