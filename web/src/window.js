@@ -11,9 +11,11 @@ const fontInput = document.getElementById('font-input');
 const themes = [
   'gleam',
   'aske',
+  'frost',
   'zima',
   'spirit',
-  'perlin'
+  'perlin',
+  'dart'
 ];
 
 export default class Window {
@@ -93,7 +95,7 @@ export default class Window {
 
   setFont(font, save = true) {
     this.currentFont = font ?? 'inter';
-    root.style.setProperty('--font-family', `'${this.currentFont}', 'inter', 'arial'`);
+    root.style.setProperty('--font-family', `'${this.currentFont}', 'inter', sans-serif`);
     fontInput.value = this.currentFont;
     if (save) leto.config.save();
   }

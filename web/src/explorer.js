@@ -206,6 +206,8 @@ export default class Explorer {
     this.#makeDroppable(rootDropArea);
     rootDropArea.addEventListener('drop', (event) => this.#handleElementDrop(event, directoryPath));
 
+    this.pins.sort((a, b) => this.#pinsBeforeCheck.indexOf(a) - this.#pinsBeforeCheck.indexOf(b));
+
     this.#showPins();
   }
 

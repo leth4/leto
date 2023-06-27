@@ -1,7 +1,7 @@
 :root {
     --font-size: 15px;
     --sidebar-font-size: 15px;
-    --font-family: 'inter', 'arial';
+    --font-family: 'inter', sans-serif;
     --font-weight: 300;
 }
 
@@ -13,9 +13,8 @@
 body {
     font-weight: var(--font-weight);
     scroll-behavior: smooth;
-    margin: 0px;
+    margin: 0;
     user-select: none;
-    display: var(--display);
     overflow: hidden;
 }
 
@@ -204,7 +203,7 @@ mark {
     background-color: transparent;
 }
 
-mark.inline-code {
+mark.inline-code, mark.inline-code .italic {
     background-color: var(--editor-code-background-color);
     color: var(--editor-text-color);
     border-radius: 3px;

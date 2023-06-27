@@ -27,6 +27,10 @@
     cursor: pointer;
 }
 
+.folder-button:focus, .file-button:focus, .pin-button:focus {
+    background: var(--sidebar-selection-color);
+}
+
 .folder-button:hover, .file-button:hover, .pin-button:hover, select:hover {
     background: var(--sidebar-selection-color);
 }
@@ -38,8 +42,6 @@
 .folder-button {
     color: var(--sidebar-folder-color);
     text-transform: uppercase;
-    letter-spacing: .3px;
-    transform: scale(1, .95);
 }
 
 .selected {
@@ -110,8 +112,6 @@ select {
     width: 140px;
 }
 
-option {
+select option {
     background-color: var(--sidebar-background-color);
-    color: var(--sidebar-folder-color);
-    font-size: var(--sidebar-font-size);
 }

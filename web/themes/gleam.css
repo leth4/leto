@@ -1,6 +1,6 @@
 :root {
     --editor-background-color: #e3e2dd;
-    --editor-code-background-color: #cfcdc6;
+    --editor-code-background-color: #d9d7d2;
     --editor-text-color: #515050;
     --editor-header-color: #b6160a;
     --editor-hashtag-color: #a5a4a4;
@@ -11,6 +11,6 @@
     --sidebar-file-color: #a1a09c;
     --sidebar-selection-color: #dedcd4;
 
-    --sidebar-divider-color:  #515050;
+    --divider-color:  #e3e2dd;
     --shadow: 0px;
 }
