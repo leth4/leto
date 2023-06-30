@@ -21,25 +21,20 @@
       "dialog" : {
         "open" : true,
         "save" : true,
-        "message": true,
-        "confirm" : true
+        "message": true
       },
       "path": {
         "all" : true
       },
       "fs": {
         "exists": true,
-        "writeFile": true,
         "readFile": true,
         "readDir": true,
+        "writeFile": true,
         "removeFile": true,
-        "copyFile" : true,
         "createDir" : true,
         "removeDir": true,
         "scope":["**"]
-      },
-      "shell": {
-        "open": ".*"
       }
     },
     "bundle": {
@@ -58,16 +53,9 @@
         "icons/icon.ico"
       ],
       "identifier": "leto",
-      "longDescription": "",
-      "macOS": {
-        "entitlements": null,
-        "exceptionDomain": "",
-        "frameworks": [],
-        "providerShortName": null,
-        "signingIdentity": null
-      },
+      "longDescription": "Minimalistic text editor",
       "resources": [],
-      "shortDescription": "",
+      "shortDescription": "Minimalistic text editor",
       "targets": "all",
       "windows": {
         "certificateThumbprint": null,

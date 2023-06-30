@@ -7,7 +7,7 @@ const { invoke } = window.__TAURI__.tauri;
 const editor = document.getElementById('text-editor');
 const DIRECTORY_ENTRIES_LIMIT = 2000;
 const TOO_BIG_MESSAGE = `Selected directory is too big. You can only have ${DIRECTORY_ENTRIES_LIMIT} files and subfolders in the directory.`;
-const NO_DIRECTORY_MESSAGE = `Press <Ctrl+O> to open a directory.`
+const NO_DIRECTORY_MESSAGE = "Press `Ctrl+O` to open a directory.";
 
 export default class Directory {
 
@@ -135,6 +135,7 @@ export default class Directory {
 
   #removeActiveDirectory() {
     leto.explorer.clearFileTree();
+    leto.explorer.setPins(null);
     this.activeDirectory = null;
     this.#removeActiveFile();
   }
