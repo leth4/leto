@@ -8,7 +8,7 @@ export default class Preview {
 
   setPreviewText() {
     var editorText = editor.value + (editor.value.slice(-1) === '\n' ? ' ' : '');
-    const chunks = editorText.split(/(?<=(?:\n|^))(```[\s\S]*?```(?:$|\n))/g);
+    const chunks = this.#cleanupHtmlTags(editorText).split(/(?<=(?:\n|^))(```[\s\S]*?```(?:$|\n))/g);
     for (var i in chunks) {
       if (i % 2 === 0) {
         chunks[i] = chunks[i]
@@ -27,7 +27,12 @@ export default class Preview {
     search.scrollTop = editor.scrollTop;
     
     if (leto.search.text == "") return;
-    search.innerHTML = editorText.replace(new RegExp(`(${leto.search.text.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gmi'), `<mark class='search'>$1</mark>`)
+    var searchText = this.#cleanupHtmlTags(leto.search.text.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&'));
+    search.innerHTML = this.#cleanupHtmlTags(editorText).replace(new RegExp(`(${searchText})`, 'gmi'), `<mark class='search'>$1</mark>`);
+  }
+
+  #cleanupHtmlTags(text) {
+    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
   #replaceCodeBlock(code) {
@@ -62,7 +67,6 @@ export default class Preview {
     
     return `<span class='code'>` + code + `\n</span>`;
   }
-
 }
 
 class Language {

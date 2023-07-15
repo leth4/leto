@@ -8,7 +8,7 @@ Visually inspired by [Left](https://github.com/hundredrabbits/Left), functionall
 
 Create a file directory to store your notes. Open the app, press `Ctrl + O` and select the directory. You can browse, open, create, pin, rename, delete and move files and folders via the sidebar. Deleted files and folders are kept in a `.trash` folder in the working directory. All your changes are auto-saved.
 
-Markdown `# headers`, `*italics*` and `` `inline code` `` are highlighted. There's also syntax highlighting for code blocks wrapped between `` ``` `` symbols — you can specify the language in the first line, like `` ```csharp ``. Languages that support highlighting are *C#*, *C++*, *C*, *JavaScript*, *Python*, *Rust*, *Java* and *HLSL*. 
+Markdown `# headers`, `*italics*` and `` `inline code` `` are highlighted. There's also syntax highlighting for code blocks wrapped between `` ``` `` symbols — you can specify the language in the first line, like `` ```csharp ``. Languages that support highlighting are *C#*, *C++*, *C*, *JavaScript*, *Python*, *Rust*, *Go*, *Java* and *HLSL*. 
 
 The default font is [Inter](https://github.com/rsms/inter), but you can input any font via the Preferences menu (opened with `Ctrl+P`). Note that you need the font installed locally.
 
