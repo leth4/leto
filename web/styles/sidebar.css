@@ -68,7 +68,16 @@ ul {
 }
 
 #preferences {
+    background: var(--sidebar-background-color);
+    border-top: calc(1px - var(--shadow)) solid var(--divider-color);
+    box-shadow: 0 0 calc(var(--shadow) * 20) var(--divider-color);
+    width: 200px;
     display: none;
+    position: absolute;
+    bottom: 0;
+    padding: 20px 20px 25px 20px;
+    margin: 0;
+    z-index: 10;
 }
 
 .pref {

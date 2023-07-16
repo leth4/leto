@@ -2,12 +2,12 @@
     --editor-background-color: #2b2b2b;
     --editor-code-background-color: #232323;
     --editor-text-color: #bab6b6;
-    --editor-header-color: #9a94cb;
-    --editor-hashtag-color: #747171;
+    --editor-accent-color: #e3d1bb;
+    --editor-muted-color: #747171;
     --selection-color: #424141;
 
     --sidebar-background-color: #2b2b2b;
-    --sidebar-folder-color: #bab6b6;
+    --sidebar-folder-color: #a9a6a6;
     --sidebar-file-color: #8a8787;
     --sidebar-selection-color: #424141;
 

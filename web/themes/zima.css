@@ -2,14 +2,14 @@
     --editor-background-color: #232a31;
     --editor-code-background-color: #192028;
     --editor-text-color: #a9c3c7;
-    --editor-header-color: #dfe4e4;
-    --editor-hashtag-color: #516a79;
+    --editor-accent-color: #dfe4e4;
+    --editor-muted-color: #516a79;
     --selection-color: #2f2f96;
 
     --sidebar-background-color:#232a31;
-    --sidebar-folder-color: #e0e0e0;
+    --sidebar-folder-color: #cacaca;
     --sidebar-file-color: #a9c3c7;
-    --sidebar-selection-color: #405866;
+    --sidebar-selection-color: #293b45;
 
     --divider-color: #73989d;
     --shadow: 0px;

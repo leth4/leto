@@ -78,7 +78,7 @@ main {
 #circularScroll {
     z-index: 100 !important;
     position: absolute;
-    background-color: var(--editor-hashtag-color);
+    background-color: var(--editor-muted-color);
     opacity: 0;
     border-radius: 50%;
     width: 20px;
@@ -193,8 +193,8 @@ span.code::before {
     bottom: 0;
     left: -5px;
     background-color: var(--editor-code-background-color);
-    border: .5px solid var(--editor-hashtag-color);
-    box-shadow: 0 0 calc(var(--shadow) * 5) var(--editor-hashtag-color);
+    border: .5px solid var(--editor-muted-color);
+    box-shadow: 0 0 calc(var(--shadow) * 5) var(--editor-muted-color);
     border-radius: 3px;
 }
 
@@ -210,14 +210,14 @@ mark.inline-code, mark.inline-code .italic {
 }
 
 mark.header, mark.italic, mark.keyword {
-    color: var(--editor-header-color);
+    color: var(--editor-accent-color);
 }
 
 mark.hashtag, mark.comment, mark.comment .keyword {
-    color: var(--editor-hashtag-color);
+    color: var(--editor-muted-color);
 }
 
 mark.search {
-    background-color: var(--editor-hashtag-color);
+    background-color: var(--editor-muted-color);
     color: var(--editor-text-color);
 }

@@ -38,7 +38,7 @@ export default class Config {
     leto.windowManager.setFontWeight(configObject.fontWeight, false);
     
     leto.directory.setActiveDirectory(configObject.selectedDirectory);
-    leto.directory.setActiveFile(configObject.selectedFile);
+    leto.directory.setActiveFile(configObject.selectedFile, false);
     leto.explorer.setPins(configObject.pins);
   }
 

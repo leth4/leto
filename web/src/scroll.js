@@ -31,7 +31,7 @@ export default class Scroll {
     this.#displayTimeout = setTimeout(this.#hideScrollCircle.bind(this), SCROLL_DISPLAY_TIMEOUT);
 
     const scroll = (editor.scrollTop / (editor.scrollHeight - editor.clientHeight)) * 360;
-    scrollCircle.style.background = `conic-gradient(var(--editor-text-color) ${scroll}deg, var(--editor-hashtag-color) ${scroll}deg)`;
+    scrollCircle.style.background = `conic-gradient(var(--editor-text-color) ${scroll}deg, var(--editor-muted-color) ${scroll}deg)`;
     preview.scrollTop = editor.scrollTop;
     search.scrollTop = editor.scrollTop;
   }

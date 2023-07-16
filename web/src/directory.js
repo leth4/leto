@@ -28,12 +28,12 @@ export default class Directory {
     this.setActiveFile(this.#previousActiveFile);
   }
 
-  setActiveFile(path) {
+  setActiveFile(path, save = true) {
     if (this.activeFile != path)
       this.#previousActiveFile = this.activeFile;
     this.activeFile = path;
     this.tryOpenActiveFile();
-    leto.config.save();
+    if (save) leto.config.save();
   }
 
   async selectNewDirectory() {
