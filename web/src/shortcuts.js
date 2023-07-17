@@ -10,6 +10,7 @@ export default class Shortcuts {
     window.onkeydown = (e) => {
       if (!leto.focused) return;
       var inEditor = document.activeElement === editor;
+      var selected = editor.selectionStart != editor.selectionEnd;
 
       if (e.ctrlKey && !e.shiftKey && e.code === 'KeyY') {
         e.preventDefault();
@@ -23,7 +24,7 @@ export default class Shortcuts {
       } 
 
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyX') {
-        if (editor.selectionStart != editor.selectionEnd) return;
+        if (selected) return;
         leto.edit.cutLine();
       }
       
@@ -33,9 +34,10 @@ export default class Shortcuts {
       else if (document.activeElement === nameInput && e.code === 'Enter') nameInput.blur();
       else if (document.activeElement === fontInput && e.code === 'Enter') fontInput.blur();
 
-      else if (!e.ctrlKey && e.shiftKey && e.code === 'Digit8' && inEditor) leto.edit.insertDoubleSymbol('*');
-      else if (!e.ctrlKey && e.shiftKey && e.code === 'Quote' && inEditor) leto.edit.insertDoubleSymbol('\"');
-      else if (!e.ctrlKey && !e.shiftKey && e.code === 'Backquote' && inEditor) leto.edit.insertDoubleSymbol('`');
+      else if (!e.ctrlKey && e.shiftKey && e.key == '*' && inEditor) leto.edit.insertDoubleSymbol('*');
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyI' && inEditor && selected) leto.edit.insertDoubleSymbol('*');
+      else if (!e.ctrlKey && e.shiftKey && e.key == '\"' && inEditor) leto.edit.insertDoubleSymbol('\"');
+      else if (!e.ctrlKey && !e.shiftKey && e.key == '`' && inEditor) leto.edit.insertDoubleSymbol('`');
       else if (!e.ctrlKey && !e.shiftKey && e.code === 'Minus' && inEditor) leto.edit.handleHyphen();
       else if (!e.ctrlKey && !e.shiftKey && e.code === 'Enter' && inEditor) leto.edit.handleNewLine();
       else if (e.altKey && e.shiftKey && e.code === 'ArrowUp' && inEditor) leto.edit.copyLineUp();
