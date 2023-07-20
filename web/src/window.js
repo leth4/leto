@@ -20,7 +20,6 @@ const themes = [
 export default class Window {
 
   #prefsToggled = false;
-  #fullscreenToggled = false;
   #sidebarToggled = true;
 
   constructor() {
@@ -46,11 +45,6 @@ export default class Window {
   toggleSpellcheck() {
     var newValue = editor.getAttribute('spellcheck') === 'true' ? 'false' : 'true';
     editor.setAttribute('spellcheck', newValue);
-  }
-
-  toggleFullscreen() {
-    this.#fullscreenToggled = !this.#fullscreenToggled;
-    appWindow.setFullscreen(this.#fullscreenToggled);
   }
 
   togglePrefs() {

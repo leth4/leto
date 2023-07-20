@@ -64,14 +64,14 @@ main {
     white-space: break-spaces;
     overflow-y : auto;
     overflow-x : hidden;
-    padding: 6vh 18vw 20px 18vw;
+    padding: 6vh 18vw 50px 18vw;
     font-size: var(--font-size);
     transition: padding .15s ease;
 }
 
 @media (max-width: 1150px) {
     #search-preview, #text-preview, #text-editor {
-        padding: 20px;
+        padding: 20px 20px 50px 20px;
     }
 }
 

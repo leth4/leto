@@ -13,6 +13,7 @@ export default class Scroll {
   #lastFrameScroll;
   #currentMousePosition = 0;
   #displayTimeout;
+  #scrollPositionsMap = new Map();
 
   constructor() {
     editor.addEventListener('scroll', () => this.#handleScroll(), false);
@@ -25,6 +26,11 @@ export default class Scroll {
     document.addEventListener('mousemove', (event) => this.#currentMousePosition = event.clientX);
   }
 
+  handleNewFile() {
+    editor.scrollTop = this.#scrollPositionsMap.get(leto.directory.activeFile);
+    this.#handleScroll();
+  }
+
   #handleScroll() {
     clearTimeout(this.#displayTimeout);
     scrollCircle.style.opacity = '1';
@@ -34,6 +40,8 @@ export default class Scroll {
     scrollCircle.style.background = `conic-gradient(var(--editor-text-color) ${scroll}deg, var(--editor-muted-color) ${scroll}deg)`;
     preview.scrollTop = editor.scrollTop;
     search.scrollTop = editor.scrollTop;
+
+    this.#scrollPositionsMap.set(leto.directory.activeFile, editor.scrollTop);
   }
 
   #hideScrollCircle() {
