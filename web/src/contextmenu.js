@@ -9,6 +9,7 @@ const editor = document.getElementById('text-editor');
 export default class ContextMenu {
   
   #initialClickTarget;
+  #deleting;
 
   constructor() {
     document.addEventListener('contextmenu', (event) => {
@@ -19,8 +20,10 @@ export default class ContextMenu {
     });
 
     document.addEventListener('click', (event) => {
-      this.hide();
-      if (!contextMenu.contains(event.target)) return;
+      if (!contextMenu.contains(event.target)){
+        this.hide();
+        return;
+      }
       if (event.target.tagName !== 'LI') return;
       this.#handleClick(event.target.textContent);
     });
@@ -34,6 +37,7 @@ export default class ContextMenu {
   }
 
   async #show(event) {
+    this.#deleting = false;
     const size = await appWindow.innerSize();
     contextMenu.classList.add('show');
 
@@ -52,15 +56,24 @@ export default class ContextMenu {
     else if (action === 'Paste') document.execCommand('insertText', false, await readText());
     else if (action === 'Cut') document.execCommand('cut', false);
 
+    else if (action === 'Delete') {
+      this.#deleting = true;
+      this.#createFileSystemMenu();
+      return;
+    } 
+
+    else if (action === 'Delete?') leto.explorer.deleteItem(this.#initialClickTarget);
     else if (action === 'Pin') leto.explorer.pinItem(this.#initialClickTarget);
     else if (action === 'Unpin') leto.explorer.unpinItem(this.#initialClickTarget);
     else if (action === 'Unpin All') leto.explorer.setPins(null);
     else if (action === 'Rename') leto.explorer.renameItem(this.#initialClickTarget);
-    else if (action === 'Delete') leto.explorer.deleteItem(this.#initialClickTarget);
     else if (action === 'New File') this.#createFile(this.#initialClickTarget);
     else if (action === 'New Folder') this.#createFolder(this.#initialClickTarget);
-   
     else if (action === 'Reload') leto.directory.tryDisplayActiveDirectory();
+
+    else return;
+
+    this.hide();
   }
 
   #createFile(target) {
@@ -85,12 +98,12 @@ export default class ContextMenu {
 
     if (leto.explorer.isFile(this.#initialClickTarget)) {
       this.#addAction('Rename');
-      this.#addAction('Delete');
+      this.#addAction(this.#deleting ? 'Delete?' : 'Delete');
       this.#addAction(leto.explorer.isPinned(this.#initialClickTarget) ? 'Unpin' : 'Pin');
       this.#addSeparator();
     } else if (leto.explorer.isFolder(this.#initialClickTarget)) {
       this.#addAction('Rename');
-      this.#addAction('Delete');
+      this.#addAction(this.#deleting ? 'Delete?' : 'Delete');
       this.#addSeparator();
     } else if (leto.explorer.isPinned(this.#initialClickTarget)) {
       this.#addAction('Unpin');
