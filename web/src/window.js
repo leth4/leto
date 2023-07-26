@@ -30,6 +30,7 @@ export default class Window {
 
     themeSelector.addEventListener('change', () => this.setTheme(themeSelector.value), false);
     fontInput.addEventListener('input', () => this.setFont(fontInput.value), false);
+    editor.addEventListener('wheel', (e) => this.#handleMouseWheel(e), false);
 
     this.populateThemes();
   }
@@ -58,6 +59,12 @@ export default class Window {
     document.getElementById('sidebar').style.overflowY = this.#sidebarToggled ? 'auto' : 'hidden';
     document.getElementById('sidebar-content').style.opacity = this.#sidebarToggled ? '1' : '0';
     document.getElementById('sidebar-content').style.pointerEvents = this.#sidebarToggled ? 'all' : 'none';
+  }
+
+  #handleMouseWheel(event) {
+    if (!event.ctrlKey) return;
+    if (event.shiftKey) return;
+    this.changeFontSize(-event.deltaY / Math.abs(event.deltaY));
   }
 
   changeFontSize(change = 0) {

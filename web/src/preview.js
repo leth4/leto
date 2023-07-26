@@ -29,6 +29,7 @@ export default class Preview {
     if (leto.search.text == "") return;
     var searchText = this.#cleanupHtmlTags(leto.search.text.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&'));
     search.innerHTML = this.#cleanupHtmlTags(editorText).replace(new RegExp(`(${searchText})`, 'gmi'), `<mark class='search'>$1</mark>`);
+    search.scrollTop = editor.scrollTop;
   }
 
   #cleanupHtmlTags(text) {
