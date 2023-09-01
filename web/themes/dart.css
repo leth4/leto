@@ -1,9 +1,9 @@
 :root {
     --editor-background-color: #271d1d;
-    --editor-code-background-color: #3b2d2d;
+    --editor-code-background-color: #1f1313;
     --editor-text-color: #c6bd9f;
     --editor-accent-color: #cea477;
-    --editor-muted-color: #826767;
+    --editor-muted-color: #765b5b;
     --selection-color: #4d3f3f;
 
     --sidebar-background-color:#271d1d;
