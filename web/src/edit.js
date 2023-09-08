@@ -13,12 +13,10 @@ export default class Edit {
 
     for (var i = editor.selectionStart; i < editor.value.length + 1; i++) {
       editor.selectionEnd = i;
-      var symbol = editor.value[i];
       if (!alphabet.includes(editor.value[i])) break;
     }
     for (var i = editor.selectionStart; i >= -1; i--) {
       editor.selectionStart = i + 1;
-      var symbol = editor.value[i];
       if (!alphabet.includes(editor.value[i])) break;
     }
   }

@@ -10,6 +10,8 @@ export default class Preview {
   setPreviewText() {
     var editorText = editor.value + (editor.value.slice(-1) === '\n' ? ' ' : '');
     const chunks = this.#cleanupHtmlTags(editorText).split(/(?<=(?:\n|^))(```[\s\S]*?```(?:$|\n))/g);
+    var codeRanges = [];
+    var currentLength = 0; 
     for (var i in chunks) {
       if (i % 2 === 0) {
         chunks[i] = chunks[i]
@@ -18,12 +20,14 @@ export default class Preview {
           .replace(/((?<!`)`(?!`))([^\n]*?)((?<!`)`(?!`))/gm, `<mark class='inline-code'><mark class='hashtag'>$1</mark>$2<mark class='hashtag'>$3</mark></mark>`);
       } else {
         chunks[i] = this.#replaceCodeBlock(chunks[i]);
+        codeRanges.push([currentLength, currentLength + chunks[i].length]);
       }
+      currentLength += chunks[i].length;
     }
     preview.innerHTML = chunks.join('');
     preview.scrollTop = editor.scrollTop;
 
-    this.#previewSpell();
+    this.#previewSpell(codeRanges);
 
     search.innerHTML = '';
     if (!leto.search.toggled) return;
@@ -33,25 +37,28 @@ export default class Preview {
     var searchText = this.#cleanupHtmlTags(leto.search.text.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&'));
     search.innerHTML = this.#cleanupHtmlTags(editorText).replace(new RegExp(`(${searchText})`, 'gmi'), `<mark class='search'>$1</mark>`);
     search.scrollTop = editor.scrollTop;
-
   }
 
-  #previewSpell() {
+  #previewSpell(excludeRanges) {
     spell.innerHTML = "";
 
     if (!leto.spellcheck.toggled) return;
 
-    const words = editor.value.split(/(\W+)(?<!')/).filter(Boolean);
+    var words = editor.value.split(/(\W+)(?<!')/).filter(Boolean);
+    var textLength = 0;
 
-    const result = words.map(word => {
-      if (/\w+/.test(word)) {
-        return leto.spellcheck.checkWord(word) ? word : `<mark class='mistake'>${word}</mark>`;
-      } else {
-        return word;
-      }
-    });
+    for (var i = 0; i < words.length; i++) {
+      var isActiveWord = textLength <= editor.selectionStart && textLength + words[i].length >= editor.selectionStart;
+      var isExcludedRange = 0;
+      excludeRanges.forEach(range => { if (textLength > range[0] && textLength < range[1]) isExcludedRange = true; })
 
-    spell.innerHTML = result.join("");
+      textLength += words[i].length;
+      if (/\w+/.test(words[i]) && !/^\d+$/.test(words[i]) && !isActiveWord && !isExcludedRange)
+        words[i] = leto.spellcheck.checkWord(words[i]) ? words[i] : `<mark class='mistake'>${words[i]}</mark>`;
+    }
+
+    spell.innerHTML = words.join("");
+    spell.scrollTop = editor.scrollTop;
   }
 
   #cleanupHtmlTags(text) {

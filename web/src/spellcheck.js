@@ -143,12 +143,12 @@ export default class Spellcheck {
         c = (name[i].toUpperCase()).charCodeAt(0) - 65;
         if (c >= 0 && c <= 25)
         {
-          if(mappings[c] != '0') {
-            if(mappings[c] != s[si-1]) {
+          if (mappings[c] != '0') {
+            if (mappings[c] != s[si-1]) {
               s[si] = mappings[c];
               si++;
             }
-            if(si > 3) break;
+            if (si > 3) break;
           }
         }
       }
