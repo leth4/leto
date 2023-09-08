@@ -169,6 +169,7 @@ export default class Directory {
 
     await createDir(folderName);
 
+    leto.explorer.pendingRename = folderName;
     this.tryDisplayActiveDirectory();
   }
 
@@ -185,6 +186,7 @@ export default class Directory {
     await writeTextFile(newFile, '');
 
     this.activeFile = newFile;
+    leto.explorer.pendingRename = newFile;
     this.tryDisplayActiveDirectory();
     this.tryOpenActiveFile();
   }

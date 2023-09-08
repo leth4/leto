@@ -8,9 +8,11 @@ export default class Explorer {
 
   #openFolders = [];
   #pinsBeforeCheck = [];
+  #elementPendingRename = null;
 
   constructor() {
     this.pins = [];
+    this.pendingRename = null;
     
     nameInput.addEventListener('input', () => this.#sanitizeNameInput());
     nameInput.addEventListener('focusout', async () => {
@@ -209,6 +211,10 @@ export default class Explorer {
     this.pins.sort((a, b) => this.#pinsBeforeCheck.indexOf(a) - this.#pinsBeforeCheck.indexOf(b));
 
     this.#showPins();
+
+    this.renameItem(this.#elementPendingRename);
+    this.#elementPendingRename = null;
+    this.pendingRename = null;
   }
 
   #showFile(file, parentElement) {
@@ -235,6 +241,8 @@ export default class Explorer {
       event.dataTransfer.setData('text/path', file.path);
       event.dataTransfer.setData('text', file.path);
     });
+
+    if (file.path == this.pendingRename) this.#elementPendingRename = fileButton;
   }
 
   #showFolder(folder, parentElement) {
@@ -269,6 +277,8 @@ export default class Explorer {
     if (this.#openFolders.includes(folder.path)) {
       liElement.querySelector('.nested').style.display = 'block';
     }
+
+    if (folder.path == this.pendingRename) this.#elementPendingRename = folderButton;
   }
 
   #handleElementDrop(event, newPath) {
