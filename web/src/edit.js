@@ -8,6 +8,26 @@ export default class Edit {
     editor.setSelectionRange(this.#getLineStart(), this.#getLineEnd());
   }
 
+  selectWord() {
+    var alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'";
+
+    for (var i = editor.selectionStart; i < editor.value.length + 1; i++) {
+      editor.selectionEnd = i;
+      var symbol = editor.value[i];
+      if (!alphabet.includes(editor.value[i])) break;
+    }
+    for (var i = editor.selectionStart; i >= -1; i--) {
+      editor.selectionStart = i + 1;
+      var symbol = editor.value[i];
+      if (!alphabet.includes(editor.value[i])) break;
+    }
+  }
+
+  replaceWord(newWord) {
+    this.selectWord();
+    document.execCommand('insertText', false, newWord);
+  }
+
   deselect() {
     editor.selectionStart = editor.selectionEnd;
   }
@@ -62,9 +82,10 @@ export default class Edit {
   
   handleNewLine() {
     var [lineStart, lineEnd] = this.#getLineBorders();
-    var insertText = '\n';
+    var insertText = '';
 
-    if (editor.selectionStart != editor.selectionEnd) {} 
+    if (editor.selectionStart != editor.selectionEnd) 
+      insertText = '\n';
     else if (editor.value[lineStart] === '—' && editor.selectionEnd - lineStart > 1) 
       (/^—[\s]*$/.test(editor.value.slice(lineStart, lineEnd))) ? this.#deleteLine() : insertText = '\n— ';
     else if (editor.value.slice(lineStart, lineStart + 3) === '[ ]' && editor.selectionEnd - lineStart > 3)
@@ -79,6 +100,7 @@ export default class Edit {
         if (num) insertText = `\n${num + 1}. `
       }
     }
+    else insertText = '\n';
 
     document.execCommand('insertText', false, insertText);
     this.#setSelectionAndFocus(editor.selectionStart);

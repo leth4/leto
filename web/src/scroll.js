@@ -4,6 +4,7 @@ const scrollCircle = document.getElementById('circularScroll');
 const editor = document.getElementById('text-editor');
 const preview = document.getElementById('text-preview');
 const search = document.getElementById('search-preview');
+const spell = document.getElementById('spell-preview');
 
 const SCROLL_DISPLAY_TIMEOUT = 1000;
 
@@ -48,6 +49,7 @@ export default class Scroll {
     scrollCircle.style.background = `conic-gradient(var(--editor-text-color) ${scroll}deg, var(--editor-muted-color) ${scroll}deg)`;
     preview.scrollTop = editor.scrollTop;
     search.scrollTop = editor.scrollTop;
+    spell.scrollTop = editor.scrollTop;
 
     this.#scrollPositionsMap.set(leto.directory.activeFile, editor.scrollTop);
   }

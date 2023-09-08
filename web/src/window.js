@@ -43,11 +43,6 @@ export default class Window {
     appWindow.minimize();
   }
 
-  toggleSpellcheck() {
-    var newValue = editor.getAttribute('spellcheck') === 'true' ? 'false' : 'true';
-    editor.setAttribute('spellcheck', newValue);
-  }
-
   togglePrefs() {
     this.#prefsToggled = !this.#prefsToggled;
     document.getElementById('preferences').style.display = this.#prefsToggled ? 'block' : 'none';

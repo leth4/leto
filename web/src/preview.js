@@ -3,6 +3,7 @@
 const editor = document.getElementById('text-editor');
 const preview = document.getElementById('text-preview');
 const search = document.getElementById('search-preview');
+const spell = document.getElementById('spell-preview');
 
 export default class Preview {
 
@@ -21,7 +22,9 @@ export default class Preview {
     }
     preview.innerHTML = chunks.join('');
     preview.scrollTop = editor.scrollTop;
-    
+
+    this.#previewSpell();
+
     search.innerHTML = '';
     if (!leto.search.toggled) return;
     search.scrollTop = editor.scrollTop;
@@ -30,6 +33,25 @@ export default class Preview {
     var searchText = this.#cleanupHtmlTags(leto.search.text.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&'));
     search.innerHTML = this.#cleanupHtmlTags(editorText).replace(new RegExp(`(${searchText})`, 'gmi'), `<mark class='search'>$1</mark>`);
     search.scrollTop = editor.scrollTop;
+
+  }
+
+  #previewSpell() {
+    spell.innerHTML = "";
+
+    if (!leto.spellcheck.toggled) return;
+
+    const words = editor.value.split(/(\W+)(?<!')/).filter(Boolean);
+
+    const result = words.map(word => {
+      if (/\w+/.test(word)) {
+        return leto.spellcheck.checkWord(word) ? word : `<mark class='mistake'>${word}</mark>`;
+      } else {
+        return word;
+      }
+    });
+
+    spell.innerHTML = result.join("");
   }
 
   #cleanupHtmlTags(text) {

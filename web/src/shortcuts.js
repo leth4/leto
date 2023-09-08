@@ -57,7 +57,6 @@ export default class Shortcuts {
       else if (e.ctrlKey && e.shiftKey && e.code === 'KeyN') leto.directory.createNewFolder();
       else if (e.ctrlKey && e.shiftKey && e.code === 'KeyS')  leto.directory.exportActiveFile();
       
-      else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyR') leto.windowManager.toggleSpellcheck();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyB') leto.windowManager.toggleSidebar();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyT') leto.windowManager.setNextTheme();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyQ') leto.windowManager.closewindow();
@@ -78,6 +77,7 @@ export default class Shortcuts {
       else if (e.ctrlKey && !e.shiftKey && e.code === 'Digit8') leto.explorer.openPin(7);
       else if (e.ctrlKey && !e.shiftKey && e.code === 'Digit9') leto.explorer.openPin(8);
       
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyR') leto.spellcheck.toggle();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyF') leto.search.toggle();
 
       else if (e.ctrlKey && e.code === 'KeyG') {}

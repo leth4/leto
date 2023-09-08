@@ -35,7 +35,7 @@ main {
     background: var(--editor-background-color);
 }
 
-#text-preview, #search-preview {
+#text-preview, #search-preview, #spell-preview {
     z-index: 3;
     position: absolute;
     left: 0; top: 0; right: 0; bottom: 0;
@@ -43,7 +43,7 @@ main {
     content: var(--preview-text);
 }
 
-#search-preview {
+#search-preview, #spell-preview {
     color: transparent;
 }
 
@@ -58,19 +58,19 @@ main {
     font-weight: inherit; 
 }
 
-#search-preview, #text-preview, #text-editor {
+#search-preview, #text-preview, #text-editor, #spell-preview {
     tab-size : 4;
     word-wrap: break-word;
     white-space: break-spaces;
     overflow-y : auto;
     overflow-x : hidden;
-    padding: 6vh 18vw 200px 18vw;
+    padding: 6vh 14vw 200px 10vw;
     font-size: var(--font-size);
-    transition: padding .15s ease;
+    transition: padding .1s ease;
 }
 
 @media (max-width: 1150px) {
-    #search-preview, #text-preview, #text-editor {
+    #search-preview, #text-preview, #text-editor, #spell-preview {
         padding: 20px 20px 200px 20px;
     }
 }
@@ -220,4 +220,9 @@ mark.hashtag, mark.comment, mark.comment .keyword {
 mark.search {
     background-color: var(--editor-muted-color);
     color: var(--editor-text-color);
+}
+
+mark.mistake {
+    text-decoration: underline 2px red;
+    color: transparent;
 }

@@ -71,7 +71,7 @@ export default class ContextMenu {
     else if (action === 'New Folder') this.#createFolder(this.#initialClickTarget);
     else if (action === 'Reload') leto.directory.tryDisplayActiveDirectory();
 
-    else return;
+    else leto.edit.replaceWord(action);
 
     this.hide();
   }
@@ -122,6 +122,13 @@ export default class ContextMenu {
     this.#addAction('Copy');
     this.#addAction('Paste');
     this.#addAction('Cut');
+    if (leto.spellcheck.toggled && !leto.spellcheck.checkCurrentWord()) {
+      var words = leto.spellcheck.correctCurrentWord();
+      if (words != null && words.length != 0) {
+        this.#addSeparator();
+        words.forEach(word => this.#addAction(word));
+      } 
+    }
   }
 
   #addAction(name) {
