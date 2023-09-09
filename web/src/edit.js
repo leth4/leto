@@ -1,5 +1,7 @@
 'use strict';
 
+const { readText } = window.__TAURI__.clipboard;
+
 const editor = document.getElementById('text-editor');
 
 export default class Edit {
@@ -21,13 +23,29 @@ export default class Edit {
     }
   }
 
+  deselect() {
+    editor.selectionStart = editor.selectionEnd;
+  }
+
   replaceWord(newWord) {
     this.selectWord();
     document.execCommand('insertText', false, newWord);
   }
 
-  deselect() {
-    editor.selectionStart = editor.selectionEnd;
+  copy() {
+    var selectionStart = editor.selectionStart;
+    if (editor.selectionStart == editor.selectionEnd) this.selectLine();
+    document.execCommand('copy', false);
+    this.#setSelectionAndFocus(selectionStart);
+  }
+
+  async paste() {
+    document.execCommand('insertText', false, await readText());
+  }
+
+  cut() {
+    if (editor.selectionStart == editor.selectionEnd) this.selectLine();
+    document.execCommand('cut', false);
   }
 
   handleHyphen() {

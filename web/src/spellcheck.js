@@ -92,9 +92,11 @@ export default class Spellcheck {
     var results = [];  
     var edits = this.#getVariations(word);  
     var editsDouble = [];
+
     for (var i = 0; i < edits.length; i++)
       editsDouble = editsDouble.concat(this.#getVariations(edits[i]));          
-    edits = edits.concat(editsDouble);  
+    edits = edits.concat(editsDouble);
+
     for (var i = 0; i < edits.length; i++)
       if (this.#wordTrie.contains(edits[i]) && !results.includes(edits[i]) && edits[i] != word) 
         results.push(edits[i]);  
@@ -110,12 +112,14 @@ export default class Spellcheck {
       if (scoreA > scoreB) return 1;
       return 0;
     }  
+
     function scoreSimularity(word1, word2) {
       var distance = calculateLevenshteinDistance(word1, word2);
       var firstLetter = word1[0] == word2[0] ? 0 : 2;
       var soundDistance = calculateLevenshteinDistance(soundex(word1), soundex(word2));
       return distance + firstLetter + soundDistance;
     }  
+
     function calculateLevenshteinDistance(a, b) {
       const c = a.length + 1;
       const d = b.length + 1;
@@ -158,15 +162,17 @@ export default class Spellcheck {
           si++;
         }
       }
-      return s.join("");
+      return s.join('');
     }
   }
 }
 
 class Trie {
+
   constructor() {
     this.root = new TrieNode();
   }  
+
   add(word) {
     if (!word) return false;  
     let currNode = this.root;  
@@ -177,6 +183,7 @@ class Trie {
     currNode.endOfWord = true;
     return currNode;
   }  
+
   contains(word, start = this.root) {
     if (!word) return false;  
     let currNode = start;
@@ -189,9 +196,11 @@ class Trie {
 }
 
 class TrieNode {
+
   constructor(value = '') {
     this.children = new Map();
     this.value = value;
     this.endOfWord = false;
   }
+
 }

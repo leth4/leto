@@ -1,7 +1,6 @@
 'use strict';
 
 const { appWindow } = window.__TAURI__.window;
-const { readText } = window.__TAURI__.clipboard;
 
 const contextMenu = document.getElementById('context-menu');
 const editor = document.getElementById('text-editor');
@@ -52,9 +51,9 @@ export default class ContextMenu {
 
   async #handleClick(action) {
     editor.focus();
-    if (action === 'Copy') document.execCommand('copy', false);
-    else if (action === 'Paste') document.execCommand('insertText', false, await readText());
-    else if (action === 'Cut') document.execCommand('cut', false);
+    if (action === 'Copy') leto.edit.copy();
+    else if (action === 'Paste') leto.edit.paste();
+    else if (action === 'Cut') leto.edit.cut();
 
     else if (action === 'Delete') {
       this.#deleting = true;

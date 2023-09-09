@@ -4,10 +4,17 @@ const editor = document.getElementById('text-editor');
 const preview = document.getElementById('text-preview');
 const search = document.getElementById('search-preview');
 const spell = document.getElementById('spell-preview');
+const counter = document.getElementById('counter');
 
 export default class Preview {
 
+  constructor() {
+    document.addEventListener("selectionchange", () => this.#setCounterValues());
+  }
+
   setPreviewText() {
+    this.#setCounterValues();
+
     var editorText = editor.value + (editor.value.slice(-1) === '\n' ? ' ' : '');
     const chunks = this.#cleanupHtmlTags(editorText).split(/(?<=(?:\n|^))(```[\s\S]*?```(?:$|\n))/g);
     var codeRanges = [];
@@ -27,6 +34,7 @@ export default class Preview {
     preview.innerHTML = chunks.join('');
     preview.scrollTop = editor.scrollTop;
 
+
     this.#previewSpell(codeRanges);
 
     search.innerHTML = '';
@@ -37,6 +45,14 @@ export default class Preview {
     var searchText = this.#cleanupHtmlTags(leto.search.text.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&'));
     search.innerHTML = this.#cleanupHtmlTags(editorText).replace(new RegExp(`(${searchText})`, 'gmi'), `<mark class='search'>$1</mark>`);
     search.scrollTop = editor.scrollTop;
+  }
+
+  #setCounterValues() {
+    var words = editor.value.match(/(\w+)/g);
+    if (editor.selectionStart == editor.selectionEnd) 
+      counter.innerHTML = `L${editor.value.length} W${words ? words.length : 0}`;
+    else
+      counter.innerHTML = `S${editor.selectionEnd - editor.selectionStart} L${editor.value.length} W${words ? words.length : 0}`;
   }
 
   #previewSpell(excludeRanges) {
