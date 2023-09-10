@@ -108,8 +108,9 @@ export default class ContextMenu {
       this.#addSeparator();
     } else if (leto.explorer.isPinned(this.#initialClickTarget)) {
       this.#addAction('Unpin');
-      this.#addSeparator();
       this.#addAction('Unpin All');
+      this.#addSeparator();
+      this.#addAction('Preview');
       return;
     }
     this.#addAction('New File');

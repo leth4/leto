@@ -62,8 +62,8 @@ export default class Shortcuts {
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyQ') leto.windowManager.closewindow();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyM') leto.windowManager.minimizeWindow();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyP') leto.windowManager.togglePrefs();
-      else if (e.ctrlKey && !e.shiftKey && e.code === 'Equal') leto.windowManager.changeFontSize(+1);
-      else if (e.ctrlKey && !e.shiftKey && e.code === 'Minus') leto.windowManager.changeFontSize(-1);
+      else if (e.ctrlKey && !e.shiftKey && e.d === 'Equal') leto.windowManager.changeFontSize(+1);
+      else if (e.ctrlKey && !e.shiftKey && e.d === 'Minus') leto.windowManager.changeFontSize(-1);
       else if (e.ctrlKey && !e.shiftKey && e.code === 'BracketRight') leto.windowManager.changeFontWeight(+100);
       else if (e.ctrlKey && !e.shiftKey && e.code === 'BracketLeft') leto.windowManager.changeFontWeight(-100);
 
@@ -77,6 +77,7 @@ export default class Shortcuts {
       else if (e.ctrlKey && !e.shiftKey && e.code === 'Digit8') leto.explorer.openPin(7);
       else if (e.ctrlKey && !e.shiftKey && e.code === 'Digit9') leto.explorer.openPin(8);
       
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyD') leto.render.openCurrent();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyR') leto.spellcheck.toggle();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyF') leto.search.toggle();
 

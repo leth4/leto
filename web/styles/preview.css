@@ -1,39 +1,87 @@
+:root {
+    --font-size: 20px;
+    --font-family: 'inter', sans-serif;
+}
+
 body {
     background-color: var(--editor-background-color);
+    margin: 0;
+    overflow: hidden;
+}
+
+main {
     color: var(--editor-text-color);
     word-wrap: break-word;
-    padding: 5px;
+    margin: 0;
     font-size: var(--font-size);
-    font-family: "inter";
+    font-family: var(--font-family);
+    overflow: scroll;
+    height: 100vh;
 }
 
 #content {
     tab-size : 4;
+    padding: 20px;
     white-space: pre-wrap;
 }
 
-button {
-    background: var(--editor-muted-color);
-    border: var(--editor-text-color) 1px solid;
-    height: 1.3em;
-    width: 1.3em;
-    padding: 0;
-    border-radius: 50%;
+#titlebar {
+    background: var(--editor-background-color);
+    border-bottom: var(--editor-accent-color) calc(1px - var(--shadow)) solid;
+    box-shadow: 0 0 calc(var(--shadow) * 10) var(--editor-muted-color);
+    height: 28px;
+    display: flex;
 }
 
-.checked {
-    background: var(--editor-text-color);
+#title {
+    flex-grow: 1;
+    padding-left: 10px;
+    padding-top: 4px;
+    font: 17px var(--font-family);
+    color: var(--editor-accent-color);
+    user-select: none;
+}
+
+.titlebar-button {
+    width: 30px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.titlebar-button:hover {
+    background-color: var(--editor-code-background-color);
+}
+
+.titlebar-button svg {
+    fill: var(--editor-text-color);
+    width: 10px;
+    height: 10px;
+}
+
+.todo {
+    background: transparent;
+    border: var(--editor-muted-color) 1px solid;
+    height: var(--font-size);
+    width: var(--font-size);
+    padding: 0;
+    border-radius: 50%;
+    vertical-align: calc(var(--font-size) * -0.15);
+}
+
+.todo.checked {
+    background: var(--editor-muted-color);
     border: var(--editor-muted-color);
 }
 
-button:hover {
+.todo:hover {
     cursor: pointer;
 }
 
 span.code, span.inline-code {
     display: block;
     position: relative;
-    font-family: monospace;
+    font-family: "Iosevka", "Victor Mono", monospace;
 }
 
 span.inline-code {
@@ -108,6 +156,7 @@ h1, h2, h3, h4 {
     display: inline;
     font-weight: bold;
     background-color: transparent;
+    color: var(--editor-accent-color);
 }
 
 ::selection {
@@ -118,4 +167,14 @@ h1, h2, h3, h4 {
 ul {
     margin-bottom: 0.5em;
     margin-top: 0.5em;
+}
+
+::-webkit-scrollbar {
+    background: transparent;
+    width: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--editor-muted-color);
+    border-radius: 3px;
 }

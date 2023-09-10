@@ -1,9 +1,9 @@
 'use strict';
 
-const { WebviewWindow } = window.__TAURI__.window;
+const { WebviewWindow, appWindow } = window.__TAURI__.window;
 const { emit, listen } = window.__TAURI__.event;
-
 const { exists, writeTextFile, readTextFile } = window.__TAURI__.fs;
+const { invoke } = window.__TAURI__.tauri;
 
 const editor = document.getElementById('text-editor');
 const preview = document.getElementById('text-preview');
@@ -18,29 +18,46 @@ export default class Render {
         await listen('renderTodoClicked', event => { this.#toggleTodo(event.payload.index, event.payload.file) });
     }
 
+    openCurrent() {
+        this.openWindow(leto.directory.activeFile);
+    }
+
     async openWindow(file) {
         if (!(await exists(file))) return;
         var text = await readTextFile(file);
         var [preview, _] = leto.preview.getPreview(text);
         var render  = this.#createRender(preview);
-        
+
         var webview = new WebviewWindow(this.#generateRandomId(), {
             title: leto.directory.removeFileExtension(leto.directory.getNameFromPath(file)),
             url: 'preview.html',
+            decorations: false,
             transparent: true,
-            center: true,
-            focus: true
+            focus: true,
+            height: 800,
+            width: 600
         });
 
         this.#webviews.push(webview);
 
-        await listen('renderWindowLoaded', () => {
+        await listen('renderWindowLoaded', (event) => {
             emit('renderWindowUpdate', {
                 text: render,
-                theme: leto.windowManager.themes[leto.windowManager.currentTheme],
-                file: file
+                theme: leto.windowManager.currentTheme,
+                file: file,
+                font: leto.windowManager.currentFont,
+                title: leto.directory.removeFileExtension(leto.directory.getNameFromPath(file))
             });
+            invoke('apply_shadow', {  label: event.payload.label });
         });
+    }
+
+    closeAllWindows() {
+        if (!this.#webviews) return;
+        for (var i = 0; i < this.#webviews.length; i++) {
+            if (!this.#webviews[i]) continue;
+            this.#webviews[i].close();
+        }
     }
 
     #generateRandomId() {
@@ -91,8 +108,10 @@ export default class Render {
     update(text = preview.innerHTML, file = leto.directory.activeFile) {
         emit('renderWindowUpdate', {
             text: this.#createRender(text),
-            theme: leto.windowManager.themes[leto.windowManager.currentTheme],
-            file: file
+            font: leto.windowManager.currentFont,
+            theme: leto.windowManager.currentTheme,
+            file: file,
+            title: leto.directory.removeFileExtension(leto.directory.getNameFromPath(file))
         });
     }
 
