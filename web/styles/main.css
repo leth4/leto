@@ -209,12 +209,19 @@ mark.inline-code, mark.inline-code .italic {
     border-radius: 3px;
 }
 
-mark.header, mark.italic, mark.keyword {
+h1, h2, h3, h4 {
+    display: inline;
+    font-size: 1em;
+    margin: 0;
+    font-weight: var(--font-weight);
+}
+
+h1, h2, h3, h4, mark.italic, mark.keyword {
     color: var(--editor-accent-color);
     text-shadow: 0 0 calc(var(--shadow) * 4) var(--editor-muted-color);
 }
 
-mark.hashtag, mark.comment, mark.comment .keyword {
+mark.muted, mark.comment, mark.comment .keyword {
     color: var(--editor-muted-color);
 }
 
@@ -226,4 +233,9 @@ mark.search {
 mark.mistake {
     text-decoration: underline 1px red;
     color: transparent;
+}
+
+a, a:visited {
+    text-decoration: underline 1px;
+    color: var(--editor-accent-color);
 }

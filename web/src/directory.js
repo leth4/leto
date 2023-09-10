@@ -231,12 +231,12 @@ export default class Directory {
     if (newPath === oldPath.substring(0, oldPath.lastIndexOf('\\'))) return;
     if (newPath.includes(oldPath)) return;
 
-    var name = this.#getNameFromPath(oldPath);
+    var name = this.getNameFromPath(oldPath);
     const extension = this.#getFileExtension(name);
 
     var isFile;
     await invoke('is_dir', { path: oldPath }).then((response) => (isFile = !response), () => {});
-    if (isFile) name = this.#removeFileExtension(name);
+    if (isFile) name = this.removeFileExtension(name);
     
     var finalPath = `${newPath}\\${name}${isFile ? `.${extension}` : ''}`;
     for (var i = 0; i < Infinity; i++) {
@@ -261,11 +261,11 @@ export default class Directory {
     return /[^.]*$/.exec(file)[0];
   }
   
-  #getNameFromPath(path) {
+  getNameFromPath(path) {
     return path.replace(/^.*[\\\/]/, '');
   }
 
-  #removeFileExtension(file) {
+  removeFileExtension(file) {
     return file.replace(/\.[^/.]+$/, '');
   }
 }

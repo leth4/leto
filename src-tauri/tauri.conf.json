@@ -35,6 +35,9 @@
         "createDir" : true,
         "removeDir": true,
         "scope":["**"]
+      },
+      "shell": {
+        "all": true
       }
     },
     "bundle": {

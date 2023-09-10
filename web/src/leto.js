@@ -12,6 +12,7 @@ import Scroll from './scroll.js';
 import Preview from './preview.js';
 import Search from './search.js';
 import Spellcheck from './spellcheck.js';
+import Render from './render.js';
 
 const { appWindow } = window.__TAURI__.window;
 
@@ -32,6 +33,7 @@ class Leto {
     this.preview = new Preview();
     this.search = new Search();
     this.spellcheck = new Spellcheck();
+    this.render = new Render();
 
     this.focused = true;
 
@@ -44,6 +46,7 @@ class Leto {
     this.preview.setPreviewText();
     this.undo.pushToBuffer(e);
     this.search.find();
+    this.render.update();
   }
 }
 

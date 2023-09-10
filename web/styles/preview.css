@@ -1,0 +1,121 @@
+body {
+    background-color: var(--editor-background-color);
+    color: var(--editor-text-color);
+    word-wrap: break-word;
+    padding: 5px;
+    font-size: var(--font-size);
+    font-family: "inter";
+}
+
+#content {
+    tab-size : 4;
+    white-space: pre-wrap;
+}
+
+button {
+    background: var(--editor-muted-color);
+    border: var(--editor-text-color) 1px solid;
+    height: 1.3em;
+    width: 1.3em;
+    padding: 0;
+    border-radius: 50%;
+}
+
+.checked {
+    background: var(--editor-text-color);
+    border: var(--editor-muted-color);
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+span.code, span.inline-code {
+    display: block;
+    position: relative;
+    font-family: monospace;
+}
+
+span.inline-code {
+    display: inline-block;
+    position: relative;
+}
+
+span.code::before {
+    z-index: -10;
+    content: "";
+    display: block;
+    position: absolute;
+    top: -1px;
+    right: 0;
+    bottom: 0;
+    left: -5px;
+    background-color: var(--editor-code-background-color);
+    border: .5px solid var(--editor-muted-color);
+    box-shadow: 0 0 calc(var(--shadow) * 5) var(--editor-muted-color);
+    border-radius: 3px;
+}
+
+a, a:visited {
+    color: var(--editor-accent-color);
+}
+
+a:after {
+    content: '↗';
+    font-family: arial;
+}
+
+s {
+    color: var(--editor-muted-color);
+}
+
+mark {
+    display: inline;
+    background-color: transparent;
+}
+
+mark.inline-code, mark.inline-code .italic {
+    background-color: var(--editor-code-background-color);
+    color: var(--editor-text-color);
+    border-radius: 3px;
+}
+
+mark.italic, mark.keyword {
+    color: var(--editor-accent-color);
+    font-style: italic;
+    text-shadow: 0 0 calc(var(--shadow) * 4) var(--editor-muted-color);
+}
+
+mark.muted {
+    display: none;
+}
+
+mark.comment, mark.comment .keyword {
+    color: var(--editor-muted-color);
+}
+
+mark.search {
+    background-color: var(--editor-muted-color);
+    color: var(--editor-text-color);
+}
+
+mark.mistake {
+    text-decoration: underline 1px red;
+    color: transparent;
+}
+
+h1, h2, h3, h4 {
+    display: inline;
+    font-weight: bold;
+    background-color: transparent;
+}
+
+::selection {
+    background-color: var(--selection-color);
+    color: var(--editor-text-color);
+}
+
+ul {
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;
+}

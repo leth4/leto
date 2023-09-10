@@ -69,6 +69,7 @@ export default class ContextMenu {
     else if (action === 'New File') this.#createFile(this.#initialClickTarget);
     else if (action === 'New Folder') this.#createFolder(this.#initialClickTarget);
     else if (action === 'Reload') leto.directory.tryDisplayActiveDirectory();
+    else if (action === 'Preview') leto.render.openWindow(this.#initialClickTarget.getAttribute('data-path'));
 
     else leto.edit.replaceWord(action);
 
@@ -99,6 +100,7 @@ export default class ContextMenu {
       this.#addAction('Rename');
       this.#addAction(this.#deleting ? 'Delete?' : 'Delete');
       this.#addAction(leto.explorer.isPinned(this.#initialClickTarget) ? 'Unpin' : 'Pin');
+      this.#addAction('Preview');
       this.#addSeparator();
     } else if (leto.explorer.isFolder(this.#initialClickTarget)) {
       this.#addAction('Rename');

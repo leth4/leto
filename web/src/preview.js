@@ -15,25 +15,10 @@ export default class Preview {
   setPreviewText() {
     this.#setCounterValues();
 
-    var editorText = editor.value + (editor.value.slice(-1) === '\n' ? ' ' : '');
-    const chunks = this.#cleanupHtmlTags(editorText).split(/(?<=(?:\n|^))(```[\s\S]*?```(?:$|\n))/g);
-    var codeRanges = [];
-    var currentLength = 0; 
-    for (var i in chunks) {
-      if (i % 2 === 0) {
-        chunks[i] = chunks[i]
-          .replace(/(?<!# )(\*)(.*?)(\*)/g, `<mark class='hashtag'>$1</mark><mark class='italic'>$2</mark><mark class='hashtag'>$3</mark>`)
-          .replace(/(^#{1,4})( .*)/gm, `<mark class='hashtag'>$1</mark><mark class='header'>$2</mark>`)
-          .replace(/((?<!`)`(?!`))([^\n]*?)((?<!`)`(?!`))/gm, `<mark class='inline-code'><mark class='hashtag'>$1</mark>$2<mark class='hashtag'>$3</mark></mark>`);
-      } else {
-        chunks[i] = this.#replaceCodeBlock(chunks[i]);
-        codeRanges.push([currentLength, currentLength + chunks[i].length]);
-      }
-      currentLength += chunks[i].length;
-    }
-    preview.innerHTML = chunks.join('');
-    preview.scrollTop = editor.scrollTop;
+    var [previewValue, codeRanges] = this.getPreview(editor.value);
 
+    preview.innerHTML = previewValue;
+    preview.scrollTop = editor.scrollTop;
 
     this.#previewSpell(codeRanges);
 
@@ -45,6 +30,30 @@ export default class Preview {
     var searchText = this.#cleanupHtmlTags(leto.search.text.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&'));
     search.innerHTML = this.#cleanupHtmlTags(editorText).replace(new RegExp(`(${searchText})`, 'gmi'), `<mark class='search'>$1</mark>`);
     search.scrollTop = editor.scrollTop;
+  }
+
+  getPreview(text) {
+    var editorText = text + (text.slice(-1) === '\n' ? ' ' : '');
+    const chunks = this.#cleanupHtmlTags(editorText).split(/(?<=(?:\n|^))(```[\s\S]*?```(?:$|\n))/g);
+    var codeRanges = [];
+    var currentLength = 0; 
+    for (var i in chunks) {
+      if (i % 2 === 0) {
+        chunks[i] = chunks[i]
+          .replace(/(?<!# )(\*)(.*?)(\*)/g, `<mark class='muted'>$1</mark><mark class='italic'>$2</mark><mark class='muted'>$3</mark>`)
+          .replace(/(^# )(.*)/gm, `<mark class='muted'>$1</mark><h1>$2</h1>`)
+          .replace(/(^## )(.*)/gm, `<mark class='muted'>$1</mark><h2>$2</h2>`)
+          .replace(/(^### )(.*)/gm, `<mark class='muted'>$1</mark><h3>$2</h3>`)
+          .replace(/(^#### )(.*)/gm, `<mark class='muted'>$1</mark><h4>$2</h4>`)
+          .replace(/(^(?:https?:\/\/)[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*))/gm, `<a target="_blank" href="$1">$1</a>`)
+          .replace(/((?<!`)`(?!`))([^\n]*?)((?<!`)`(?!`))/gm, `<mark class='inline-code'><mark class='muted'>$1</mark>$2<mark class='muted'>$3</mark></mark>`);
+      } else {
+        chunks[i] = this.#replaceCodeBlock(chunks[i]);
+        codeRanges.push([currentLength, currentLength + chunks[i].length]);
+      }
+      currentLength += chunks[i].length;
+    }
+    return [chunks.join(''), codeRanges];
   }
 
   #setCounterValues() {

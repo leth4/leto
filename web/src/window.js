@@ -27,6 +27,7 @@ export default class Window {
     this.currentFont = 'inter';
     this.fontSize = 20;
     this.fontWeight = 300;
+    this.themes = themes;
 
     themeSelector.addEventListener('change', () => this.setTheme(themeSelector.value), false);
     fontInput.addEventListener('input', () => this.setFont(fontInput.value), false);

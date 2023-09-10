@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" id="theme-link">
+        <link rel="stylesheet" href="styles/preview.css">
+    </head>
+
+    <body>
+        <main>
+            <div id="content"></div>
+        </main>
+
+        <script type="module">
+
+            const { listen, emit } = window.__TAURI__.event;
+            const content = document.getElementById('content');
+
+            var displayedFile;
+
+            await listen('renderWindowUpdate', (event) => {
+                
+                if (!displayedFile) {
+                    document.getElementById('theme-link').setAttribute('href', `themes/${event.payload.theme}.css`);
+                    displayedFile = event.payload.file;
+                    content.innerHTML = event.payload.text;
+                }
+                else if (displayedFile != event.payload.file) return;
+
+                content.innerHTML = event.payload.text;
+                var buttons = document.getElementsByClassName('todo');
+                for (let i = 0; i < buttons.length; i++) {
+                    buttons[i].addEventListener('click', () => emit('renderTodoClicked', { index: i, file: displayedFile }));
+                }
+            });
+
+            emit('renderWindowLoaded');
+
+        </script>
+    </body>
+
+</html>
