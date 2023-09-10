@@ -211,6 +211,7 @@ mark.inline-code, mark.inline-code .italic {
 
 mark.header, mark.italic, mark.keyword {
     color: var(--editor-accent-color);
+    text-shadow: 0 0 calc(var(--shadow) * 4) var(--editor-muted-color);
 }
 
 mark.hashtag, mark.comment, mark.comment .keyword {
@@ -223,6 +224,6 @@ mark.search {
 }
 
 mark.mistake {
-    text-decoration: underline 2px red;
+    text-decoration: underline 1px red;
     color: transparent;
 }
