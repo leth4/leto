@@ -50,6 +50,7 @@ export default class Explorer {
   }
 
   openFromLink(file) {
+    file = file.replaceAll('/', '\\');
     const files = document.getElementsByClassName('file-button');
 
     for (var i = 0; i < files.length; i++) {
@@ -74,12 +75,11 @@ export default class Explorer {
           filesFound++;
         }
       }
-      console.log(link, filesFound);
       if (filesFound == 1) break;
       link = parts.pop() + '\\' + link;
     }
 
-    return this.#removeFileExtension(link);
+    return this.#removeFileExtension(link.replaceAll('\\', '/'));
   }
 
   updateFolderPath(oldPath, newPath) {

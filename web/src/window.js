@@ -1,6 +1,7 @@
 'use strict';
 
 const { appWindow } = window.__TAURI__.window;
+const { invoke } = window.__TAURI__.tauri;
 
 const themeSelector = document.getElementById('theme-selector');
 const editor = document.getElementById('text-editor')
@@ -14,7 +15,8 @@ const themes = [
   'zima',
   'spirit',
   'perlin',
-  'dart'
+  'dart',
+  'glass'
 ];
 
 export default class Window {
@@ -103,6 +105,7 @@ export default class Window {
   setTheme(theme, save = true) {
     this.currentTheme = theme ?? 0;
     if (theme >= themes.length) this.currentTheme = 0;
+    invoke(this.currentTheme == 6 ? 'add_blur' : 'remove_blur', {  label: "main" });
     themeSelector.value = this.currentTheme;
     document.getElementById('theme-link').setAttribute('href', `themes/${themes[this.currentTheme]}.css`);
     if (save) leto.config.save();

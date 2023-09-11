@@ -28,18 +28,16 @@ main {
 #non-drag {
     position: relative;
     z-index: 10;
-    background: var(--editor-background-color);
     height: 4px;
 }
 
 #titlebar {
-    background: var(--editor-background-color);
     border-bottom: var(--editor-accent-color) calc(1px - var(--shadow)) solid;
     box-shadow: 0 0 calc(var(--shadow) * 10) var(--editor-muted-color);
     padding-bottom: 4px;
     height: 26px;
     display: flex;
-    margin-right: 3px;
+    padding-right: 3px;
 }
 
 #title {

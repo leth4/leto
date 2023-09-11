@@ -1,5 +1,6 @@
 const { appWindow } = window.__TAURI__.window;
 const { listen, emit } = window.__TAURI__.event;
+const { invoke } = window.__TAURI__.tauri;
 const content = document.getElementById('content');
 
 var displayedFile;
@@ -12,7 +13,8 @@ const themes = [
   'zima',
   'spirit',
   'perlin',
-  'dart'
+  'dart',
+  'glass'
 ];
 
 document.getElementById('minimize').addEventListener('click', () => appWindow.minimize());
@@ -52,6 +54,7 @@ function setFontSize(size) {
 function setTheme(theme) {
   currentTheme = theme ?? 0;
   if (theme >= themes.length) currentTheme = 0;
+  invoke(currentTheme == 6 ? 'add_blur' : 'remove_blur', { label:appWindow.label });
   document.getElementById('theme-link').setAttribute('href', `themes/${themes[currentTheme]}.css`);
 }
 
