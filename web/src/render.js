@@ -1,7 +1,7 @@
 'use strict';
 
-const { WebviewWindow, appWindow } = window.__TAURI__.window;
-const { emit, listen } = window.__TAURI__.event;
+const { WebviewWindow } = window.__TAURI__.window;
+const { emit, listen, once } = window.__TAURI__.event;
 const { exists, writeTextFile, readTextFile } = window.__TAURI__.fs;
 const { invoke } = window.__TAURI__.tauri;
 
@@ -23,10 +23,14 @@ export default class Render {
     }
 
     async openWindow(file) {
-        if (!(await exists(file))) return;
-        var text = await readTextFile(file);
+        var text;
+        if (file == leto.directory.activeFile) {
+            text = editor.value;
+        } else {
+            if (!(await exists(file))) return;
+            text = await readTextFile(file);
+        }
         var [preview, _] = leto.preview.getPreview(text);
-        var render  = this.#createRender(preview);
 
         var webview = new WebviewWindow(this.#generateRandomId(), {
             title: leto.directory.removeFileExtension(leto.directory.getNameFromPath(file)),
@@ -40,14 +44,8 @@ export default class Render {
 
         this.#webviews.push(webview);
 
-        await listen('renderWindowLoaded', (event) => {
-            emit('renderWindowUpdate', {
-                text: render,
-                theme: leto.windowManager.currentTheme,
-                file: file,
-                font: leto.windowManager.currentFont,
-                title: leto.directory.removeFileExtension(leto.directory.getNameFromPath(file))
-            });
+        await once('renderWindowLoaded', event => {
+            this.update(preview, file);
             invoke('apply_shadow', {  label: event.payload.label });
         });
     }

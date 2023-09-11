@@ -50,9 +50,13 @@ export default class Edit {
 
   handleHyphen() {
     const previousSymbol = editor.value[editor.selectionStart - 1];
-    if (editor.selectionEnd == editor.selectionStart && previousSymbol && previousSymbol == '-') {
+    const secondPreviousSymbol = editor.value[editor.selectionStart - 2];
+    if (editor.selectionEnd == editor.selectionStart && previousSymbol == '-' && secondPreviousSymbol != '-') {
       editor.selectionStart -= 1;
       document.execCommand('insertText', false, '—');
+    } else if (editor.selectionEnd == editor.selectionStart && previousSymbol == '—') {
+      editor.selectionStart -= 1;
+      document.execCommand('insertText', false, '---');
     } else {
       document.execCommand('insertText', false, '-');
     }
@@ -76,12 +80,37 @@ export default class Edit {
     editor.selectionStart = editor.selectionEnd;
   }
 
+  handleBracket() {
+    const nextSymbol = editor.value[editor.selectionStart];
+    const previousSymbol = editor.value[editor.selectionStart - 1];
+    if (editor.selectionEnd == editor.selectionStart && nextSymbol && nextSymbol !== '\n' && nextSymbol !== ' ' && nextSymbol !== ']') {
+      document.execCommand('insertText', false, '[');
+      return;
+    }
+    if (editor.selectionEnd == editor.selectionStart && previousSymbol && previousSymbol !== '\n' && previousSymbol !== ' ' && previousSymbol !== '[') {
+      document.execCommand('insertText', false, '[');
+      return;
+    }
+    const insideValue = editor.value.slice(editor.selectionStart, editor.selectionEnd);
+    document.execCommand('insertText', false, '[' + insideValue + ']');
+    if (!insideValue) {
+      editor.selectionEnd = editor.selectionEnd - 1;
+      editor.selectionStart = editor.selectionEnd;
+    }
+    else {
+      editor.selectionStart -= insideValue.length + 1;
+      editor.selectionEnd--;
+    }
+  }
+
   handleTab() {
-    if (editor.value[editor.selectionEnd] !== '\"' && editor.value[editor.selectionEnd] !== ')' && editor.value[editor.selectionEnd] !== '*')
+    if (editor.value[editor.selectionEnd] !== '\"' && editor.value[editor.selectionEnd] !== ')' && editor.value[editor.selectionEnd] !== '*' && editor.value[editor.selectionEnd] !== ']')
       document.execCommand('insertText', false, '\t');
     else if (editor.selectionEnd != editor.selectionStart)
       document.execCommand('insertText', false, '\t');
-    else 
+    else if (editor.value[editor.selectionEnd] === "]" && editor.value[editor.selectionEnd + 1] === "]")
+      this.#setSelectionAndFocus(editor.selectionEnd + 2);
+    else
       this.#setSelectionAndFocus(editor.selectionEnd + 1);
     leto.handleEditorInput();
   }

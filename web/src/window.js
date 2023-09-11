@@ -30,7 +30,9 @@ export default class Window {
 
     themeSelector.addEventListener('change', () => this.setTheme(themeSelector.value), false);
     fontInput.addEventListener('input', () => this.setFont(fontInput.value), false);
-    editor.addEventListener('wheel', (e) => this.#handleMouseWheel(e), false);
+    document.addEventListener('wheel', e => this.#handleMouseWheel(e), false);
+    document.addEventListener('keydown', e => {if (e.key === 'Control') editor.style.pointerEvents = 'none'}, false);
+    document.addEventListener('keyup', e => {if (e.key === 'Control') editor.style.pointerEvents = 'auto'}, false);
 
     this.populateThemes();
   }

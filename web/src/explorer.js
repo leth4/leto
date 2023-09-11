@@ -49,6 +49,39 @@ export default class Explorer {
     });
   }
 
+  openFromLink(file) {
+    const files = document.getElementsByClassName('file-button');
+
+    for (var i = 0; i < files.length; i++) {
+      if (files[i].getAttribute('data-path').endsWith(file + '.md')) {
+        leto.directory.setActiveFile(files[i].getAttribute('data-path'));
+        break;
+      }
+    }
+  }
+
+  #getUniqueLink(file) {
+    const files = document.getElementsByClassName('file-button');
+
+    var parts = file.split('\\');
+    var link = parts.pop();
+    
+    
+    while (parts.length != 0) {
+      var filesFound = 0;
+      for (var i = 0; i < files.length; i++) {
+        if (files[i].getAttribute('data-path').endsWith('\\' + link)) {
+          filesFound++;
+        }
+      }
+      console.log(link, filesFound);
+      if (filesFound == 1) break;
+      link = parts.pop() + '\\' + link;
+    }
+
+    return this.#removeFileExtension(link);
+  }
+
   updateFolderPath(oldPath, newPath) {
     this.#openFolders.filter(item => item != oldPath);
     if (newPath) this.#openFolders.push(newPath);
@@ -239,7 +272,7 @@ export default class Explorer {
     liElement.addEventListener('dragstart', (event) => {
       event.dataTransfer.setData('text/oldpath', file.path);
       event.dataTransfer.setData('text/path', file.path);
-      event.dataTransfer.setData('text', file.path);
+      event.dataTransfer.setData('text', `[[${this.#getUniqueLink(file.path)}]]`);
     });
 
     if (file.path == this.pendingRename) this.#elementPendingRename = fileButton;

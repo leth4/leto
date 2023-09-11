@@ -28,17 +28,18 @@ export default class Shortcuts {
         leto.edit.cutLine();
       }
       
-      else if (e.ctrlKey && !e.shiftKey && e.code === 'Tab' && inEditor) leto.directory.setPreviousActiveFile();
+      else if (e.ctrlKey && e.code === 'Tab' && inEditor) leto.directory.setPreviousActiveFile();
       else if (!e.ctrlKey && !e.shiftKey && e.code === 'Tab') leto.edit.handleTab();
       else if (!e.ctrlKey && e.shiftKey && e.code === 'Tab') {}
 
       else if (document.activeElement === nameInput && e.code === 'Enter') nameInput.blur();
       else if (document.activeElement === fontInput && e.code === 'Enter') fontInput.blur();
 
-      else if (!e.ctrlKey && e.shiftKey && e.key == '*' && inEditor) leto.edit.insertDoubleSymbol('*');
+      else if (e.key == '*' && inEditor) leto.edit.insertDoubleSymbol('*');
+      else if (e.key == '\"' && inEditor) leto.edit.insertDoubleSymbol('\"');
+      else if (e.key == '`' && inEditor) leto.edit.insertDoubleSymbol('`');
+      else if (e.key == '[' && inEditor) leto.edit.handleBracket();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyI' && inEditor && selected) leto.edit.insertDoubleSymbol('*');
-      else if (!e.ctrlKey && e.shiftKey && e.key == '\"' && inEditor) leto.edit.insertDoubleSymbol('\"');
-      else if (!e.ctrlKey && !e.shiftKey && e.key == '`' && inEditor) leto.edit.insertDoubleSymbol('`');
       else if (!e.ctrlKey && !e.shiftKey && e.code === 'Minus' && inEditor) leto.edit.handleHyphen();
       else if (!e.ctrlKey && !e.shiftKey && e.code === 'Enter' && inEditor) leto.edit.handleNewLine();
       else if (e.altKey && e.shiftKey && e.code === 'ArrowUp' && inEditor) leto.edit.copyLineUp();

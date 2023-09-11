@@ -60,7 +60,6 @@ function setNextTheme() {
 }
 
 await listen('renderWindowUpdate', (event) => {
-
   if (!displayedFile) {
     setTheme(event.payload.theme);
     document.getElementById('title').innerHTML = event.payload.title;
@@ -68,7 +67,7 @@ await listen('renderWindowUpdate', (event) => {
     displayedFile = event.payload.file;
   }
   else if (displayedFile != event.payload.file) return;  
-
+  
   content.innerHTML = event.payload.text;
   var buttons = document.getElementsByClassName('todo');
   for (let i = 0; i < buttons.length; i++) {
