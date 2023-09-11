@@ -4,7 +4,7 @@
     --editor-text-color: #c1c1c1dc;
     --editor-accent-color: #94b3eddc;
     --editor-muted-color: #555555dc;
-    --selection-color: #373737dc;
+    --selection-color: #4b4b4b;
 
     --sidebar-background-color:#141414b2;
     --sidebar-folder-color: #c1c1c1dc;
@@ -12,5 +12,5 @@
     --sidebar-selection-color: #262626b1;
 
     --divider-color: #14141400;
-    --shadow: 0;
+    --shadow: 0px;
 }

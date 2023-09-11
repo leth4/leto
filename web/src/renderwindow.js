@@ -28,6 +28,8 @@ window.onkeydown = (e) => {
   else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyM') appWindow.minimize();
   else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyT') setNextTheme();
   else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyR') {}
+  else if (e.ctrlKey && !e.shiftKey && e.code === 'Equal') changeFontSize(+1);
+  else if (e.ctrlKey && !e.shiftKey && e.code === 'Minus') changeFontSize(-1);
   else return;
 
   e.preventDefault();

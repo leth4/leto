@@ -10,6 +10,12 @@
     transition: max-width .4s ease-in-out;
 }
 
+#nodrag {
+    width: 4px;
+    height: 100%;
+    background-color: var(--sidebar-background-color);
+}
+
 #sidebar-content {
     transition: opacity .3s ease-in;
     flex: 1 1 auto; 
@@ -58,7 +64,7 @@ li {
 }
 
 ul {
-    padding-left: 20px;
+    padding-left: 17px;
 }
 
 .nested {
