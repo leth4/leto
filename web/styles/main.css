@@ -4,6 +4,8 @@
     --font-family: 'inter', sans-serif;
     --font-weight: 300;
     --scroll-background: red;
+    --italic-style: normal;
+    --bold-weight: var(--font-weight);
 }
 
 * {
@@ -216,8 +218,15 @@ h1, h2, h3, h4 {
     font-weight: var(--font-weight);
 }
 
-h1, h2, h3, h4, mark.italic, mark.keyword, mark.bold {
+h1, h2, h3, h4, mark.bold {
     color: var(--editor-accent-color);
+    font-weight: var(--bold-weight);
+    text-shadow: 0 0 calc(var(--shadow) * 4) var(--editor-muted-color);
+}
+
+mark.italic, mark.keyword {
+    color: var(--editor-accent-color);
+    font-style: var(--italic-style);
     text-shadow: 0 0 calc(var(--shadow) * 4) var(--editor-muted-color);
 }
 

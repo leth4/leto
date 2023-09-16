@@ -98,9 +98,26 @@ export default class Window {
 
   setFont(font, save = true) {
     this.currentFont = font ?? 'inter';
-    root.style.setProperty('--font-family', `'${this.currentFont}', 'inter', sans-serif`);
     fontInput.value = this.currentFont;
+    root.style.setProperty('--font-family', `'${this.currentFont}', 'inter', sans-serif`);
+    root.style.setProperty('--italic-style', this.isFontMonospaced(font) ? "italic" : "normal");
+    root.style.setProperty('--bold-weight', this.isFontMonospaced(font) ? "calc(var(--font-weight) + 100)" : "var(--font-weight)");
     if (save) leto.config.save();
+  }
+
+  isFontMonospaced(font) {
+    if (font === 'monospace') return false;
+
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    context.font = `30px ${font}`;
+    const width = context.measureText('a').width;
+
+    const alphabet = `0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ`
+    for (var i = 0; i < alphabet.length; i++)
+      if (context.measureText(alphabet[i]).width !== width) return false;
+
+    return true;
   }
   
   setTheme(theme, save = true) {

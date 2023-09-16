@@ -105,6 +105,7 @@ export default class Render {
     }
 
     update(text = preview.innerHTML, file = leto.directory.activeFile) {
+        if (file === null) return;
         emit('renderWindowUpdate', {
             text: this.#createRender(text),
             font: leto.windowManager.currentFont,
