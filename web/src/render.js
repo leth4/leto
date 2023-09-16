@@ -12,10 +12,11 @@ export default class Render {
 
     #webviews = [];
 
-    constructor() {this.#setupTodoListener()}
+    constructor() {this.#setupListeners()}
 
-    async #setupTodoListener() {
+    async #setupListeners() {
         await listen('renderTodoClicked', event => { this.#toggleTodo(event.payload.index, event.payload.file) });
+        await listen('renderOpenFile', event => {leto.directory.setActiveFile(event.payload.file)});
     }
 
     openCurrent() {

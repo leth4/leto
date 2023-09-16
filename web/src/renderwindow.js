@@ -6,6 +6,7 @@ const content = document.getElementById('content');
 var displayedFile;
 var currentTheme;
 var fontSize = 20;
+var isAlwaysOnTop = false;
 
 const themes = [
   'gleam',
@@ -20,6 +21,7 @@ const themes = [
 document.getElementById('minimize').addEventListener('click', () => appWindow.minimize());
 document.getElementById('maximize').addEventListener('click', async () => await appWindow.isMaximized() ? appWindow.unmaximize() : appWindow.maximize());
 document.getElementById('close').addEventListener('click', () => appWindow.close());
+document.getElementById('title').addEventListener('mousedown', e => e.button == 2 ? toggleAlwaysOnTop() : null);
 document.addEventListener('wheel', e => handleMouseWheel(e));
 document.addEventListener('contextmenu', e => e.preventDefault());
 
@@ -30,15 +32,27 @@ window.onkeydown = (e) => {
   else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyR') {}
   else if (e.ctrlKey && !e.shiftKey && e.code === 'Equal') changeFontSize(+1);
   else if (e.ctrlKey && !e.shiftKey && e.code === 'Minus') changeFontSize(-1);
+  else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyP') toggleAlwaysOnTop();
+  else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyO') openFile();
   else return;
 
   e.preventDefault();
+}
+
+function openFile() {
+  emit('renderOpenFile', { file: displayedFile });
 }
 
 function handleMouseWheel(event) {
     if (!event.ctrlKey) return;
     if (event.shiftKey) return;
     changeFontSize(-event.deltaY / Math.abs(event.deltaY));
+}
+
+function toggleAlwaysOnTop() {
+  isAlwaysOnTop = !isAlwaysOnTop;
+  appWindow.setAlwaysOnTop(isAlwaysOnTop);
+  document.querySelector(':root').style.setProperty('--before-title', isAlwaysOnTop ? '"↓ "' : '""');
 }
 
 function changeFontSize(change = 0) {

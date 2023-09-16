@@ -216,7 +216,7 @@ h1, h2, h3, h4 {
     font-weight: var(--font-weight);
 }
 
-h1, h2, h3, h4, mark.italic, mark.keyword {
+h1, h2, h3, h4, mark.italic, mark.keyword, mark.bold {
     color: var(--editor-accent-color);
     text-shadow: 0 0 calc(var(--shadow) * 4) var(--editor-muted-color);
 }
