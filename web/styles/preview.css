@@ -106,7 +106,7 @@ span.inline-code {
 }
 
 span.code::before {
-    z-index: -10;
+    z-index: 30;
     content: "";
     display: block;
     position: absolute;

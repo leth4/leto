@@ -26,7 +26,7 @@ export default class Scroll {
 
     scrollCircle.addEventListener('mousedown', () => this.#startScrollDrag());
     document.addEventListener('mouseup', () => this.#scrollDragStart = -1);
-    document.addEventListener('mousemove', (event) => this.#currentMousePosition = event.clientX);
+    document.addEventListener('mousemove', (event) => this.#currentMousePosition = [event.clientX, event.clientY]);
   }
 
   handleNewFile() {
@@ -72,7 +72,8 @@ export default class Scroll {
 
   #updateScrollDrag() {
     if (this.#currentMousePosition !=  this.#lastFrameScroll) {
-      editor.scrollTop += (this.#currentMousePosition - this.#lastFrameScroll) * editor.scrollHeight / editor.clientHeight - 1;
+      editor.scrollTop += (this.#currentMousePosition[0] - this.#lastFrameScroll[0]) * editor.scrollHeight / editor.clientHeight - 1;
+      editor.scrollTop += (this.#currentMousePosition[1] - this.#lastFrameScroll[1]) * editor.scrollHeight / editor.clientHeight - 1;
       this.handleEditorScroll();
       this.#lastFrameScroll = this.#currentMousePosition;
     }

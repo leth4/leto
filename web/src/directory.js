@@ -74,8 +74,8 @@ export default class Directory {
     } else {
       editor.scrollTop = scrollBuffer;
     }
-    leto.handleEditorInput();
     leto.scroll.handleNewFile();
+    leto.handleEditorInput();
   }
 
   async tryDisplayActiveDirectory() {
