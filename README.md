@@ -1,4 +1,4 @@
-![image](https://user-images.githubusercontent.com/44412176/236444916-ca598da3-26cc-4626-9f15-d8a02ba269eb.png)
+![leto](https://github.com/leth4/leto/assets/44412176/96cb37ac-8774-4428-b16b-f2b06b0b539f)
 
 leto is a minimalistic lightweight plain text editor for Windows.
 
