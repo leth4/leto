@@ -81,8 +81,10 @@ function setNextTheme() {
 await listen('renderWindowUpdate', (event) => {
   if (!displayedFile) {
     setTheme(event.payload.theme);
+    setFontSize(event.payload.fontSize);
     document.getElementById('title').innerHTML = event.payload.title;
     document.querySelector(':root').style.setProperty('--font-family', `'${event.payload.font}', 'inter', sans-serif`);
+    document.querySelector(':root').style.setProperty('--font-weight', `${event.payload.fontWeight}`);
     displayedFile = event.payload.file;
   }
   else if (displayedFile != event.payload.file) return;  

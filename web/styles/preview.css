@@ -1,5 +1,6 @@
 :root {
     --font-size: 20px;
+    --font-weight: 300;
     --font-family: 'inter', sans-serif;
     --before-title: '';
 }
@@ -15,6 +16,7 @@ main {
     word-wrap: break-word;
     margin: 0;
     font-size: var(--font-size);
+    font-weight: var(--font-weight);
     font-family: var(--font-family);
     overflow: scroll;
     height: 100vh;
@@ -94,15 +96,16 @@ main {
     cursor: pointer;
 }
 
-span.code, span.inline-code {
+span.code {
     display: block;
     position: relative;
     font-family: "Iosevka", "Victor Mono", monospace;
 }
 
-span.inline-code {
+mark.inline-code {
     display: inline-block;
     position: relative;
+    font-family: "Iosevka", "Victor Mono", monospace;
 }
 
 span.code::before {

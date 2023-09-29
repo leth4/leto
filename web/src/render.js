@@ -109,6 +109,8 @@ export default class Render {
         emit('renderWindowUpdate', {
             text: this.#createRender(text),
             font: leto.windowManager.currentFont,
+            fontSize: leto.windowManager.fontSize,
+            fontWeight: leto.windowManager.fontWeight,
             theme: leto.windowManager.currentTheme,
             file: file,
             title: leto.directory.removeFileExtension(leto.directory.getNameFromPath(file))

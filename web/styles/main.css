@@ -87,7 +87,6 @@ main {
     right: 15px;
     bottom: 15px;
     transition: opacity .3s ease-in-out;
-
 }
 
 #circularScroll::before {

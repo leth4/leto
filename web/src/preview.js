@@ -47,7 +47,7 @@ export default class Preview {
           .replace(/(^### )(.*)/gm, `<mark class='muted'>$1</mark><h3>$2</h3>`)
           .replace(/(^#### )(.*)/gm, `<mark class='muted'>$1</mark><h4>$2</h4>`)
           .replace(/\[\[([^[\]]+)\]\]/g, `<mark class='link' onclick='leto.preview.handleLinkClick(event)' data-link='$1'>[[$1]]</mark>`)
-          .replace(/(^(?:https?:\/\/)[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*))/gm, `<a target="_blank" href="$1">$1</a>`)
+          .replace(/((?:https?:\/\/)[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{1,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/=]*))/gm, `<a target="_blank" href="$1">$1</a>`)
           .replace(/((?<!`)`(?!`))([^\n]*?)((?<!`)`(?!`))/gm, `<mark class='inline-code'><mark class='muted'>$1</mark>$2<mark class='muted'>$3</mark></mark>`);
       } else {
         chunks[i] = this.#replaceCodeBlock(chunks[i]);
