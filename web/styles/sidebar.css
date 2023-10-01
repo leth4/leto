@@ -123,7 +123,7 @@ ul {
 
 select {
     display : inline-block;
-    background: var(--sidebar-background-color);
+    background: transparent;
     border: 1px solid var(--editor-text-color);
     border-radius: 4px;
     padding-bottom: 0px;

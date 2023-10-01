@@ -16,6 +16,7 @@ export default class Scroll {
   #currentMousePosition = 0;
   #displayTimeout;
   #scrollPositionsMap = new Map();
+  #cursorPositionsMap = new Map();
 
   constructor() {
     editor.addEventListener('beforeinput', (event) => this.#handleNewLine(event), false);
@@ -27,10 +28,13 @@ export default class Scroll {
     scrollCircle.addEventListener('mousedown', () => this.#startScrollDrag());
     document.addEventListener('mouseup', () => this.#scrollDragStart = -1);
     document.addEventListener('mousemove', (event) => this.#currentMousePosition = [event.clientX, event.clientY]);
+    document.addEventListener('selectionchange', () => this.#cursorPositionsMap.set(leto.directory.activeFile, editor.selectionStart), false);
   }
 
   handleNewFile() {
     editor.scrollTop = this.#scrollPositionsMap.get(leto.directory.activeFile);
+    var cursorPosition = this.#cursorPositionsMap.get(leto.directory.activeFile);
+    editor.setSelectionRange(cursorPosition, cursorPosition);
     this.handleEditorScroll();
   }
 

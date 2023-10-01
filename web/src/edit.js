@@ -29,6 +29,14 @@ export default class Edit {
 
   replaceWord(newWord) {
     this.selectWord();
+    var oldWord = editor.value.substring(editor.selectionStart, editor.selectionEnd);
+
+    if (oldWord[0].toLowerCase() != oldWord[0]) newWord = newWord.charAt(0).toUpperCase() + newWord.slice(1);
+    var capitalLetters = 0;
+    for (var i = 0; i < oldWord.length; i++) 
+      if (oldWord[i].toLowerCase() != oldWord[i]) capitalLetters++;
+    if (capitalLetters == oldWord.length) newWord = newWord.toUpperCase();
+
     document.execCommand('insertText', false, newWord);
   }
 
