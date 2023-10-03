@@ -10,16 +10,30 @@ import {words} from './words.js';
 
 export default class Spellcheck {
 
-  #wordTrie;
+  userDictionary;
   toggled = false;
+  #wordTrie;
 
   toggle() {
     if (this.#wordTrie == null) {
       this.#wordTrie = new Trie();
       words.forEach(word => this.#wordTrie.add(word));
+      this.userDictionary.forEach(word => this.#wordTrie.add(word));
     }
     this.toggled = !this.toggled;
     leto.preview.setPreviewText();
+  }
+
+  setUserDictionary(dictionary) {
+    this.userDictionary = dictionary ?? [];
+  }
+
+  addCurrentToDictionary() {
+    var word = this.#getCurrentWord().toLowerCase();
+    this.userDictionary.push(word);
+    this.#wordTrie.add(word);
+    leto.preview.setPreviewText();
+    leto.config.save();
   }
 
   checkWord(word) {
@@ -46,8 +60,8 @@ export default class Spellcheck {
       if (!alphabet.includes(editor.value[i])) break;
     }
     for (var i = editor.selectionStart; i >= 0; i--) {
-      wordStart = i;
       if (!alphabet.includes(editor.value[i])) break;
+      wordStart = i;
     }
     
     return editor.value.substr(wordStart, wordEnd - wordStart);

@@ -70,6 +70,7 @@ export default class ContextMenu {
     else if (action === 'New Folder') this.#createFolder(this.#initialClickTarget);
     else if (action === 'Reload') leto.directory.tryDisplayActiveDirectory();
     else if (action === 'Preview') leto.render.openWindow(this.#initialClickTarget.getAttribute('data-path'));
+    else if (action === 'Add to Dictionary') leto.spellcheck.addCurrentToDictionary();
 
     else leto.edit.replaceWord(action);
 
@@ -125,6 +126,8 @@ export default class ContextMenu {
     this.#addAction('Paste');
     this.#addAction('Cut');
     if (leto.spellcheck.toggled && !leto.spellcheck.checkCurrentWord()) {
+      this.#addSeparator();
+      this.#addAction("Add to Dictionary");
       var words = leto.spellcheck.correctCurrentWord();
       if (words != null && words.length != 0) {
         this.#addSeparator();
