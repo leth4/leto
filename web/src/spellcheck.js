@@ -37,7 +37,7 @@ export default class Spellcheck {
   }
 
   checkWord(word) {
-    return this.#wordTrie.contains(word.toLowerCase());
+    return word.length == 0 || this.#wordTrie.contains(word.toLowerCase());
   };
 
   checkCurrentWord() {

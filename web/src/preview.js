@@ -15,12 +15,14 @@ export default class Preview {
   setPreviewText() {
     this.#setCounterValues();
 
-    var [previewValue, codeRanges] = this.getPreview(editor.value);
+    var editorText = editor.value + (editor.value.slice(-1) === '\n' ? ' ' : '');
+
+    var [previewValue, codeRanges] = this.getPreview(editorText);
 
     preview.innerHTML = previewValue;
     preview.scrollTop = editor.scrollTop;
 
-    this.#previewSpell(codeRanges);
+    this.#previewSpell(editorText, codeRanges);
 
     search.innerHTML = '';
     if (!leto.search.toggled) return;
@@ -28,12 +30,11 @@ export default class Preview {
     
     if (leto.search.text == "") return;
     var searchText = this.#cleanupHtmlTags(leto.search.text.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&'));
-    search.innerHTML = this.#cleanupHtmlTags(editor.value).replace(new RegExp(`(${searchText})`, 'gmi'), `<mark class='search'>$1</mark>`);
+    search.innerHTML = this.#cleanupHtmlTags(editorText).replace(new RegExp(`(${searchText})`, 'gmi'), `<mark class='search'>$1</mark>`);
     search.scrollTop = editor.scrollTop;
   }
 
-  getPreview(text) {
-    var editorText = text + (text.slice(-1) === '\n' ? ' ' : '');
+  getPreview(editorText) {
     const chunks = this.#cleanupHtmlTags(editorText).split(/(?<=(?:\n|^))(```[\s\S]*?```(?:$|\n))/g);
     var codeRanges = [];
     var currentLength = 0; 
@@ -70,21 +71,20 @@ export default class Preview {
       counter.innerHTML = `S${editor.selectionEnd - editor.selectionStart} L${editor.value.length} W${words ? words.length : 0}`;
   }
 
-  #previewSpell(excludeRanges) {
+  #previewSpell(editorText, excludeRanges) {
     spell.innerHTML = "";
 
     if (!leto.spellcheck.toggled) return;
 
-    var words = editor.value.split(/(\W+)(?<!')/).filter(Boolean);
+    var words = editorText.split(/(\W+)(?<!')/).filter(Boolean);
     var textLength = 0;
 
     for (var i = 0; i < words.length; i++) {
-      var isActiveWord = textLength <= editor.selectionStart && textLength + words[i].length >= editor.selectionStart;
       var isExcludedRange = 0;
       excludeRanges.forEach(range => { if (textLength > range[0] && textLength < range[1]) isExcludedRange = true; })
 
       textLength += words[i].length;
-      if (/\w+/.test(words[i]) && !/^\d+$/.test(words[i]) && !isActiveWord && !isExcludedRange)
+      if (/\w+/.test(words[i]) && !/^\d+$/.test(words[i]) && !isExcludedRange)
         words[i] = leto.spellcheck.checkWord(words[i]) ? words[i] : `<mark class='mistake'>${words[i]}</mark>`;
     }
 
