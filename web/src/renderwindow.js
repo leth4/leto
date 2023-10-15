@@ -22,6 +22,7 @@ document.getElementById('minimize').addEventListener('click', () => appWindow.mi
 document.getElementById('maximize').addEventListener('click', async () => await appWindow.isMaximized() ? appWindow.unmaximize() : appWindow.maximize());
 document.getElementById('close').addEventListener('click', () => appWindow.close());
 document.getElementById('title').addEventListener('mousedown', e => e.button == 2 ? toggleAlwaysOnTop() : null);
+document.getElementById('open').addEventListener('mousedown', () => openFile());
 document.addEventListener('wheel', e => handleMouseWheel(e));
 document.addEventListener('contextmenu', e => e.preventDefault());
 
