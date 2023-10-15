@@ -121,6 +121,7 @@ export default class Render {
         const html = text.replace(/^\[ \] (.*$)/gm, `<button class="todo"></button> $1`)
                          .replace(/^\[x\] (.*$)/gm, `<button class="todo checked"></button> <s>$1</s>`)
                          .replace(/^— (.*)(\n)?/gm, "<ul><li>$1</li></ul>")
+                         .replace(/(^----*)[\r\n]/gm, `<hr>`)
                          .replace(/\n/g, "<br>");
 
 	    return html.trim();
