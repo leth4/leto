@@ -60,7 +60,8 @@ export default class Shortcuts {
       
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyB') leto.windowManager.toggleSidebar();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyT') leto.windowManager.setNextTheme();
-      else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyQ') leto.windowManager.closewindow();
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyQ') leto.windowManager.closeWindow();
+      else if (e.ctrlKey && e.shiftKey && e.code === 'KeyQ') leto.windowManager.closeAllWindows();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyM') leto.windowManager.minimizeWindow();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyP') leto.windowManager.togglePrefs();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'Equal') leto.windowManager.changeFontSize(+1);

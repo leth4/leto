@@ -20,14 +20,14 @@ const themes = [
 
 document.getElementById('minimize').addEventListener('click', () => appWindow.minimize());
 document.getElementById('maximize').addEventListener('click', async () => await appWindow.isMaximized() ? appWindow.unmaximize() : appWindow.maximize());
-document.getElementById('close').addEventListener('click', () => appWindow.close());
+document.getElementById('close').addEventListener('click', () => closeWindow());
 document.getElementById('title').addEventListener('mousedown', e => e.button == 2 ? toggleAlwaysOnTop() : null);
 document.getElementById('open').addEventListener('mousedown', () => openFile());
 document.addEventListener('wheel', e => handleMouseWheel(e));
 document.addEventListener('contextmenu', e => e.preventDefault());
 
 window.onkeydown = (e) => {
-  if (e.ctrlKey && !e.shiftKey && e.code === 'KeyQ') appWindow.close();
+  if (e.ctrlKey && !e.shiftKey && e.code === 'KeyQ') closeWindow();
   else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyM') appWindow.minimize();
   else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyT') setNextTheme();
   else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyR') {}
@@ -38,6 +38,11 @@ window.onkeydown = (e) => {
   else return;
 
   e.preventDefault();
+}
+
+function closeWindow() {
+  emit('renderWindowClosed', { label: appWindow.label });
+  appWindow.close();
 }
 
 function openFile() {

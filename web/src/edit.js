@@ -137,16 +137,18 @@ export default class Edit {
     var [lineStart, lineEnd] = this.#getLineBorders();
     var insertText = '';
 
+    var deleteLine = false;
+
     if (editor.selectionStart != editor.selectionEnd) 
       insertText = '\n';
     else if (editor.value[lineStart] === '—' && editor.selectionEnd - lineStart > 1) 
-      (/^—[\s]*$/.test(editor.value.slice(lineStart, lineEnd))) ? this.#deleteLine() : insertText = '\n— ';
+      (/^—[\s]*$/.test(editor.value.slice(lineStart, lineEnd))) ? deleteLine = true : insertText = '\n— ';
     else if (editor.value.slice(lineStart, lineStart + 3) === '[ ]' && editor.selectionEnd - lineStart > 3)
-      (/^\[ \][\s]*$/.test(editor.value.slice(lineStart, lineEnd))) ? this.#deleteLine() : insertText = '\n[ ] ';
+      (/^\[ \][\s]*$/.test(editor.value.slice(lineStart, lineEnd))) ? deleteLine = true : insertText = '\n[ ] ';
     else if (editor.value.slice(lineStart, lineStart + 3) === '[x]' && editor.selectionEnd - lineStart > 3)
-      (/^\[x\][\s]*$/.test(editor.value.slice(lineStart, lineEnd))) ? this.#deleteLine() : insertText = '\n[ ] ';
+      (/^\[x\][\s]*$/.test(editor.value.slice(lineStart, lineEnd))) ? deleteLine = true : insertText = '\n[ ] ';
     else if (/^\d+\. /.test(editor.value.slice(lineStart, lineEnd))) {
-      if (/^\d+\.\s*$/.test(editor.value.slice(lineStart, lineEnd))) this.#deleteLine();
+      if (/^\d+\.\s*$/.test(editor.value.slice(lineStart, lineEnd))) deleteLine = true;
       else {
         var dotIndex = editor.value.slice(lineStart, lineEnd).indexOf(".");
         var num = parseInt(editor.value.slice(lineStart, lineStart + dotIndex));
@@ -154,6 +156,11 @@ export default class Edit {
       }
     }
     else insertText = '\n';
+
+    if (deleteLine) {
+      editor.setSelectionRange(this.#getLineStart(), this.#getLineEnd() - 1);
+      document.execCommand('delete');
+    }
 
     document.execCommand('insertText', false, insertText);
     this.#setSelectionAndFocus(editor.selectionStart);

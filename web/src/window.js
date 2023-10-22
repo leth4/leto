@@ -23,6 +23,7 @@ export default class Window {
 
   #prefsToggled = false;
   #sidebarToggled = true;
+  isHidden = false;
 
   constructor() {
     this.currentTheme = 0;
@@ -39,10 +40,27 @@ export default class Window {
 
     this.populateThemes();
   }
-  
-  closewindow() {
+
+  closeAllWindows() {
     leto.render.closeAllWindows();
-    appWindow.close();
+    this.closeWindow();
+  }
+
+  showIsHidden() {
+    if (this.isHidden) {
+      appWindow.show();
+      this.isHidden = false;
+    }
+  }
+  
+  closeWindow() {
+    if (leto.render.hasWebviews()) {
+      appWindow.hide();
+      this.isHidden = true;
+    }
+    else {
+      appWindow.close();
+    }
   }
 
   minimizeWindow() {

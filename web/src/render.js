@@ -1,6 +1,6 @@
 'use strict';
 
-const { WebviewWindow } = window.__TAURI__.window;
+const { WebviewWindow, getAll } = window.__TAURI__.window;
 const { emit, listen, once } = window.__TAURI__.event;
 const { exists, writeTextFile, readTextFile } = window.__TAURI__.fs;
 const { invoke } = window.__TAURI__.tauri;
@@ -15,12 +15,19 @@ export default class Render {
     constructor() {this.#setupListeners()}
 
     async #setupListeners() {
+        await listen('renderWindowClosed', event => { this.#handleWindowClosed(event.payload.label) });
         await listen('renderTodoClicked', event => { this.#toggleTodo(event.payload.index, event.payload.file) });
-        await listen('renderOpenFile', event => {leto.directory.setActiveFile(event.payload.file)});
+        await listen('renderOpenFile', event => {leto.directory.setActiveFile(event.payload.file); leto.windowManager.showIsHidden(); });
     }
 
     openCurrent() {
         this.openWindow(leto.directory.activeFile);
+    }
+
+    #handleWindowClosed(label) {
+        var index = this.#webviews.indexOf(label);
+        this.#webviews.splice(index, 1);
+        if (leto.windowManager.isHidden && !this.hasWebviews()) leto.windowManager.closeAllWindows();
     }
 
     async openWindow(file) {
@@ -33,7 +40,9 @@ export default class Render {
         }
         var [preview, _] = leto.preview.getPreview(text);
 
-        var webview = new WebviewWindow(this.#generateRandomId(), {
+        var windowLabel = this.#generateRandomId();
+
+        new WebviewWindow(windowLabel, {
             title: leto.directory.removeFileExtension(leto.directory.getNameFromPath(file)),
             url: 'preview.html',
             decorations: false,
@@ -43,7 +52,7 @@ export default class Render {
             width: 600
         });
 
-        this.#webviews.push(webview);
+        this.#webviews.push(windowLabel);
 
         await once('renderWindowLoaded', event => {
             this.update(preview, file);
@@ -51,11 +60,15 @@ export default class Render {
         });
     }
 
+    hasWebviews() {
+        if (!this.#webviews) return false;
+        return this.#webviews != 0;
+    }
+
     closeAllWindows() {
-        if (!this.#webviews) return;
-        for (var i = 0; i < this.#webviews.length; i++) {
-            if (!this.#webviews[i]) continue;
-            this.#webviews[i].close();
+        var windows = getAll();
+        for (var i = 0; i < windows.length; i++) {
+            windows[i].close();
         }
     }
 

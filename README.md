@@ -20,7 +20,8 @@ Shortcut | Action
 :-|:-
 `Ctrl + O` | Open a new directory
 `Ctrl + Shift + S` | Save active file as new
-`Ctrl + Q` | Exit leto
+`Ctrl + Q` | Close active window
+`Ctrl + Shift + Q` | Close all windows
 `Ctrl + M` | Minimize leto
 `Ctrl + P` | Show/hide preferences
 `Ctrl + F` | Show/hide the search box
