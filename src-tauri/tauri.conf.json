@@ -76,9 +76,11 @@
       {
         "fullscreen": false,
         "height": 600,
+        "width": 950,
+        "minWidth": 300,
+        "minHeight": 200,
         "resizable": true,
         "title": "leto",
-        "width": 950,
         "fileDropEnabled" : false,
         "center" : true,
         "focus": true,

@@ -54,7 +54,7 @@ export default class Explorer {
     const files = document.getElementsByClassName('file-button');
 
     for (var i = 0; i < files.length; i++) {
-      if (files[i].getAttribute('data-path').endsWith(file + '.md')) {
+      if (files[i].getAttribute('data-path').endsWith("\\" + file + '.md')) {
         leto.directory.setActiveFile(files[i].getAttribute('data-path'));
         break;
       }
@@ -66,7 +66,6 @@ export default class Explorer {
 
     var parts = file.split('\\');
     var link = parts.pop();
-    
     
     while (parts.length != 0) {
       var filesFound = 0;

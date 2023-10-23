@@ -128,8 +128,10 @@ hr {
     border: 1px solid var(--editor-muted-color);
 }
 
-a, a:visited {
+a, a:visited, mark.link {
+    text-decoration: underline 1px;
     color: var(--editor-accent-color);
+    cursor: pointer;
 }
 
 a:after {

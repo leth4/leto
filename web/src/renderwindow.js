@@ -96,10 +96,17 @@ await listen('renderWindowUpdate', (event) => {
   else if (displayedFile != event.payload.file) return;  
   
   content.innerHTML = event.payload.text;
+
   var buttons = document.getElementsByClassName('todo');
   for (let i = 0; i < buttons.length; i++) {
     buttons[i].addEventListener('click', () => emit('renderTodoClicked', { index: i, file: displayedFile }));
   }
+
+  var innerLinks = document.getElementsByClassName('link');
+  for (let i = 0; i < innerLinks.length; i++) {
+    innerLinks[i].addEventListener('click', event => emit('renderOpenLink', { file: event.target.getAttribute('data-link') }));
+  }
+
 });
 
 emit('renderWindowLoaded', {label: appWindow.label});

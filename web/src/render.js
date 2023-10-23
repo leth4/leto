@@ -17,7 +17,8 @@ export default class Render {
     async #setupListeners() {
         await listen('renderWindowClosed', event => { this.#handleWindowClosed(event.payload.label) });
         await listen('renderTodoClicked', event => { this.#toggleTodo(event.payload.index, event.payload.file) });
-        await listen('renderOpenFile', event => {leto.directory.setActiveFile(event.payload.file); leto.windowManager.showIsHidden(); });
+        await listen('renderOpenFile', event => { leto.directory.setActiveFile(event.payload.file); leto.windowManager.showIsHidden(); });
+        await listen('renderOpenLink', event => { leto.explorer.openFromLink(event.payload.file); leto.windowManager.showIsHidden(); });
     }
 
     openCurrent() {

@@ -1,14 +1,14 @@
 :root {
-    --editor-background-color: #282020;
-    --editor-code-background-color: #1f1313;
-    --editor-text-color: #c7bda9;
-    --editor-accent-color: #cba985;
+    --editor-background-color: #292121;
+    --editor-code-background-color: #221717;
+    --editor-text-color: #c4bcac;
+    --editor-accent-color: #d1b495;
     --editor-muted-color: #765b5b;
     --selection-color: #4d3f3f;
 
-    --sidebar-background-color:#282020;
-    --sidebar-folder-color: #cba985;
-    --sidebar-file-color: #c7bda9;
+    --sidebar-background-color:#292121;
+    --sidebar-folder-color: #b89a79;
+    --sidebar-file-color: #c4bcac;
     --sidebar-selection-color: #3b2f2f;
 
     --divider-color: #918076;
