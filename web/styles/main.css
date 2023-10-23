@@ -1,6 +1,7 @@
 :root {
     --font-size: 15px;
     --sidebar-font-size: 15px;
+    --additional-padding-left: 50px;
     --font-family: 'inter', sans-serif;
     --font-weight: 300;
     --scroll-background: red;
@@ -67,9 +68,9 @@ main {
     white-space: break-spaces;
     overflow-y : auto;
     overflow-x : hidden;
-    padding: 6vh 14vw 200px 10vw;
+    padding: 6vh 14vw 200px calc(var(--additional-padding-left) + 12vw);
     font-size: var(--font-size);
-    transition: padding .1s ease;
+    transition: padding .4s ease-in-out;
 }
 
 @media (max-width: 1150px) {

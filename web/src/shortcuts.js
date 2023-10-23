@@ -51,13 +51,18 @@ export default class Shortcuts {
       else if (e.ctrlKey && !e.shiftKey && e.code === 'Enter' && inEditor) leto.edit.createCheckbox();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyL' && inEditor) leto.edit.selectLine();
 
-      else if (!e.ctrlKey && !e.shiftKey && e.code === 'Escape') {leto.search.toggled ? leto.search.toggle() : leto.edit.deselect();}
+      else if (!e.ctrlKey && !e.shiftKey && e.code === 'Escape') {
+        if (leto.search.toggled) leto.search.toggle();
+        else if (editor.selectionStart !== editor.selectionEnd) leto.edit.deselect();
+        else if (leto.windowManager.isFullscreen) leto.windowManager.toggleFullscreen();
+      }
       
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyO') leto.directory.selectNewDirectory();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyN') leto.directory.createNewFile();
       else if (e.ctrlKey && e.shiftKey && e.code === 'KeyN') leto.directory.createNewFolder();
       else if (e.ctrlKey && e.shiftKey && e.code === 'KeyS')  leto.directory.exportActiveFile();
       
+      else if (e.ctrlKey && e.shiftKey && e.code === 'KeyF') leto.windowManager.toggleFullscreen();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyB') leto.windowManager.toggleSidebar();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyT') leto.windowManager.setNextTheme();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyQ') leto.windowManager.closeWindow();

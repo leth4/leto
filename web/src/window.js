@@ -23,13 +23,15 @@ export default class Window {
 
   #prefsToggled = false;
   #sidebarToggled = true;
-  isHidden = false;
+  #draggableElements;
 
   constructor() {
     this.currentTheme = 0;
     this.currentFont = 'inter';
     this.fontSize = 20;
     this.fontWeight = 300;
+    this.isHidden = false;
+    this.isFullscreen = false;
 
     themeSelector.addEventListener('change', () => this.setTheme(themeSelector.value), false);
     fontInput.addEventListener('input', () => this.setFont(fontInput.value), false);
@@ -37,13 +39,25 @@ export default class Window {
     document.addEventListener('keydown', e => {if (e.key === 'Control') editor.style.pointerEvents = 'none'}, false);
     document.addEventListener('keyup', e => {if (e.key === 'Control') editor.style.pointerEvents = 'auto'}, false);
     document.addEventListener('mousemove', e => editor.style.pointerEvents = e.ctrlKey ? 'none' : 'auto');
-
     this.populateThemes();
   }
 
   closeAllWindows() {
     leto.render.closeAllWindows();
     this.closeWindow();
+  }
+
+  toggleFullscreen() {
+    this.isFullscreen = !this.isFullscreen;
+    appWindow.unmaximize();
+    appWindow.setFullscreen(this.isFullscreen);
+
+    if (this.isFullscreen) {
+      this.#draggableElements = document.querySelectorAll('[data-tauri-drag-region]');
+      this.#draggableElements.forEach(element => element.removeAttribute('data-tauri-drag-region'))
+    } else {
+      this.#draggableElements.forEach(element => element.setAttribute('data-tauri-drag-region', ''))
+    }
   }
 
   showIsHidden() {
@@ -80,6 +94,7 @@ export default class Window {
     document.getElementById('sidebar-content').style.pointerEvents = this.#sidebarToggled ? 'all' : 'none';
     document.getElementById('preferences').style.opacity = this.#sidebarToggled ? '1' : '0';
     document.getElementById('preferences').style.pointerEvents = this.#sidebarToggled ? 'all' : 'none';
+    root.style.setProperty('--additional-padding-left', this.#sidebarToggled ? '50px' : '200px');
   }
 
   #handleMouseWheel(event) {
