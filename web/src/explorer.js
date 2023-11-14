@@ -55,7 +55,7 @@ export default class Explorer {
 
     for (var i = 0; i < files.length; i++) {
       var path = files[i].getAttribute('data-path');
-      if (path.endsWith("\\" + file + '.md') || path.endsWith("\\" + file + '.png') || path.endsWith("\\" + file + '.jpg')) {
+      if (path.endsWith("\\" + file + '.md') || path.endsWith("\\" + file + '.png') || path.endsWith("\\" + file + '.jpg') || path.endsWith("\\" + file + '.gif')) {
         leto.directory.setActiveFile(files[i].getAttribute('data-path'));
         break;
       }
@@ -68,7 +68,7 @@ export default class Explorer {
 
     for (var i = 0; i < files.length; i++) {
       var path = files[i].getAttribute('data-path');
-      if (path.endsWith("\\" + file + '.md') || path.endsWith("\\" + file + '.png') || path.endsWith("\\" + file + '.jpg')) {
+      if (path.endsWith("\\" + file + '.md') || path.endsWith("\\" + file + '.png') || path.endsWith("\\" + file + '.jpg') || path.endsWith("\\" + file + '.gif')) {
         leto.render.openWindow(files[i].getAttribute('data-path'));
         break;
       }
@@ -80,7 +80,8 @@ export default class Explorer {
     const files = document.getElementsByClassName('file-button');
 
     for (var i = 0; i < files.length; i++) {
-      if (files[i].getAttribute('data-path').endsWith("\\" + image + '.png') || files[i].getAttribute('data-path').endsWith("\\" + image + '.jpg'))  {
+      var path = files[i].getAttribute('data-path');
+      if (path.endsWith("\\" + image + '.png') || path.endsWith("\\" + image + '.jpg') || path.endsWith("\\" + image + '.gif'))  {
         return files[i].getAttribute('data-path');
       }
     }
@@ -278,7 +279,7 @@ export default class Explorer {
 
   #showFile(file, parentElement) {
     var extension = this.#getFileExtension(file.name);
-    if (extension != 'md' && extension != 'txt' && extension != 'jpg' && extension != 'png') return;
+    if (extension != 'md' && extension != 'txt' && extension != 'jpg' && extension != 'png' && extension != 'gif') return;
 
     if (this.#pinsBeforeCheck.includes(file.path)) this.pins.push(file.path);
 
@@ -286,7 +287,7 @@ export default class Explorer {
     fileButton.className = 'file-button';
     fileButton.setAttribute('data-path', file.path);
     fileButton.innerHTML = this.#removeFileExtension(file.name);
-    if (extension == 'jpg' || extension == 'png') fileButton.classList.add('image-file');
+    if (extension == 'jpg' || extension == 'png' || extension == 'gif') fileButton.classList.add('image-file');
     if (fileButton.innerHTML.replace(/\s/g, '').length === 0) fileButton.innerHTML = '--';
 
     this.#makeDroppable(fileButton);

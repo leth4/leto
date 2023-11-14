@@ -303,7 +303,7 @@ export default class Directory {
 
   isFileAnImage(file) {
     var extension = this.#getFileExtension(file);
-    return (extension == 'png' || extension == 'jpg');
+    return (extension == 'png' || extension == 'jpg' || extension == 'gif');
   }
   
   getNameFromPath(path) {
