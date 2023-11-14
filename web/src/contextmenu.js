@@ -105,6 +105,10 @@ export default class ContextMenu {
     else if (action === 'Reload') leto.directory.tryDisplayActiveDirectory();
     else if (action === 'Preview') leto.render.openWindow(this.#initialClickTarget.getAttribute('data-path'));
     else if (action === 'Add to Dictionary') leto.spellcheck.addCurrentToDictionary();
+    else if (action === 'Show in Explorer') {
+      var path = this.#initialClickTarget.getAttribute('data-path') ?? leto.directory.activeDirectory;
+      leto.directory.showInExplorer(path);
+    }
 
     else leto.edit.replaceWord(action);
 
@@ -151,6 +155,7 @@ export default class ContextMenu {
     this.#addAction('New File');
     this.#addAction('New Folder');
     this.#addSeparator();
+    this.#addAction('Show in Explorer');
     this.#addAction('Reload');
   }
 

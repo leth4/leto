@@ -62,6 +62,8 @@ main {
 #image-display {
     max-width: 100%;
     max-height: 100%;
+    border: var(--editor-accent-color) calc(1px - var(--shadow)) solid;
+    box-shadow: 0 0 calc(var(--shadow) * 10) var(--editor-muted-color);
 }
 
 #search-preview, #spell-preview {

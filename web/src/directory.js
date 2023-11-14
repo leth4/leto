@@ -297,6 +297,10 @@ export default class Directory {
     this.moveTo(path, `${this.activeDirectory}\\.trash`);
   }
   
+  showInExplorer(path) {
+    invoke('show_in_explorer', { path: path });
+  }
+  
   #getFileExtension(file) {
     return /[^.]*$/.exec(file)[0];
   }

@@ -7,12 +7,13 @@ use tauri::Manager;
 use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
+use std::process::Command;
 use window_shadows::set_shadow;
 use window_vibrancy::{apply_blur, clear_blur};
 
 fn main() {
   tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![move_to, rename, is_dir, apply_shadow, add_blur, remove_blur])
+    .invoke_handler(tauri::generate_handler![move_to, rename, is_dir, apply_shadow, add_blur, remove_blur, show_in_explorer])
     .setup(|app| {
       let window = app.get_window("main").unwrap();
       set_shadow(&window, true).expect("Unsupported platform!");
@@ -38,6 +39,11 @@ fn add_blur<R: tauri::Runtime>(app: tauri::AppHandle<R>, label: &str) {
 fn remove_blur<R: tauri::Runtime>(app: tauri::AppHandle<R>, label: &str) {
   let window = app.get_window(label).unwrap();
   clear_blur(&window).expect("Unsupported platform!");
+}
+
+#[tauri::command]
+fn show_in_explorer(path: &str) {
+  Command::new( "explorer" ).args( ["/select,", path] ).spawn( ).unwrap( );
 }
 
 #[tauri::command]

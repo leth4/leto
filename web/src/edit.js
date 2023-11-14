@@ -121,7 +121,7 @@ export default class Edit {
   }
 
   handleTab() {
-    if (editor.value[editor.selectionEnd] !== '\"' && editor.value[editor.selectionEnd] !== ')' && editor.value[editor.selectionEnd] !== '*' && editor.value[editor.selectionEnd] !== ']')
+    if (editor.value[editor.selectionEnd] !== '\"' && editor.value[editor.selectionEnd] !== ')' && editor.value[editor.selectionEnd] !== '*' && editor.value[editor.selectionEnd] !== ']'  && editor.value[editor.selectionEnd] !== '`')
       document.execCommand('insertText', false, '\t');
     else if (editor.selectionEnd != editor.selectionStart)
       document.execCommand('insertText', false, '\t');
