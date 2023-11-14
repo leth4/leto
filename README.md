@@ -1,6 +1,6 @@
 ![leto](https://github.com/leth4/leto/assets/44412176/96cb37ac-8774-4428-b16b-f2b06b0b539f)
 
-leto is a minimalistic lightweight plain text editor for Windows.
+leto is a minimalistic lightweight markdown editor for Windows.
 
 Visually inspired by [Left](https://github.com/hundredrabbits/Left), functionally by [Obsidian](https://obsidian.md). Made using [Tauri](https://github.com/tauri-apps/tauri).
 
@@ -10,7 +10,9 @@ Create a file directory to store your notes. Open the app, press `Ctrl + O` and 
 
 Markdown `# headers`, `*italics*`, `**bold**` and `` `inline code` `` are highlighted. You can also `[[link]]` to other files and ctrl-click to open them. There's also syntax highlighting for code blocks wrapped between `` ``` `` symbols — you can specify the language in the first line, like `` ```csharp ``. Languages that support highlighting are *C#*, *C++*, *C*, *JavaScript*, *Python*, *Rust*, *Go*, *Java* and *HLSL*.
 
-You can open a preview window for any file; task items in a preview window are clickable. Note that in leto tasks start with `[ ]`, not `- [ ]`. Press `Ctrl + O` to open a file corresponding to the selected preview. Press `Ctrl + P` or right-click the title bar of the preview window to make it always stay on top.
+You can open a preview window for any file; task items in a preview window are clickable. Note that in leto tasks start with `[ ]`, not `- [ ]`. Press `Ctrl + O` to open a file corresponding to the selected preview. Press `Ctrl + P` or right-click the title bar of the preview window to make it always stay on top. Right-click on a any link to open a preview window for it!
+
+You can open `.png` and `.jpg` images and `[[link]]` them just like regular files. Hover on a link while holding `Ctrl` to preview the image; you can also open a separate preview window for it, where you can zoom and move it. Paste an image directly into the text, and leto will make a file for it and link it automatically.
 
 The default font is [Inter](https://github.com/rsms/inter), but you can input any font via the Preferences menu (opened with `Ctrl+P`). Note that you need the font installed locally. Real italics and bold are only displayed for monospace fonts; otherwise those are just colored.
 

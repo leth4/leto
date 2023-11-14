@@ -40,6 +40,17 @@ export default class Window {
     document.addEventListener('keyup', e => {if (e.key === 'Control') editor.style.pointerEvents = 'auto'}, false);
     document.addEventListener('mousemove', e => editor.style.pointerEvents = e.ctrlKey ? 'none' : 'auto');
     this.populateThemes();
+
+    document.onpaste = function (event) {
+      var items = (event.clipboardData || event.originalEvent.clipboardData).items;
+      for (var index in items) {
+        var item = items[index];
+        if (item.kind === 'file' && item.type.startsWith('image/')) {
+          var blob = item.getAsFile();
+          leto.directory.createImageFromPaste(blob, 'image');
+        }
+      }
+    };
   }
 
   closeAllWindows() {

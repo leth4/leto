@@ -1,14 +1,19 @@
 'use strict';
 
 const { appWindow } = window.__TAURI__.window;
+const { convertFileSrc } = window.__TAURI__.tauri;
 
+const imagePreview = document.getElementById('image-preview');
+const imagePreviewImage = document.getElementById('image-preview-image');
 const contextMenu = document.getElementById('context-menu');
 const editor = document.getElementById('text-editor');
+const explorer = document.getElementById('sidebar');
 
 export default class ContextMenu {
   
   #initialClickTarget;
   #deleting;
+  #showingImagePreview;
 
   constructor() {
     document.addEventListener('contextmenu', (event) => {
@@ -19,6 +24,7 @@ export default class ContextMenu {
     });
 
     document.addEventListener('click', (event) => {
+      this.hidePreviewImage();
       if (!contextMenu.contains(event.target)){
         this.hide();
         return;
@@ -28,6 +34,7 @@ export default class ContextMenu {
     });
     
     document.addEventListener('keydown', () => this.hide());
+    document.addEventListener('mousemove', event => this.#updatePreviewImage(event));
   }
 
   hide() {
@@ -35,13 +42,40 @@ export default class ContextMenu {
     contextMenu.classList.remove('show');
   }
 
+  async previewImage(imagePath, event) {
+    this.#showingImagePreview = true;
+    const size = await appWindow.innerSize();
+    imagePreviewImage.setAttribute('src', convertFileSrc(imagePath));
+    const deltaX = size.width > event.clientX + imagePreviewImage.clientWidth + 5 ? 0 :  imagePreviewImage.clientWidth;
+    const deltaY = size.height > event.clientY + imagePreviewImage.clientHeight + 5 ? 0 : imagePreviewImage.clientHeight;
+    imagePreview.classList.add('show');
+    imagePreview.style.left = event.clientX - deltaX + 'px';
+    imagePreview.style.top = event.clientY - deltaY + 'px';
+  }
+
+  hidePreviewImage() {
+    this.#showingImagePreview = false;
+    imagePreview.classList.remove('show');
+  }
+
+  async #updatePreviewImage(event) {
+    if (!this.#showingImagePreview) return;
+    if (!document.elementFromPoint(event.clientX, event.clientY).classList.contains("link")) this.hidePreviewImage();
+    const size = await appWindow.innerSize();
+    const deltaX = size.width > event.clientX + imagePreviewImage.clientWidth + 5 ? 0 :  imagePreviewImage.clientWidth;
+    const deltaY = size.height > event.clientY + imagePreviewImage.clientHeight + 5 ? 0 : imagePreviewImage.clientHeight;
+    imagePreview.style.left = event.clientX - deltaX + 'px';
+    imagePreview.style.top = event.clientY - deltaY + 'px';
+  }
+
   async #show(event) {
+    if (event.target === editor) this.#createEditorMenu();
+    else if (explorer.contains(event.target)) this.#createFileSystemMenu();
+    else return;
+
     this.#deleting = false;
     const size = await appWindow.innerSize();
     contextMenu.classList.add('show');
-
-    if (event.target === editor) this.#createEditorMenu();
-    else this.#createFileSystemMenu();
 
     const deltaX = size.width > event.clientX + contextMenu.clientWidth + 5 ? 0 :  contextMenu.clientWidth;
     const deltaY = size.height > event.clientY + contextMenu.clientHeight + 5 ? 0 : contextMenu.clientHeight;

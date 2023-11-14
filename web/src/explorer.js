@@ -54,14 +54,41 @@ export default class Explorer {
     const files = document.getElementsByClassName('file-button');
 
     for (var i = 0; i < files.length; i++) {
-      if (files[i].getAttribute('data-path').endsWith("\\" + file + '.md')) {
+      var path = files[i].getAttribute('data-path');
+      if (path.endsWith("\\" + file + '.md') || path.endsWith("\\" + file + '.png') || path.endsWith("\\" + file + '.jpg')) {
         leto.directory.setActiveFile(files[i].getAttribute('data-path'));
         break;
       }
     }
   }
 
-  #getUniqueLink(file) {
+  previewFromLink(file) {
+    file = file.replaceAll('/', '\\');
+    const files = document.getElementsByClassName('file-button');
+
+    for (var i = 0; i < files.length; i++) {
+      var path = files[i].getAttribute('data-path');
+      if (path.endsWith("\\" + file + '.md') || path.endsWith("\\" + file + '.png') || path.endsWith("\\" + file + '.jpg')) {
+        leto.render.openWindow(files[i].getAttribute('data-path'));
+        break;
+      }
+    }
+  }
+
+  getImagePathFromLink(image) {
+    image = image.replaceAll('/', '\\');
+    const files = document.getElementsByClassName('file-button');
+
+    for (var i = 0; i < files.length; i++) {
+      if (files[i].getAttribute('data-path').endsWith("\\" + image + '.png') || files[i].getAttribute('data-path').endsWith("\\" + image + '.jpg'))  {
+        return files[i].getAttribute('data-path');
+      }
+    }
+
+    return '';
+  }
+
+  getUniqueLink(file) {
     const files = document.getElementsByClassName('file-button');
 
     var parts = file.split('\\');
@@ -251,7 +278,7 @@ export default class Explorer {
 
   #showFile(file, parentElement) {
     var extension = this.#getFileExtension(file.name);
-    if (extension != 'md' && extension != 'txt') return;
+    if (extension != 'md' && extension != 'txt' && extension != 'jpg' && extension != 'png') return;
 
     if (this.#pinsBeforeCheck.includes(file.path)) this.pins.push(file.path);
 
@@ -259,6 +286,7 @@ export default class Explorer {
     fileButton.className = 'file-button';
     fileButton.setAttribute('data-path', file.path);
     fileButton.innerHTML = this.#removeFileExtension(file.name);
+    if (extension == 'jpg' || extension == 'png') fileButton.classList.add('image-file');
     if (fileButton.innerHTML.replace(/\s/g, '').length === 0) fileButton.innerHTML = '--';
 
     this.#makeDroppable(fileButton);
@@ -271,7 +299,7 @@ export default class Explorer {
     liElement.addEventListener('dragstart', (event) => {
       event.dataTransfer.setData('text/oldpath', file.path);
       event.dataTransfer.setData('text/path', file.path);
-      event.dataTransfer.setData('text', `[[${this.#getUniqueLink(file.path)}]]`);
+      event.dataTransfer.setData('text', `[[${this.getUniqueLink(file.path)}]]`);
     });
 
     if (file.path == this.pendingRename) this.#elementPendingRename = fileButton;

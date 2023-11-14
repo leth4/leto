@@ -28,7 +28,7 @@ export default class Shortcuts {
         leto.edit.cutLine();
       }
       
-      else if (e.ctrlKey && e.code === 'Tab' && inEditor) leto.directory.setPreviousActiveFile();
+      else if (e.ctrlKey && e.code === 'Tab') leto.directory.setPreviousActiveFile();
       else if (!e.ctrlKey && !e.shiftKey && e.code === 'Tab') leto.edit.handleTab();
       else if (!e.ctrlKey && e.shiftKey && e.code === 'Tab') {}
 

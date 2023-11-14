@@ -38,6 +38,10 @@
       },
       "shell": {
         "open": true
+      },
+      "protocol": {
+        "asset": true,
+        "assetScope": ["**"]
       }
     },
     "bundle": {

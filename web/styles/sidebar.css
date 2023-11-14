@@ -48,6 +48,10 @@
     content: "→ ";
 }
 
+.image-file::before {
+    content: "● ";
+}
+
 .folder-button {
     color: var(--sidebar-folder-color);
     text-transform: uppercase;

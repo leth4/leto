@@ -56,6 +56,15 @@ export default class Edit {
     document.execCommand('cut', false);
   }
 
+  renameLinks(oldLink, newFile) {
+    var oldLink = `\[\[${oldLink}\]\]`
+    var newLink = `[[${leto.explorer.getUniqueLink(newFile)}]]`
+    while (editor.value.indexOf(oldLink) != -1) {
+      this.#setSelectionAndFocus(editor.value.indexOf(oldLink), editor.value.indexOf(oldLink) + oldLink.length);
+      document.execCommand('insertText', false, newLink);
+    }
+  }
+
   handleHyphen() {
     const previousSymbol = editor.value[editor.selectionStart - 1];
     const secondPreviousSymbol = editor.value[editor.selectionStart - 2];

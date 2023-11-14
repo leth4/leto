@@ -25,6 +25,9 @@ export default class Preview {
     var innerLinks = document.getElementsByClassName('link');
     for (let i = 0; i < innerLinks.length; i++) {
       innerLinks[i].addEventListener('click', event => this.#handleLinkClick(event));
+      innerLinks[i].addEventListener('contextmenu', event => this.#handleLinkRightClick(event));
+      innerLinks[i].addEventListener('mouseenter', event => this.#handleLinkHover(event));
+      innerLinks[i].addEventListener('mouseout', () => leto.contextMenu.hidePreviewImage());
     }
 
     this.#previewSpell(editorText, codeRanges);
@@ -66,6 +69,16 @@ export default class Preview {
 
   #handleLinkClick(event) {
     leto.explorer.openFromLink(event.target.getAttribute('data-link'));
+  }
+  
+  #handleLinkRightClick(event) {
+    leto.explorer.previewFromLink(event.target.getAttribute('data-link'));
+  }
+
+  #handleLinkHover(event) {
+    var imagePath = leto.explorer.getImagePathFromLink(event.target.getAttribute('data-link'));
+    if (imagePath == '') return;
+    leto.contextMenu.previewImage(imagePath, event);
   }
 
   #setCounterValues() {

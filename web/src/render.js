@@ -3,19 +3,17 @@
 const { WebviewWindow, getAll } = window.__TAURI__.window;
 const { emit, listen, once } = window.__TAURI__.event;
 const { exists, writeTextFile, readTextFile } = window.__TAURI__.fs;
-const { invoke } = window.__TAURI__.tauri;
+const { invoke, convertFileSrc } = window.__TAURI__.tauri;
 
 const editor = document.getElementById('text-editor');
 const preview = document.getElementById('text-preview');
 
 export default class Render {
 
-    #webviews = [];
-
     constructor() {this.#setupListeners()}
 
     async #setupListeners() {
-        await listen('renderWindowClosed', event => { this.#handleWindowClosed(event.payload.label) });
+        await listen('renderWindowClosed', () => this.#handleWindowClosed());
         await listen('renderTodoClicked', event => { this.#toggleTodo(event.payload.index, event.payload.file) });
         await listen('renderOpenFile', event => { leto.directory.setActiveFile(event.payload.file); leto.windowManager.showIsHidden(); });
         await listen('renderOpenLink', event => { leto.explorer.openFromLink(event.payload.file); leto.windowManager.showIsHidden(); });
@@ -25,45 +23,74 @@ export default class Render {
         this.openWindow(leto.directory.activeFile);
     }
 
-    #handleWindowClosed(label) {
-        var index = this.#webviews.indexOf(label);
-        this.#webviews.splice(index, 1);
+    #handleWindowClosed() {
         if (leto.windowManager.isHidden && !this.hasWebviews()) leto.windowManager.closeAllWindows();
     }
 
     async openWindow(file) {
-        var text;
-        if (file == leto.directory.activeFile) {
-            text = editor.value;
-        } else {
-            if (!(await exists(file))) return;
-            text = await readTextFile(file);
+
+        var imagePath = '', _;
+        var preview = '';
+        var windowSize = {width: 800, height: 600};
+
+        if (leto.directory.isFileAnImage(file)) {
+            imagePath = convertFileSrc(file);
+            windowSize = await this.#getImageWindowSize(imagePath);
         }
-        var [preview, _] = leto.preview.getPreview(text);
+        else {
+            var text;
+            if (file == leto.directory.activeFile) {
+                text = editor.value;
+            } else {
+                if (!(await exists(file))) return;
+                text = await readTextFile(file);
+            }
+            [preview, _] = leto.preview.getPreview(text);
+        }
 
-        var windowLabel = this.#generateRandomId();
-
-        new WebviewWindow(windowLabel, {
+        new WebviewWindow(this.#generateRandomId(), {
             title: leto.directory.removeFileExtension(leto.directory.getNameFromPath(file)),
             url: 'preview.html',
             decorations: false,
             transparent: true,
             focus: true,
-            height: 800,
-            width: 600
+            width: windowSize.width,
+            height: windowSize.height + 35
         });
 
-        this.#webviews.push(windowLabel);
-
         await once('renderWindowLoaded', event => {
-            this.update(preview, file);
+            this.update(preview, file, imagePath);
             invoke('apply_shadow', {  label: event.payload.label });
         });
     }
 
+    async #getImageWindowSize(imageFile) {
+       var windowSize = {width: 800, height: 600};
+
+       var imageSize = await this.getImageSize(imageFile);
+
+       var aspectRatio = imageSize.width / imageSize.height;
+
+       if (imageSize.width < windowSize.width) windowSize.width = imageSize.width;
+       if (imageSize.height < windowSize.height) windowSize.height = imageSize.height;
+
+       if (aspectRatio > 1) windowSize.height = windowSize.width / aspectRatio;
+       else windowSize.width = windowSize.height * aspectRatio;
+
+       return windowSize;
+    }
+
+    getImageSize(src) {
+        return new Promise((resolve, reject) => {
+            var image = new Image();
+            image.src = src;
+            image.onload = () => resolve({width: image.width, height: image.height});
+            image.onerror = reject;
+        });
+    }
+
     hasWebviews() {
-        if (!this.#webviews) return false;
-        return this.#webviews != 0;
+        return getAll().length > 1;
     }
 
     closeAllWindows() {
@@ -118,10 +145,11 @@ export default class Render {
         }   
     }
 
-    update(text = preview.innerHTML, file = leto.directory.activeFile) {
+    update(text = preview.innerHTML, file = leto.directory.activeFile, imagePath = '') {
         if (file === null) return;
         emit('renderWindowUpdate', {
             text: this.#createRender(text),
+            imagePath: imagePath,
             font: leto.windowManager.currentFont,
             fontSize: leto.windowManager.fontSize,
             fontWeight: leto.windowManager.fontWeight,
@@ -136,8 +164,14 @@ export default class Render {
                          .replace(/^\[x\] (.*$)/gm, `<button class="todo checked"></button> <s>$1</s>`)
                          .replace(/^— (.*)(\n)?/gm, "<ul><li>$1</li></ul>")
                          .replace(/(^----*)[\r\n]/gm, `<hr>`)
+                         .replace(/\[\[([^[\]]+)\]\]/g, this.#imageReplacerFunction)
                          .replace(/\n/g, "<br>");
-
 	    return html.trim();
+    }
+
+    #imageReplacerFunction(match, p1) {
+        var imagePath = leto.explorer.getImagePathFromLink(p1);
+        if (imagePath == '') return match;
+        return `<img src='${convertFileSrc(imagePath)}' alt='${p1}'>`;
     }
 }

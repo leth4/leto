@@ -54,6 +54,9 @@ main {
     font: 17px var(--font-family);
     color: var(--editor-accent-color);
     user-select: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 #title::before {
@@ -94,6 +97,27 @@ main {
 
 .todo:hover {
     cursor: pointer;
+}
+
+#content img {
+    max-width: 100%;
+    max-height: 400px;
+    border: var(--editor-accent-color) calc(1px - var(--shadow)) solid;
+    box-shadow: 0 0 calc(var(--shadow) * 10) var(--editor-muted-color);
+    cursor: default;
+}
+
+#image-container {
+    position: absolute;
+    top: 35px; left: 0; bottom: 0; right: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#image-display {
+    max-width: 100%;
+    max-height: 100%;
 }
 
 span.code {

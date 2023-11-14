@@ -1,10 +1,11 @@
 'use strict';
 
-const { exists, writeTextFile, readTextFile, readDir, createDir } = window.__TAURI__.fs;
+const { exists, writeTextFile, writeBinaryFile, readTextFile, readDir, createDir } = window.__TAURI__.fs;
 const { open, save, message } = window.__TAURI__.dialog;
-const { invoke } = window.__TAURI__.tauri;
+const { invoke, convertFileSrc } = window.__TAURI__.tauri;
 
 const editor = document.getElementById('text-editor');
+const imageDisplay = document.getElementById('image-display');
 const DIRECTORY_ENTRIES_LIMIT = 2000;
 const TOO_BIG_MESSAGE = `Selected directory is too big. You can only have ${DIRECTORY_ENTRIES_LIMIT} files and subfolders in the directory.`;
 const NO_DIRECTORY_MESSAGE = "Press `Ctrl+O` to open a directory.";
@@ -46,6 +47,7 @@ export default class Directory {
 
   async tryOpenActiveFile() {
     editor.disabled = true;
+    editor.style.display = 'none';
     try {
       await this.#openActiveFile();
     } catch {
@@ -61,21 +63,31 @@ export default class Directory {
 
     if (this.activeDirectory) leto.explorer.highlightSelectedFile(this.activeFile);
 
-    var newEditorValue = await readTextFile(this.activeFile);
-    var isNewValue = editor.value != newEditorValue;
-    var scrollBuffer = editor.scrollTop;
-    editor.disabled = false;
-    editor.style.cursor = 'auto';
-    editor.focus();
-    editor.value = newEditorValue;
-    if (isNewValue) {
-      editor.setSelectionRange(0, 0);
-      leto.undo.resetBuffers();
-    } else {
-      editor.scrollTop = scrollBuffer;
+    if (this.isFileAnImage(this.activeFile)) {
+      imageDisplay.setAttribute('src', convertFileSrc(this.activeFile));
+      editor.value = '';
+      leto.scroll.handleNewFile();
+      leto.handleEditorInput();
     }
-    leto.scroll.handleNewFile();
-    leto.handleEditorInput();
+    else {
+      imageDisplay.setAttribute('src', '');
+      var newEditorValue = await readTextFile(this.activeFile);
+      var isNewValue = editor.value != newEditorValue;
+      var scrollBuffer = editor.scrollTop;
+      editor.disabled = false;
+      editor.style.display = 'block'
+      editor.style.cursor = 'auto';
+      editor.focus();
+      editor.value = newEditorValue;
+      if (isNewValue) {
+        editor.setSelectionRange(0, 0);
+        leto.undo.resetBuffers();
+      } else {
+        editor.scrollTop = scrollBuffer;
+      }
+      leto.scroll.handleNewFile();
+      leto.handleEditorInput();
+    }
   }
 
   async tryDisplayActiveDirectory() {
@@ -129,6 +141,7 @@ export default class Directory {
     this.activeFile = null;
     editor.value = this.activeDirectory ? '' : NO_DIRECTORY_MESSAGE;
     editor.disabled = true;
+    editor.style.display = 'none';
     leto.handleEditorInput();
     this.tryDisplayActiveDirectory();
     leto.config.save();
@@ -191,19 +204,46 @@ export default class Directory {
     this.tryOpenActiveFile();
   }
 
+  async createImageFromPaste(contents, name = 'new') {
+    if (!this.activeDirectory) return;
+    var directory = this.activeDirectory;
+
+    var newFile = directory + `\\${name}.png`;
+    for (var i = 0; i < Infinity; i++) {
+      if (!(await exists(newFile))) break;
+      newFile = directory + `\\${name} ${i + 1}.png`;
+    }
+
+    if (!editor.disabled) {
+      document.execCommand('insertText', false, `[[${this.removeFileExtension(this.getNameFromPath(newFile))}]]`);
+    }
+
+    var arrayBuffer = await contents.arrayBuffer();
+    await writeBinaryFile(newFile, arrayBuffer);
+
+    leto.explorer.pendingRename = newFile;
+    this.tryDisplayActiveDirectory();
+    this.tryOpenActiveFile();
+  }
+
   async renameFile(filePath, newName) {
-    var newFile = `${filePath.substring(0, filePath.lastIndexOf('\\') + 1)}${newName}.md`;
+    var extension = this.#getFileExtension(filePath);
+    var newFile = `${filePath.substring(0, filePath.lastIndexOf('\\') + 1)}${newName}.${extension}`;
     if (newFile === filePath) return;
 
     for (var i = 0; i < Infinity; i++) {
       if (!(await exists(newFile))) break;
-      newFile = `${filePath.substring(0, filePath.lastIndexOf('\\') + 1)}${newName} ${i + 1}.md`;
+      newFile = `${filePath.substring(0, filePath.lastIndexOf('\\') + 1)}${newName} ${i + 1}.${extension}`;
     }
     await invoke('rename', { oldPath: filePath, newPath: newFile });
     if (this.activeFile === filePath) this.activeFile = newFile;
 
-    this.tryDisplayActiveDirectory();
-    this.tryOpenActiveFile();
+    var previousLinkToFile = leto.explorer.getUniqueLink(filePath);
+
+    await this.tryDisplayActiveDirectory();
+    await this.tryOpenActiveFile();
+
+    leto.edit.renameLinks(previousLinkToFile, newFile);
   }
 
   async renameFolder(oldPath, newName) {
@@ -259,6 +299,11 @@ export default class Directory {
   
   #getFileExtension(file) {
     return /[^.]*$/.exec(file)[0];
+  }
+
+  isFileAnImage(file) {
+    var extension = this.#getFileExtension(file);
+    return (extension == 'png' || extension == 'jpg');
   }
   
   getNameFromPath(path) {

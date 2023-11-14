@@ -2,11 +2,19 @@ const { appWindow } = window.__TAURI__.window;
 const { listen, emit } = window.__TAURI__.event;
 const { invoke } = window.__TAURI__.tauri;
 const content = document.getElementById('content');
+const imageDisplay = document.getElementById('image-display');
+const imageContainer = document.getElementById('image-container');
 
 var displayedFile;
+var isDisplayingImage;
 var currentTheme;
 var fontSize = 20;
 var isAlwaysOnTop = false;
+
+var currentImageZoom = 1;
+var startImagePosition = {x: 0, y: 0};
+var currentImagePosition = {x: 0, y: 0};
+var isPanningImage;
 
 const themes = [
   'gleam',
@@ -40,9 +48,50 @@ window.onkeydown = (e) => {
   e.preventDefault();
 }
 
+imageContainer.addEventListener('wheel', event => {
+  var direction = event.deltaY > 0 ? -1 : 1;
+  var newZoom = currentImageZoom + direction * 0.15; 
+  if (newZoom < 1) newZoom = 1; 
+  if (newZoom > 5) newZoom = 5; 
+  currentImageZoom = newZoom;
+  setImageTransform();
+});
+
+imageContainer.addEventListener('mouseup', () => {
+  isPanningImage = false;
+  if (currentImageZoom > 1) imageDisplay.style.cursor = 'grab';
+});
+
+imageContainer.addEventListener('mousedown', event => {
+  event.preventDefault();
+  if (event.clientX < 10 || event.clientY < 10 || event.clientX > window.innerWidth - 10 || event.clientY > window.innerHeight - 10) return;
+  isPanningImage = true; 
+  if (currentImageZoom > 1) imageDisplay.style.cursor = 'grabbing';
+  startImagePosition = { x: event.clientX - currentImagePosition.x, y: event.clientY - currentImagePosition.y };
+});
+
+imageContainer.addEventListener('mousemove', event => {
+  event.preventDefault();
+  if (!isPanningImage) return;
+  currentImagePosition = { x: event.clientX - startImagePosition.x, y: event.clientY - startImagePosition.y };
+  setImageTransform();
+});
+
+function setImageTransform() {
+
+  if (currentImagePosition.x < -((currentImageZoom - 1) * imageDisplay.clientWidth) / 2) currentImagePosition.x = -((currentImageZoom - 1) * imageDisplay.clientWidth) / 2;
+  if (currentImagePosition.x > ((currentImageZoom - 1) * imageDisplay.clientWidth) / 2) currentImagePosition.x = ((currentImageZoom - 1) * imageDisplay.clientWidth) / 2;
+  if (currentImagePosition.y < -((currentImageZoom - 1) * imageDisplay.clientHeight) / 2) currentImagePosition.y = -((currentImageZoom - 1) * imageDisplay.clientHeight) / 2;
+  if (currentImagePosition.y > ((currentImageZoom - 1) * imageDisplay.clientHeight) / 2) currentImagePosition.y = ((currentImageZoom - 1) * imageDisplay.clientHeight) / 2;
+
+  imageDisplay.style.transform = "translate(" + currentImagePosition.x + "px, " + currentImagePosition.y + "px) scale(" + currentImageZoom + ")";
+  if (currentImageZoom <= 1) imageDisplay.style.cursor = 'default';
+  else imageDisplay.style.cursor = isPanningImage ? 'grabbing' : 'grab';
+}
+
 function closeWindow() {
-  emit('renderWindowClosed', { label: appWindow.label });
   appWindow.close();
+  emit('renderWindowClosed');
 }
 
 function openFile() {
@@ -94,6 +143,16 @@ await listen('renderWindowUpdate', (event) => {
     displayedFile = event.payload.file;
   }
   else if (displayedFile != event.payload.file) return;  
+
+  if (event.payload.imagePath != '') {
+    isDisplayingImage = true;
+    imageDisplay.setAttribute('src', event.payload.imagePath);
+    imageContainer.style.display = 'flex';
+  }
+
+  if (isDisplayingImage) return;
+
+  imageContainer.style.display = 'none';
   
   content.innerHTML = event.payload.text;
 
