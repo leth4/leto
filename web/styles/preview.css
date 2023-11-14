@@ -121,6 +121,7 @@ main {
 }
 
 span.code {
+    z-index: 35;
     display: block;
     position: relative;
     font-family: "Iosevka", "Victor Mono", monospace;
@@ -133,7 +134,7 @@ mark.inline-code {
 }
 
 span.code::before {
-    z-index: 30;
+    z-index: -10;
     content: "";
     display: block;
     position: absolute;
@@ -212,6 +213,20 @@ h1, h2, h3, h4 {
     font-weight: bold;
     background-color: transparent;
     color: var(--editor-accent-color);
+    cursor: pointer;
+}
+
+.folded::after {
+    content: "\a\a";
+    white-space: pre;
+}
+
+.folded::before {
+    content: "↓";
+}
+
+.collapsible {
+    display: inline;
 }
 
 ::selection {

@@ -43,6 +43,9 @@ export default class Scroll {
       editor.scrollTop = this.#correctionScroll; // Hacky fix for a browser bug; scrollbar randomly jumps when inserting a new line
     }
     this.#correctionScroll = -1;
+    
+    if (preview.scrollTop == editor.scrollTop) return;
+    
     preview.scrollTop = editor.scrollTop;
 
     clearTimeout(this.#displayTimeout);

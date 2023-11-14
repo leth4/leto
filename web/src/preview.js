@@ -51,12 +51,12 @@ export default class Preview {
         chunks[i] = chunks[i]
           .replace(/(?<!# )(\*\*)(.*?)(\*\*)/g, `<mark class='muted'>$1</mark><mark class='bold'>$2</mark><mark class='muted'>$3</mark>`)
           .replace(/(?<!# )(\*)(.*?)(\*)/g, `<mark class='muted'>$1</mark><mark class='italic'>$2</mark><mark class='muted'>$3</mark>`)
-          .replace(/(^# )(.*)/gm, `<mark class='muted'>$1</mark><h1>$2</h1>`)
-          .replace(/(^## )(.*)/gm, `<mark class='muted'>$1</mark><h2>$2</h2>`)
-          .replace(/(^### )(.*)/gm, `<mark class='muted'>$1</mark><h3>$2</h3>`)
-          .replace(/(^#### )(.*)/gm, `<mark class='muted'>$1</mark><h4>$2</h4>`)
+          .replace(/(^# )(.*)/gm, `</div><mark class='muted'>$1</mark><h1>$2</h1><div class="collapsible">`)
+          .replace(/(^## )(.*)/gm, `</div><mark class='muted'>$1</mark><h2>$2</h2><div class="collapsible">`)
+          .replace(/(^### )(.*)/gm, `</div><mark class='muted'>$1</mark><h3>$2</h3><div class="collapsible">`)
+          .replace(/(^#### )(.*)/gm, `</div><mark class='muted'>$1</mark><h4>$2</h4><div class="collapsible">`)
           .replace(/\[\[([^[\]]+)\]\]/g, `<mark class='link' data-link='$1'>[[$1]]</mark>`)
-          .replace(/\b((?:https?:\/\/)[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{1,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/=]*))/gm, `<a target="_blank" href="$1">$1</a>`)
+          .replace(/\b((?:https?:\/\/)[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{1,6}\b(?:[-a-zA-Z0-9@:%_\+.;~#?&\/=]*))/gm, `<a target="_blank" href="$1">$1</a>`)
           .replace(/((?<!`)`(?!`))([^\n]*?)((?<!`)`(?!`))/gm, `<mark class='inline-code'><mark class='muted'>$1</mark>$2<mark class='muted'>$3</mark></mark>`);
       } else {
         chunks[i] = this.#replaceCodeBlock(chunks[i]);
@@ -64,7 +64,7 @@ export default class Preview {
       }
       currentLength += chunks[i].length;
     }
-    return [chunks.join(''), codeRanges];
+    return [chunks.join('') + "</div>", codeRanges];
   }
 
   #handleLinkClick(event) {

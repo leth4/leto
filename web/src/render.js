@@ -1,6 +1,6 @@
 'use strict';
 
-const { WebviewWindow, getAll } = window.__TAURI__.window;
+const { WebviewWindow, getAll, appWindow } = window.__TAURI__.window;
 const { emit, listen, once } = window.__TAURI__.event;
 const { exists, writeTextFile, readTextFile } = window.__TAURI__.fs;
 const { invoke, convertFileSrc } = window.__TAURI__.tauri;
@@ -15,8 +15,8 @@ export default class Render {
     async #setupListeners() {
         await listen('renderWindowClosed', () => this.#handleWindowClosed());
         await listen('renderTodoClicked', event => { this.#toggleTodo(event.payload.index, event.payload.file) });
-        await listen('renderOpenFile', event => { leto.directory.setActiveFile(event.payload.file); leto.windowManager.showIsHidden(); });
-        await listen('renderOpenLink', event => { leto.explorer.openFromLink(event.payload.file); leto.windowManager.showIsHidden(); });
+        await listen('renderOpenFile', event => { leto.directory.setActiveFile(event.payload.file); leto.windowManager.showIsHidden(); appWindow.setFocus(); });
+        await listen('renderOpenLink', event => { leto.explorer.openFromLink(event.payload.file); leto.windowManager.showIsHidden(); appWindow.setFocus(); });
     }
 
     openCurrent() {

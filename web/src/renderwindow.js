@@ -166,6 +166,15 @@ await listen('renderWindowUpdate', (event) => {
     innerLinks[i].addEventListener('click', event => emit('renderOpenLink', { file: event.target.getAttribute('data-link') }));
   }
 
+  var headers = document.querySelectorAll('h1, h2, h3, h4');
+  var collapsibles = document.getElementsByClassName('collapsible');
+  console.log(collapsibles);
+  for (let i = 0; i < headers.length; i++) {
+    headers[i].addEventListener('click', () => {
+      collapsibles[i].style.display == 'none' ? collapsibles[i].style.display = 'inline' : collapsibles[i].style.display = 'none';
+      headers[i].classList.contains('folded') ? headers[i].classList.remove('folded') : headers[i].classList.add('folded');
+    });
+  }
 });
 
 emit('renderWindowLoaded', {label: appWindow.label});

@@ -65,12 +65,14 @@ export default class Directory {
 
     if (this.isFileAnImage(this.activeFile)) {
       imageDisplay.setAttribute('src', convertFileSrc(this.activeFile));
+      imageDisplay.style.display = 'block';
       editor.value = '';
       leto.scroll.handleNewFile();
       leto.handleEditorInput();
     }
     else {
       imageDisplay.setAttribute('src', '');
+      imageDisplay.style.display = 'none';
       var newEditorValue = await readTextFile(this.activeFile);
       var isNewValue = editor.value != newEditorValue;
       var scrollBuffer = editor.scrollTop;
