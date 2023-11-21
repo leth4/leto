@@ -33,6 +33,9 @@ export default class Window {
     this.isHidden = false;
     this.isFullscreen = false;
 
+    document.getElementById('minimize-button').addEventListener('click', () => this.minimizeWindow());
+    document.getElementById('close-button').addEventListener('click', () => this.closeWindow());
+
     themeSelector.addEventListener('change', () => this.setTheme(themeSelector.value), false);
     fontInput.addEventListener('input', () => this.setFont(fontInput.value), false);
     document.addEventListener('wheel', e => this.#handleMouseWheel(e), false);

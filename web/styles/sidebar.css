@@ -80,13 +80,46 @@ ul {
     border-left: 1px solid var(--divider-color);
 }
 
+#window-buttons {
+    z-index: 10;
+    position: absolute;
+    bottom: 10px;
+    left: 5px;
+    width: 30px;
+    display: flex;
+    flex-direction: column;
+}
+
+#window-buttons:hover .window-button {
+    opacity: 0.2;
+}
+
+.window-button:hover{
+    opacity: 1 !important;   
+}
+
+.window-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;   
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
+}
+
+.window-button svg {
+    width: 14px;
+    height: 14px;
+    fill: var(--editor-text-color);
+}
+
 #preferences {
     border-top: calc(1px - var(--shadow)) solid var(--divider-color);
+    border-bottom: calc(1px - var(--shadow)) solid var(--divider-color);
     box-shadow: 0 0 calc(var(--shadow) * 20) var(--divider-color);
     width: 200px;
     display: none;
     padding: 24px 20px 25px 20px;
-    margin: 0;
+    margin: 0 0 55px 0;
     z-index: 10;
 }
 

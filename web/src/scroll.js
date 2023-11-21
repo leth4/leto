@@ -19,7 +19,6 @@ export default class Scroll {
   #cursorPositionsMap = new Map();
 
   constructor() {
-    editor.addEventListener('beforeinput', (event) => this.#handleNewLine(event), false);
     editor.addEventListener('scroll', () => this.handleEditorScroll(), false);
 
     scrollCircle.addEventListener('mouseover', () => {scrollCircle.style.opacity = '1'; clearTimeout(this.#displayTimeout);});
@@ -62,8 +61,7 @@ export default class Scroll {
     this.#scrollPositionsMap.set(leto.directory.activeFile, editor.scrollTop);
   }
 
-  #handleNewLine(event) {
-    if (event.inputType != 'insertLineBreak') return;
+  handleNewLine() {
     this.#correctionScroll = editor.scrollTop;
   }
 

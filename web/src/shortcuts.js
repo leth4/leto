@@ -27,6 +27,10 @@ export default class Shortcuts {
         if (selected) return;
         leto.edit.cutLine();
       }
+      else if (!e.ctrlKey && !e.shiftKey && e.code === 'Enter' && inEditor) {
+        leto.scroll.handleNewLine();
+        leto.edit.handleNewLine();
+      }
       
       else if (e.ctrlKey && e.code === 'Tab') leto.directory.setPreviousActiveFile();
       else if (!e.ctrlKey && !e.shiftKey && e.code === 'Tab') leto.edit.handleTab();
@@ -41,7 +45,6 @@ export default class Shortcuts {
       else if (!e.ctrlKey && e.key == '[' && inEditor) leto.edit.handleBracket();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyI' && inEditor && selected) leto.edit.insertDoubleSymbol('*');
       else if (!e.ctrlKey && !e.shiftKey && e.code === 'Minus' && inEditor) leto.edit.handleHyphen();
-      else if (!e.ctrlKey && !e.shiftKey && e.code === 'Enter' && inEditor) leto.edit.handleNewLine();
       else if (e.altKey && e.shiftKey && e.code === 'ArrowUp' && inEditor) leto.edit.copyLineUp();
       else if (e.altKey && e.shiftKey && e.code === 'ArrowDown' && inEditor) leto.edit.copyLineDown();
       else if (e.altKey && !e.shiftKey && e.code === 'ArrowUp' && inEditor) leto.edit.moveUp();
