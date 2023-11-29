@@ -198,6 +198,10 @@ mark.comment, mark.comment .keyword {
     color: var(--editor-muted-color);
 }
 
+mark.code-marker {
+    display: none;
+}
+
 mark.search {
     background-color: var(--editor-muted-color);
     color: var(--editor-text-color);

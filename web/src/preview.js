@@ -141,8 +141,8 @@ export default class Preview {
       code = code.replace(language.commentReg,`<mark class='comment'>$&</mark>`);
     }
 
-    code = code.replace(/^(.*)/, `<mark class='comment'>$&</mark>`);
-    code = code.replace(/(.*$)/, `<mark class='comment'>$&</mark>`);
+    code = code.replace(/^(.*)/, `<mark class='code-marker'>$&</mark>`);
+    code = code.replace(/(.*$)/, `<mark class='code-marker'>$&</mark>`);
     
     return `<span class='code'>` + code + `\n</span>`;
   }

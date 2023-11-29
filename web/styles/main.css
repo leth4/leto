@@ -275,7 +275,7 @@ mark.italic, mark.keyword {
     text-shadow: 0 0 calc(var(--shadow) * 2) var(--editor-muted-color);
 }
 
-mark.muted, mark.comment, mark.comment .keyword {
+mark.muted, mark.comment, mark.comment .keyword, mark.code-marker {
     color: var(--editor-muted-color);
 }
 
