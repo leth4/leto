@@ -1,0 +1,128 @@
+#canvas-container {
+    z-index: 100;
+    display: flex;
+    position: absolute;
+    left: 0; top: 0; right: 0; bottom: 0;
+    background-color: var(--editor-background-color);
+}
+
+#canvas {
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+
+svg {
+    pointer-events: none;
+    z-index: 500;
+    position: absolute;
+    left: -5000px;
+    top: -5000px;
+    width: 10000px;
+    height: 10000px;
+}
+
+svg line {
+    pointer-events: auto;
+    stroke: var(--editor-muted-color);
+    stroke-width: 3;
+    stroke-linecap: round;
+    margin: 3px;
+}
+
+svg line:hover {
+    stroke-width: 4;
+}
+
+svg line.selected {
+    stroke: var(--editor-accent-color);
+}
+
+.card {
+    background-color: var(--editor-code-background-color);
+    min-height: 100px;
+    height: auto;
+    width: 200px;
+    position: absolute;
+    border: 1px solid var(--divider-color);
+    border-radius: 3px;
+}
+
+.card.inverted {
+    background-color: var(--editor-background-color);
+}
+
+.card.selected {
+    border: 2px solid var(--divider-color);
+}
+
+.card:has(textarea) {
+    padding: 10px;
+    padding-top: 30px;
+}
+
+.card:has(img) {
+    padding: 5px;
+}
+
+.card img {
+    width: 100%;
+    height: auto;
+    pointer-events: none !important;
+    vertical-align: bottom;
+}
+
+.card textarea, .card-preview {
+    color: var(--editor-text-color);
+    text-decoration: none;
+    tab-size : 4;
+    word-wrap: break-word;
+    padding: 0;
+    margin: 0;
+    white-space: break-spaces;
+    overflow-y : auto;
+    overflow-x : hidden;
+    font-size: var(--font-size);
+}
+
+.card-preview {
+    z-index: 200;
+    position: relative;
+}
+
+.card textarea {
+    position: absolute;
+    height: 100%;
+    right: 10px;
+    top: 30px; left: 10px;
+    z-index: 200;
+    background-color: transparent;
+    resize: none;
+    box-sizing: border-box;
+    border: none;
+    color: transparent;
+    caret-color: var(--editor-text-color);
+    pointer-events: var(--cards-pointer-events);
+}
+
+.handle {
+    background-color: var(--editor-accent-color);
+    width: 3px;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    opacity: 0;
+    transition: opacity .3s ease-out;
+}
+
+.handle:hover {
+    opacity: 1;
+}
+
+.handle-left {
+    left: 0;
+}
+
+.handle-right {
+    right: 0;
+}

@@ -33,6 +33,8 @@ export default class Render {
         var preview = '';
         var windowSize = {width: 800, height: 600};
 
+        if (leto.directory.isFileACanvas(file)) return;
+
         if (leto.directory.isFileAnImage(file)) {
             imagePath = convertFileSrc(file);
             windowSize = await this.#getImageWindowSize(imagePath);

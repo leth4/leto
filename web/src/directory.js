@@ -6,6 +6,7 @@ const { invoke, convertFileSrc } = window.__TAURI__.tauri;
 
 const editor = document.getElementById('text-editor');
 const imageDisplay = document.getElementById('image-display');
+const canvas = document.getElementById('canvas-container');
 const DIRECTORY_ENTRIES_LIMIT = 2000;
 const TOO_BIG_MESSAGE = `Selected directory is too big. You can only have ${DIRECTORY_ENTRIES_LIMIT} files and subfolders in the directory.`;
 const NO_DIRECTORY_MESSAGE = "Press `Ctrl+O` to open a directory.";
@@ -64,15 +65,22 @@ export default class Directory {
     if (this.activeDirectory) leto.explorer.highlightSelectedFile(this.activeFile);
 
     if (this.isFileAnImage(this.activeFile)) {
+      canvas.style.display = 'none';
       imageDisplay.setAttribute('src', convertFileSrc(this.activeFile));
       imageDisplay.style.display = 'block';
       editor.value = '';
       leto.scroll.handleNewFile();
       leto.handleEditorInput();
     }
+    else if (this.isFileACanvas(this.activeFile)) {
+      canvas.style.display = 'block';
+      editor.value = '';
+      leto.canvas.load(this.activeFile);
+    }
     else {
       imageDisplay.setAttribute('src', '');
       imageDisplay.style.display = 'none';
+      canvas.style.display = 'none';
       var newEditorValue = await readTextFile(this.activeFile);
       var isNewValue = editor.value != newEditorValue;
       var scrollBuffer = editor.scrollTop;
@@ -188,14 +196,14 @@ export default class Directory {
     this.tryDisplayActiveDirectory();
   }
 
-  async createNewFile(directory) {
+  async createNewFile(directory, extension = 'md') {
     if (!this.activeDirectory) return;
     directory = directory ?? this.activeDirectory;
 
-    var newFile = directory + `\\new.md`;
+    var newFile = directory + `\\new.${extension}`;
     for (var i = 0; i < Infinity; i++) {
       if (!(await exists(newFile))) break;
-      newFile = directory + `\\new ${i + 1}.md`;
+      newFile = directory + `\\new ${i + 1}.${extension}`;
     }
 
     await writeTextFile(newFile, '');
@@ -310,6 +318,16 @@ export default class Directory {
   isFileAnImage(file) {
     var extension = this.#getFileExtension(file);
     return (extension == 'png' || extension == 'jpg' || extension == 'gif');
+  }
+
+  isFileACanvas(file) {
+    var extension = this.#getFileExtension(file);
+    return (extension == 'lea');
+  }
+
+  isFileANote(file) {
+    var extension = this.#getFileExtension(file);
+    return (extension == 'md');
   }
   
   getNameFromPath(path) {

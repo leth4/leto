@@ -12,13 +12,13 @@ export default class Shortcuts {
       var inEditor = document.activeElement === editor;
       var selected = editor.selectionStart != editor.selectionEnd;
 
-      if (e.ctrlKey && !e.shiftKey && e.code === 'KeyY') {
+      if (e.ctrlKey && !e.shiftKey && e.code === 'KeyY' && inEditor) {
         e.preventDefault();
         leto.undo.redo();
-      } else if (e.ctrlKey && e.shiftKey && e.code === 'KeyZ') {
+      } else if (e.ctrlKey && e.shiftKey && e.code === 'KeyZ' && inEditor) {
         e.preventDefault();
         leto.undo.redo();
-      } else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyZ') {
+      } else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyZ' && inEditor) {
         e.preventDefault();
         leto.undo.undo();  
       } 

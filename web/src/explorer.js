@@ -279,7 +279,7 @@ export default class Explorer {
 
   #showFile(file, parentElement) {
     var extension = this.#getFileExtension(file.name);
-    if (extension != 'md' && extension != 'txt' && extension != 'jpg' && extension != 'png' && extension != 'gif') return;
+    if (extension != 'md' && extension != 'txt' && extension != 'jpg' && extension != 'png' && extension != 'gif' && extension != 'lea') return;
 
     if (this.#pinsBeforeCheck.includes(file.path)) this.pins.push(file.path);
 
@@ -288,6 +288,7 @@ export default class Explorer {
     fileButton.setAttribute('data-path', file.path);
     fileButton.innerHTML = this.#removeFileExtension(file.name);
     if (extension == 'jpg' || extension == 'png' || extension == 'gif') fileButton.classList.add('image-file');
+    if (extension == 'lea') fileButton.classList.add('canvas-file');
     if (fileButton.innerHTML.replace(/\s/g, '').length === 0) fileButton.innerHTML = '--';
 
     this.#makeDroppable(fileButton);

@@ -22,13 +22,7 @@ export default class Preview {
     preview.innerHTML = previewValue;
     preview.scrollTop = editor.scrollTop;
 
-    var innerLinks = document.getElementsByClassName('link');
-    for (let i = 0; i < innerLinks.length; i++) {
-      innerLinks[i].addEventListener('click', event => this.#handleLinkClick(event));
-      innerLinks[i].addEventListener('contextmenu', event => this.#handleLinkRightClick(event));
-      innerLinks[i].addEventListener('mouseenter', event => this.#handleLinkHover(event));
-      innerLinks[i].addEventListener('mouseout', () => leto.contextMenu.hidePreviewImage());
-    }
+    this.updateLinksEventListeners();
 
     this.#previewSpell(editorText, codeRanges);
 
@@ -40,6 +34,16 @@ export default class Preview {
     var searchText = this.#cleanupHtmlTags(leto.search.text.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&'));
     search.innerHTML = this.#cleanupHtmlTags(editorText).replace(new RegExp(`(${searchText})`, 'gmi'), `<mark class='search'>$1</mark>`);
     search.scrollTop = editor.scrollTop;
+  }
+
+  updateLinksEventListeners() {
+    var innerLinks = document.getElementsByClassName('link');
+    for (let i = 0; i < innerLinks.length; i++) {
+      innerLinks[i].addEventListener('click', event => this.#handleLinkClick(event));
+      innerLinks[i].addEventListener('contextmenu', event => this.#handleLinkRightClick(event));
+      innerLinks[i].addEventListener('mouseenter', event => this.#handleLinkHover(event));
+      innerLinks[i].addEventListener('mouseout', () => leto.contextMenu.hidePreviewImage());
+    }
   }
 
   getPreview(editorText) {

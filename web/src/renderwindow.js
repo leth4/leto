@@ -168,7 +168,6 @@ await listen('renderWindowUpdate', (event) => {
 
   var headers = document.querySelectorAll('h1, h2, h3, h4');
   var collapsibles = document.getElementsByClassName('collapsible');
-  console.log(collapsibles);
   for (let i = 0; i < headers.length; i++) {
     headers[i].addEventListener('click', () => {
       collapsibles[i].style.display == 'none' ? collapsibles[i].style.display = 'inline' : collapsibles[i].style.display = 'none';

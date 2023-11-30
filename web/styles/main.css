@@ -7,6 +7,7 @@
     --scroll-background: red;
     --italic-style: normal;
     --bold-weight: var(--font-weight);
+    --cards-pointer-events: 'auto';
 }
 
 * {
@@ -28,7 +29,7 @@ main {
     width: 100wh;
 }
 
-#text-area {
+#main-area {
     z-index: 2;
     flex: 1;
     display: flex;
@@ -196,8 +197,17 @@ main {
     color: #ebebeb;
 }
 
+#context-menu li.locked {
+    color: #737373;
+    cursor: default;
+}
+
 #context-menu li:hover {
     background-color: #4a4a4a;
+}
+
+#context-menu li.locked:hover {
+    background-color: inherit;
 }
 
 #context-menu li.separator {
