@@ -28,6 +28,15 @@ svg line {
     stroke-width: 3;
     stroke-linecap: round;
     margin: 3px;
+    marker-end: url(#arrowHeadUnselected)
+}
+
+#arrowHeadSelected {
+    fill: var(--editor-accent-color);
+}
+
+#arrowHeadUnselected {
+    fill: var(--editor-muted-color);
 }
 
 svg line:hover {
@@ -35,6 +44,7 @@ svg line:hover {
 }
 
 svg line.selected {
+    marker-end: url(#arrowHeadSelected);
     stroke: var(--editor-accent-color);
 }
 

@@ -184,6 +184,8 @@ export default class Canvas {
       this.#selectedCards[i].style.top = previousCard.position.y + previousCard.height + 25 + 'px'; 
       this.#updateCard(this.#selectedCards[i]);
     }
+    this.#updateArrows();
+    this.#save();
   }
   
   alignSelectedHorizontally() {
@@ -195,6 +197,8 @@ export default class Canvas {
       this.#selectedCards[i].style.left = previousCard.position.x + previousCard.width + 45 + 'px'; 
       this.#updateCard(this.#selectedCards[i]);
     }
+    this.#updateArrows();
+    this.#save();
   }
 
   #deselectAllCards() {
@@ -225,7 +229,7 @@ export default class Canvas {
     }
   }
 
-  #createArrow(fromIndex, toIndex) {
+  #createArrow(fromIndex, toIndex, toPosition) {
     var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.classList.add('arrow');
@@ -233,6 +237,7 @@ export default class Canvas {
     canvas.appendChild(svg);
 
     this.#arrows.push(new Arrow(fromIndex, toIndex));
+    this.#arrows[this.#arrows.length - 1].toPosition = toPosition;
     line.setAttribute('data-index', this.#arrows.length - 1);
 
     line.addEventListener('click', event => {
@@ -252,11 +257,13 @@ export default class Canvas {
     const arrows = document.getElementsByClassName('arrow');
     for (let i = 0; i < arrows.length; i++) {
       const arrow = this.#arrows[arrows[i].getAttribute('data-index')];
+
+      arrows[i].style.pointerEvents = arrow.toIndex == -1 ? 'none' : 'auto';
       
       var fromPosition = {x: this.#cards[arrow.fromIndex].position.x, y: this.#cards[arrow.fromIndex].position.y};
       var toPosition = arrow.toIndex == -1 ? arrow.toPosition : this.#cards[arrow.toIndex].position;
-      var fromSize = {x: this.#cards[arrow.fromIndex].width + 20, y: this.#cards[arrow.fromIndex].height};
-      var toSize = arrow.toIndex == -1 ? null : {x: this.#cards[arrow.toIndex].width + 20, y: this.#cards[arrow.toIndex].height};
+      var fromSize = {x: this.#cards[arrow.fromIndex].width + 23, y: this.#cards[arrow.fromIndex].height};
+      var toSize = arrow.toIndex == -1 ? null : {x: this.#cards[arrow.toIndex].width + 23, y: this.#cards[arrow.toIndex].height};
       [fromPosition, toPosition] = this.#setArrowPosition(fromPosition, fromSize, toPosition, toSize);
 
       arrows[i].setAttribute('x1', fromPosition.x + 5000);
@@ -271,7 +278,7 @@ export default class Canvas {
       this.#draggedItem = event.target;
       if (event.button == 1) {
         this.#isDraggingArrow = true;
-        this.#createArrow(event.target.getAttribute('data-index'), event.target.getAttribute('data-index'));
+        this.#createArrow(event.target.getAttribute('data-index'), -1, this.#screenToCanvasSpace({x: event.clientX - 204, y: event.clientY}));
         this.#activeArrowIndex = this.#arrows.length - 1;
       }
       if (!event.shiftKey && event.button == 0 && (this.#selectedCards.length < 2 || !this.#selectedCards.includes(event.target))) this.#deselectAllCards()
@@ -325,6 +332,7 @@ export default class Canvas {
       this.#selectedCards.forEach(card => {
         card.style.left = this.#getPosition(card).x + (cursorPosition.x - this.#previousCursorPosition.x) / this.#canvasScale + 'px';
         card.style.top = this.#getPosition(card).y + (cursorPosition.y - this.#previousCursorPosition.y) / this.#canvasScale + 'px';
+        this.#updateCard(card);
       });
     }
     
