@@ -12,42 +12,6 @@
     height: 0;
 }
 
-svg {
-    pointer-events: none;
-    z-index: 500;
-    position: absolute;
-    left: -5000px;
-    top: -5000px;
-    width: 10000px;
-    height: 10000px;
-}
-
-svg line {
-    pointer-events: auto;
-    stroke: var(--editor-muted-color);
-    stroke-width: 3;
-    stroke-linecap: round;
-    margin: 3px;
-    marker-end: url(#arrowHeadUnselected)
-}
-
-#arrowHeadSelected {
-    fill: var(--editor-accent-color);
-}
-
-#arrowHeadUnselected {
-    fill: var(--editor-muted-color);
-}
-
-svg line:hover {
-    stroke-width: 4;
-}
-
-svg line.selected {
-    marker-end: url(#arrowHeadSelected);
-    stroke: var(--editor-accent-color);
-}
-
 .card {
     background-color: var(--editor-code-background-color);
     min-height: 100px;
@@ -58,12 +22,8 @@ svg line.selected {
     border-radius: 3px;
 }
 
-.card.inverted {
-    background-color: var(--editor-background-color);
-}
-
 .card.selected {
-    border: 2px solid var(--divider-color);
+    border: 1px solid var(--editor-accent-color);
 }
 
 .card:has(textarea) {

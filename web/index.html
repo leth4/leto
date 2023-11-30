@@ -36,9 +36,7 @@
                 </div>
             </div>
             <div id="main-area">
-                <div id="canvas-container">
-                    <div id="canvas"></div>
-                </div>
+                <div id="canvas-container"><div id="canvas"></div></div>
                 <div id="image-container"><img id="image-display"></div>
                 <textarea id="text-editor" spellcheck="false" disabled autofocus></textarea>
                 <code id="search-preview"></code>
@@ -54,17 +52,6 @@
             <input spellcheck="false" type="text" id="search-input" autocomplete="false"></input>
             <div id="search-results"></div>
         </div>
-
-        <svg width="0" height="0">
-            <defs>
-                <marker id="arrowHeadSelected" markerWidth="4" markerHeight="4" viewBox="0 0 10 10" refX="8" refY=" 5" orient="auto">
-                    <path d='M 0 0 L 10 5 L 0 10 z' />
-                </marker>
-                <marker id="arrowHeadUnselected" markerWidth="4" markerHeight="4" viewBox="0 0 10 10" refX="8" refY=" 5" orient="auto">
-                    <path d='M 0 0 L 10 5 L 0 10 z' />
-                </marker>
-            </defs>
-        </svg>
 
         <script type="module" src="src/leto.js"></script>
     </body>
