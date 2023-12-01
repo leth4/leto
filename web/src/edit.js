@@ -6,8 +6,13 @@ const editor = document.getElementById('text-editor');
 
 export default class Edit {
 
+  #activeEditor() {
+    if (document.activeElement.nodeName == 'TEXTAREA') return document.activeElement;
+    return null;
+  }
+
   selectLine() {
-    editor.setSelectionRange(this.#getLineStart(), this.#getLineEnd());
+    this.#activeEditor().setSelectionRange(this.#getLineStart(), this.#getLineEnd());
   }
 
   selectWord() {
@@ -24,12 +29,12 @@ export default class Edit {
   }
 
   deselect() {
-    editor.selectionStart = editor.selectionEnd;
+    this.#activeEditor().selectionStart = this.#activeEditor().selectionEnd;
   }
 
   replaceWord(newWord) {
     this.selectWord();
-    var oldWord = editor.value.substring(editor.selectionStart, editor.selectionEnd);
+    var oldWord = this.#activeEditor().value.substring(this.#activeEditor().selectionStart, this.#activeEditor().selectionEnd);
 
     if (oldWord[0].toLowerCase() != oldWord[0]) newWord = newWord.charAt(0).toUpperCase() + newWord.slice(1);
     var capitalLetters = 0;
@@ -41,8 +46,8 @@ export default class Edit {
   }
 
   copy() {
-    var selectionStart = editor.selectionStart;
-    if (editor.selectionStart == editor.selectionEnd) this.selectLine();
+    var selectionStart = this.#activeEditor().selectionStart;
+    if (this.#activeEditor().selectionStart == this.#activeEditor().selectionEnd) this.selectLine();
     document.execCommand('copy', false);
     this.#setSelectionAndFocus(selectionStart);
   }
@@ -52,7 +57,7 @@ export default class Edit {
   }
 
   cut() {
-    if (editor.selectionStart == editor.selectionEnd) this.selectLine();
+    if (this.#activeEditor().selectionStart == this.#activeEditor().selectionEnd) this.selectLine();
     document.execCommand('cut', false);
   }
 
@@ -66,13 +71,13 @@ export default class Edit {
   }
 
   handleHyphen() {
-    const previousSymbol = editor.value[editor.selectionStart - 1];
-    const secondPreviousSymbol = editor.value[editor.selectionStart - 2];
-    if (editor.selectionEnd == editor.selectionStart && previousSymbol == '-' && secondPreviousSymbol != '-') {
-      editor.selectionStart -= 1;
+    const previousSymbol = this.#activeEditor().value[this.#activeEditor().selectionStart - 1];
+    const secondPreviousSymbol = this.#activeEditor().value[this.#activeEditor().selectionStart - 2];
+    if (this.#activeEditor().selectionEnd == this.#activeEditor().selectionStart && previousSymbol == '-' && secondPreviousSymbol != '-') {
+      this.#activeEditor().selectionStart -= 1;
       document.execCommand('insertText', false, '—');
-    } else if (editor.selectionEnd == editor.selectionStart && previousSymbol == '—') {
-      editor.selectionStart -= 1;
+    } else if (this.#activeEditor().selectionEnd == this.#activeEditor().selectionStart && previousSymbol == '—') {
+      this.#activeEditor().selectionStart -= 1;
       document.execCommand('insertText', false, '---');
     } else {
       document.execCommand('insertText', false, '-');
@@ -80,66 +85,62 @@ export default class Edit {
   }
 
   insertDoubleSymbol(symbol) {
-    const nextSymbol = editor.value[editor.selectionStart];
-    const previousSymbol = editor.value[editor.selectionStart - 1];
-    if (editor.selectionEnd == editor.selectionStart && nextSymbol && nextSymbol !== '\n' && nextSymbol !== ' ') {
+    const nextSymbol = this.#activeEditor().value[this.#activeEditor().selectionStart];
+    const previousSymbol = this.#activeEditor().value[this.#activeEditor().selectionStart - 1];
+    if (this.#activeEditor().selectionEnd == this.#activeEditor().selectionStart && nextSymbol && nextSymbol !== '\n' && nextSymbol !== ' ') {
       document.execCommand('insertText', false, symbol);
       return;
     }
-    if (editor.selectionEnd == editor.selectionStart && previousSymbol && previousSymbol !== '\n' && previousSymbol !== ' ') {
+    if (this.#activeEditor().selectionEnd == this.#activeEditor().selectionStart && previousSymbol && previousSymbol !== '\n' && previousSymbol !== ' ') {
       document.execCommand('insertText', false, symbol);
       return;
     }
-    const insideValue = editor.value.slice(editor.selectionStart, editor.selectionEnd);
+    const insideValue = this.#activeEditor().value.slice(this.#activeEditor().selectionStart, this.#activeEditor().selectionEnd);
     document.execCommand('insertText', false, symbol + insideValue + symbol);
     if (insideValue) return;
-    editor.selectionEnd = editor.selectionEnd - 1;
-    editor.selectionStart = editor.selectionEnd;
+    this.#activeEditor().selectionEnd = this.#activeEditor().selectionEnd - 1;
+    this.#activeEditor().selectionStart = this.#activeEditor().selectionEnd;
   }
 
   handleBracket() {
-    const nextSymbol = editor.value[editor.selectionStart];
-    const previousSymbol = editor.value[editor.selectionStart - 1];
-    if (editor.selectionEnd == editor.selectionStart && nextSymbol && nextSymbol !== '\n' && nextSymbol !== ' ' && nextSymbol !== ']') {
+    const nextSymbol = this.#activeEditor().value[this.#activeEditor().selectionStart];
+    const previousSymbol = this.#activeEditor().value[this.#activeEditor().selectionStart - 1];
+    if (this.#activeEditor().selectionEnd == this.#activeEditor().selectionStart && nextSymbol && nextSymbol !== '\n' && nextSymbol !== ' ' && nextSymbol !== ']') {
       document.execCommand('insertText', false, '[');
       return;
     }
-    if (editor.selectionEnd == editor.selectionStart && previousSymbol && previousSymbol !== '\n' && previousSymbol !== ' ' && previousSymbol !== '[') {
+    if (this.#activeEditor().selectionEnd == this.#activeEditor().selectionStart && previousSymbol && previousSymbol !== '\n' && previousSymbol !== ' ' && previousSymbol !== '[') {
       document.execCommand('insertText', false, '[');
       return;
     }
-    const insideValue = editor.value.slice(editor.selectionStart, editor.selectionEnd);
+    const insideValue = this.#activeEditor().value.slice(this.#activeEditor().selectionStart, this.#activeEditor().selectionEnd);
     document.execCommand('insertText', false, '[' + insideValue + ']');
     if (!insideValue) {
-      editor.selectionEnd = editor.selectionEnd - 1;
-      editor.selectionStart = editor.selectionEnd;
+      this.#activeEditor().selectionEnd = this.#activeEditor().selectionEnd - 1;
+      this.#activeEditor().selectionStart = this.#activeEditor().selectionEnd;
     }
     else {
-      editor.selectionStart -= insideValue.length + 1;
-      editor.selectionEnd--;
+      this.#activeEditor().selectionStart -= insideValue.length + 1;
+      this.#activeEditor().selectionEnd--;
     }
   }
 
   handleTab() {
-    if (editor.value[editor.selectionEnd] !== '\"' && editor.value[editor.selectionEnd] !== ')' && editor.value[editor.selectionEnd] !== '*' && editor.value[editor.selectionEnd] !== ']'  && editor.value[editor.selectionEnd] !== '`')
+    if (this.#activeEditor().value[this.#activeEditor().selectionEnd] !== '\"' && this.#activeEditor().value[this.#activeEditor().selectionEnd] !== ')' && this.#activeEditor().value[this.#activeEditor().selectionEnd] !== '*' 
+        && this.#activeEditor().value[this.#activeEditor().selectionEnd] !== ']' && this.#activeEditor().value[this.#activeEditor().selectionEnd] !== '`')
       document.execCommand('insertText', false, '\t');
-    else if (editor.selectionEnd != editor.selectionStart)
+    else if (this.#activeEditor().selectionEnd != this.#activeEditor().selectionStart)
       document.execCommand('insertText', false, '\t');
-    else if (editor.value[editor.selectionEnd] === "]" && editor.value[editor.selectionEnd + 1] === "]")
-      this.#setSelectionAndFocus(editor.selectionEnd + 2);
+    else if (this.#activeEditor().value[this.#activeEditor().selectionEnd] === "]" && this.#activeEditor().value[this.#activeEditor().selectionEnd + 1] === "]")
+      this.#setSelectionAndFocus(this.#activeEditor().selectionEnd + 2);
     else
-      this.#setSelectionAndFocus(editor.selectionEnd + 1);
-    leto.handleEditorInput();
+      this.#setSelectionAndFocus(this.#activeEditor().selectionEnd + 1);
+    if (this.#activeEditor == editor) leto.handleEditorInput();
   }
   
   cutLine() {
     this.selectLine();
-    document.execCommand(editor.selectionEnd - 1 === editor.selectionStart ? 'delete' : 'cut');
-  }
-
-  #deleteLine() {
-    this.selectLine();
-    document.execCommand('delete');
+    document.execCommand(this.#activeEditor().selectionEnd - 1 === this.#activeEditor().selectionStart ? 'delete' : 'cut');
   }
   
   handleNewLine() {
@@ -148,174 +149,175 @@ export default class Edit {
 
     var deleteLine = false;
 
-    if (editor.selectionStart != editor.selectionEnd) 
+    if (this.#activeEditor().selectionStart != this.#activeEditor().selectionEnd) 
       insertText = '\n';
-    else if (editor.value[lineStart] === '—' && editor.selectionEnd - lineStart > 1) 
-      (/^—[\s]*$/.test(editor.value.slice(lineStart, lineEnd))) ? deleteLine = true : insertText = '\n— ';
-    else if (editor.value.slice(lineStart, lineStart + 3) === '[ ]' && editor.selectionEnd - lineStart > 3)
-      (/^\[ \][\s]*$/.test(editor.value.slice(lineStart, lineEnd))) ? deleteLine = true : insertText = '\n[ ] ';
-    else if (editor.value.slice(lineStart, lineStart + 3) === '[x]' && editor.selectionEnd - lineStart > 3)
-      (/^\[x\][\s]*$/.test(editor.value.slice(lineStart, lineEnd))) ? deleteLine = true : insertText = '\n[ ] ';
-    else if (/^\d+\. /.test(editor.value.slice(lineStart, lineEnd))) {
-      if (/^\d+\.\s*$/.test(editor.value.slice(lineStart, lineEnd))) deleteLine = true;
+    else if (this.#activeEditor().value[lineStart] === '—' && this.#activeEditor().selectionEnd - lineStart > 1) 
+      (/^—[\s]*$/.test(this.#activeEditor().value.slice(lineStart, lineEnd))) ? deleteLine = true : insertText = '\n— ';
+    else if (this.#activeEditor().value.slice(lineStart, lineStart + 3) === '[ ]' && this.#activeEditor().selectionEnd - lineStart > 3)
+      (/^\[ \][\s]*$/.test(this.#activeEditor().value.slice(lineStart, lineEnd))) ? deleteLine = true : insertText = '\n[ ] ';
+    else if (this.#activeEditor().value.slice(lineStart, lineStart + 3) === '[x]' && this.#activeEditor().selectionEnd - lineStart > 3)
+      (/^\[x\][\s]*$/.test(this.#activeEditor().value.slice(lineStart, lineEnd))) ? deleteLine = true : insertText = '\n[ ] ';
+    else if (/^\d+\. /.test(this.#activeEditor().value.slice(lineStart, lineEnd))) {
+      if (/^\d+\.\s*$/.test(this.#activeEditor().value.slice(lineStart, lineEnd))) deleteLine = true;
       else {
-        var dotIndex = editor.value.slice(lineStart, lineEnd).indexOf(".");
-        var num = parseInt(editor.value.slice(lineStart, lineStart + dotIndex));
+        var dotIndex = this.#activeEditor().value.slice(lineStart, lineEnd).indexOf(".");
+        var num = parseInt(this.#activeEditor().value.slice(lineStart, lineStart + dotIndex));
         if (num) insertText = `\n${num + 1}. `
       }
     }
     else insertText = '\n';
 
     if (deleteLine) {
-      editor.setSelectionRange(this.#getLineStart(), this.#getLineEnd() - 1);
+      this.#activeEditor().setSelectionRange(this.#getLineStart(), this.#getLineEnd() - 1);
       document.execCommand('delete');
     }
 
     document.execCommand('insertText', false, insertText);
-    this.#setSelectionAndFocus(editor.selectionStart);
+    this.#setSelectionAndFocus(this.#activeEditor().selectionStart);
   }
 
   moveDown() {
-    var lineStart = this.#getLineStart(editor.selectionStart);
-    var lineEnd = this.#getLineEnd(editor.selectionEnd);
+    var lineStart = this.#getLineStart(this.#activeEditor().selectionStart);
+    var lineEnd = this.#getLineEnd(this.#activeEditor().selectionEnd);
     if (lineEnd - 1 === lineStart) return;
-    if (lineEnd > editor.value.length) return;
+    if (lineEnd > this.#activeEditor().value.length) return;
 
-    var startSelectionPosition = editor.selectionStart - lineStart;
-    var endSelectionPosition = editor.selectionEnd - lineStart;
-    var lineToMove = editor.value.slice(lineStart, lineEnd);
+    var startSelectionPosition = this.#activeEditor().selectionStart - lineStart;
+    var endSelectionPosition = this.#activeEditor().selectionEnd - lineStart;
+    var lineToMove = this.#activeEditor().value.slice(lineStart, lineEnd);
     var [nextLineStart, nextLineEnd] = this.#getLineBorders(lineEnd);
-    var targetLine = editor.value.slice(nextLineStart, nextLineEnd);
+    var targetLine = this.#activeEditor().value.slice(nextLineStart, nextLineEnd);
 
     if (targetLine.slice(-1) != '\n') {
       targetLine += '\n';
       lineToMove = lineToMove.slice(0, -1);
     }
 
-    editor.setSelectionRange(lineStart, nextLineEnd);
+    this.#activeEditor().setSelectionRange(lineStart, nextLineEnd);
     document.execCommand('insertText', false, targetLine + lineToMove);
     this.#setSelectionAndFocus(lineStart + targetLine.length + startSelectionPosition, lineStart + targetLine.length + endSelectionPosition);
   }
 
   moveUp() {
-    var lineStart = this.#getLineStart(editor.selectionStart);
-    var lineEnd = this.#getLineEnd(editor.selectionEnd);
+    var lineStart = this.#getLineStart(this.#activeEditor().selectionStart);
+    var lineEnd = this.#getLineEnd(this.#activeEditor().selectionEnd);
     if (lineEnd - 1 === lineStart) return;
     if (lineStart === 0) return;
 
-    var startSelectionPosition = editor.selectionStart - lineStart;
-    var endSelectionPosition = editor.selectionEnd - lineStart;
-    var lineToMove = editor.value.slice(lineStart, lineEnd);
+    var startSelectionPosition = this.#activeEditor().selectionStart - lineStart;
+    var endSelectionPosition = this.#activeEditor().selectionEnd - lineStart;
+    var lineToMove = this.#activeEditor().value.slice(lineStart, lineEnd);
     var [prevLineStart, prevLineEnd] = this.#getLineBorders(lineStart - 1);
-    var targetLine = editor.value.slice(prevLineStart, prevLineEnd);
+    var targetLine = this.#activeEditor().value.slice(prevLineStart, prevLineEnd);
 
     if (lineToMove.slice(-1) != '\n') {
       lineToMove += '\n';
       targetLine = targetLine.slice(0, -1);
     }
 
-    editor.setSelectionRange(prevLineStart, lineEnd);
+    this.#activeEditor().setSelectionRange(prevLineStart, lineEnd);
     document.execCommand('insertText', false, lineToMove + targetLine);
     this.#setSelectionAndFocus(prevLineStart + startSelectionPosition, prevLineStart + endSelectionPosition);
   }
 
   copyLineDown() {
-    var lineStart = this.#getLineStart(editor.selectionStart);
-    var lineEnd = this.#getLineEnd(editor.selectionEnd);
+    var lineStart = this.#getLineStart(this.#activeEditor().selectionStart);
+    var lineEnd = this.#getLineEnd(this.#activeEditor().selectionEnd);
     if (lineEnd - 1 === lineStart) return;
 
-    var startSelectionPosition = editor.selectionStart - lineStart;
-    var endSelectionPosition = editor.selectionEnd - lineStart;
-    var lineToCopy = editor.value.slice(lineStart, lineEnd);
-    if (lineEnd > editor.value.length) lineToCopy = '\n' + lineToCopy;
+    var startSelectionPosition = this.#activeEditor().selectionStart - lineStart;
+    var endSelectionPosition = this.#activeEditor().selectionEnd - lineStart;
+    var lineToCopy = this.#activeEditor().value.slice(lineStart, lineEnd);
+    if (lineEnd > this.#activeEditor().value.length) lineToCopy = '\n' + lineToCopy;
 
-    editor.setSelectionRange(lineEnd, lineEnd);
+    this.#activeEditor().setSelectionRange(lineEnd, lineEnd);
     document.execCommand('insertText', false, lineToCopy);
     this.#setSelectionAndFocus(lineEnd + startSelectionPosition, lineEnd + endSelectionPosition);
   }
 
   copyLineUp() {
-    var lineStart = this.#getLineStart(editor.selectionStart);
-    var lineEnd = this.#getLineEnd(editor.selectionEnd);
+    var lineStart = this.#getLineStart(this.#activeEditor().selectionStart);
+    var lineEnd = this.#getLineEnd(this.#activeEditor().selectionEnd);
     if (lineEnd - 1 === lineStart) return;
 
-    var startSelectionPosition = editor.selectionStart - lineStart;
-    var endSelectionPosition = editor.selectionEnd - lineStart;
-    var lineToCopy = editor.value.slice(lineStart, lineEnd);
-    if (lineEnd > editor.value.length) lineToCopy += '\n';
+    var startSelectionPosition = this.#activeEditor().selectionStart - lineStart;
+    var endSelectionPosition = this.#activeEditor().selectionEnd - lineStart;
+    var lineToCopy = this.#activeEditor().value.slice(lineStart, lineEnd);
+    if (lineEnd > this.#activeEditor().value.length) lineToCopy += '\n';
 
-    editor.setSelectionRange(lineStart, lineStart);
+    this.#activeEditor().setSelectionRange(lineStart, lineStart);
     document.execCommand('insertText', false, lineToCopy);
     this.#setSelectionAndFocus(lineStart + startSelectionPosition, lineStart + endSelectionPosition);
   }
 
   createCheckbox() {
     var lineStart = this.#getLineStart();
-    var positionAtLine = editor.selectionEnd - lineStart;
+    var positionAtLine = this.#activeEditor().selectionEnd - lineStart;
 
-    if (editor.value.slice(lineStart, lineStart + 3) === '[x]') {
-      editor.setSelectionRange(lineStart + 1, lineStart + 2);
+    if (this.#activeEditor().value.slice(lineStart, lineStart + 3) === '[x]') {
+      this.#activeEditor().setSelectionRange(lineStart + 1, lineStart + 2);
       document.execCommand('insertText', false, ' ');
       this.#setSelectionAndFocus(lineStart + positionAtLine);
-    } else if (editor.value.slice(lineStart, lineStart + 3) === '[ ]') {
-      editor.setSelectionRange(lineStart + 1, lineStart + 2);
+    } else if (this.#activeEditor().value.slice(lineStart, lineStart + 3) === '[ ]') {
+      this.#activeEditor().setSelectionRange(lineStart + 1, lineStart + 2);
       document.execCommand('insertText', false, 'x');
       this.#setSelectionAndFocus(lineStart + positionAtLine);
     } else {
-      editor.setSelectionRange(lineStart, lineStart);
+      this.#activeEditor().setSelectionRange(lineStart, lineStart);
       document.execCommand('insertText', false, '[ ] ');
       this.#setSelectionAndFocus(lineStart + positionAtLine + 4);
     }
   }
 
   jumpUp() {
-    var position = editor.selectionEnd - 1;
+    var position = this.#activeEditor().selectionEnd - 1;
 
-    for (; position >= 0 && editor.value[position] != '\n'; position--);
+    for (; position >= 0 && this.#activeEditor().value[position] != '\n'; position--);
     for (; position > 0; position--) {
-      if (editor.value[position] != '#') continue;
-      if (position == 1 || editor.value[position - 1] == `\n`) break; 
+      if (this.#activeEditor().value[position] != '#') continue;
+      if (position == 1 || this.#activeEditor().value[position - 1] == `\n`) break; 
     }
 
     position = Math.max(0, position);
 
-    editor.setSelectionRange(position, position);
+    this.#activeEditor().setSelectionRange(position, position);
     this.#setSelectionAndFocus(this.#getLineEnd() - 1);
   }
 
   jumpDown() {
-    var position = editor.selectionEnd;
+    var position = this.#activeEditor().selectionEnd;
 
-    for (; position < editor.value.length && editor.value[position] != '\n'; position++);
-    for (; position < editor.value.length; position++) {
-      if (editor.value[position] != '#') continue;
-      if (position == 1 || editor.value[position - 1] == `\n`) break; 
+    for (; position < this.#activeEditor().value.length && this.#activeEditor().value[position] != '\n'; position++);
+    for (; position < this.#activeEditor().value.length; position++) {
+      if (this.#activeEditor().value[position] != '#') continue;
+      if (position == 1 || this.#activeEditor().value[position - 1] == `\n`) break; 
     }
 
-    editor.setSelectionRange(position, position);
+    this.#activeEditor().setSelectionRange(position, position);
     this.#setSelectionAndFocus(this.#getLineEnd() - 1);
   }
 
   #setSelectionAndFocus(start, end) {
-    editor.setSelectionRange(start, end ?? start);
-    editor.blur();
-    editor.focus();
-    leto.handleEditorInput();
+    this.#activeEditor().setSelectionRange(start, end ?? start);
+    var activeEditor = this.#activeEditor();
+    activeEditor.blur();
+    activeEditor.focus();
+    if (activeEditor == editor) leto.handleEditorInput();
   }
 
-  #getLineBorders(position = editor.selectionEnd) {
+  #getLineBorders(position = this.#activeEditor().selectionEnd) {
     return [this.#getLineStart(position), this.#getLineEnd(position)];
   }
 
-  #getLineStart(position = editor.selectionEnd) {
+  #getLineStart(position = this.#activeEditor().selectionEnd) {
     var lineStart = position - 1;
-    for (; lineStart >= 0 && editor.value[lineStart] != '\n'; lineStart--);
+    for (; lineStart >= 0 && this.#activeEditor().value[lineStart] != '\n'; lineStart--);
     return lineStart + 1;
   }
 
-  #getLineEnd(position = editor.selectionEnd) {
+  #getLineEnd(position = this.#activeEditor().selectionEnd) {
     var lineEnd = position;
-    for ( ; lineEnd < editor.value.length && editor.value[lineEnd] != '\n'; lineEnd++ );
+    for ( ; lineEnd < this.#activeEditor().value.length && this.#activeEditor().value[lineEnd] != '\n'; lineEnd++ );
     return lineEnd + 1;
   }
 }

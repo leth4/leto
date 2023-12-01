@@ -40,7 +40,6 @@ export default class Canvas {
   }
 
   #undo(event) {
-    if (document.activeElement.nodeName == 'TEXTAREA') return;
     event.preventDefault();
 
     const command = this.#undoCommands.pop();
@@ -50,7 +49,6 @@ export default class Canvas {
   }
 
   #redo(event) {
-    if (document.activeElement.nodeName == 'TEXTAREA') return;
     event.preventDefault();
 
     const command = this.#redoCommands.pop();
@@ -66,6 +64,14 @@ export default class Canvas {
         if (cards[i].getAttribute('data-index') != command.index) continue;
         cards[i].style.left = command.position.x + 'px';
         cards[i].style.top = command.position.y + 'px';
+      }
+    }
+    if (command.type == 'edit') {
+      const cards = document.getElementsByClassName('card');
+      for (let i = 0; i < cards.length; i++) {
+        if (cards[i].getAttribute('data-index') != command.index) continue;
+        cards[i].children[1].value = command.text;
+        this.#updateCard(cards[i], false);
       }
     }
     if (command.type == 'resize') {
@@ -144,6 +150,8 @@ export default class Canvas {
   }
 
   copySelectedCards() {
+    if (document.activeElement.nodeName == 'TEXTAREA') return;
+    
     this.#copiedCards = [];
     this.#selectedCards.forEach(selectedCard => {
       var index = selectedCard.getAttribute('data-index');
@@ -153,6 +161,8 @@ export default class Canvas {
   }
 
   pasteCopiedCards() {
+    if (document.activeElement.nodeName == 'TEXTAREA') return;
+
     this.#deselectAllCards();
     for (let i = 0; i < this.#copiedCards.length; i++) {
       var card = this.#copiedCards[i];
@@ -247,10 +257,11 @@ export default class Canvas {
       selection.style.transform = transformX + transformY;
       selection.style.width = Math.abs(cursorPosition.x - this.#startDragPosition.x) + 'px';
       selection.style.height = Math.abs(cursorPosition.y - this.#startDragPosition.y) + 'px';
+      this.#previousCursorPosition = cursorPosition;
       this.#handleBoxSelection();
     }
     if (this.#draggedItem == null) {
-      document.querySelector(':root').style.setProperty('--cards-pointer-events', event.ctrlKey ? 'none' : 'auto');
+      document.querySelector(':root').style.setProperty('--cards-pointer-events', event.ctrlKey || this.#isSelecting ? 'none' : 'auto');
       this.#previousCursorPosition = cursorPosition;
       return;
     }
@@ -416,20 +427,29 @@ export default class Canvas {
     canvas.style.transform = `scale(${this.#canvasScale})`;
   }
 
-  #updateCard(card) {
+  #updateCard(card, saveUndo = true) {
     var index = card.getAttribute('data-index');
     this.#cards[index].position = this.#getPosition(card);
-    if (this.#cards[index].isText()) this.#cards[index].text = card.children[1].value;
     this.#cards[index].width = parseInt(card.style.width, 10);
     
     var cardRect = card.getBoundingClientRect();
     this.#cards[index].height = parseInt(cardRect.height, 10) / this.#canvasScale;
-
+    
     if (this.#cards[index].isText()) {
       var text = card.children[1].value + (card.children[1].value.slice(-1) === '\n' ? ' ' : '');
       var [preview, _] = leto.preview.getPreview(text);
       this.#previews[index].innerHTML = preview;
       leto.preview.updateLinksEventListeners();
+    }
+
+    if (this.#cards[index].isText()) {
+      if (this.#cards[index].text != card.children[1].value) {
+        if (saveUndo) this.#undoCommands.push({
+          action: {type: 'edit', index: index, text: card.children[1].value},
+          inverse: {type: 'edit', index: index, text: this.#cards[index].text}
+        });
+        this.#cards[index].text = card.children[1].value;
+      }
     }
 
     this.#save();

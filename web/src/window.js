@@ -45,6 +45,7 @@ export default class Window {
     this.populateThemes();
 
     document.onpaste = function (event) {
+      if (!leto.directory.isFileANote(leto.directory.activeFile)) return;
       var items = (event.clipboardData || event.originalEvent.clipboardData).items;
       for (var index in items) {
         var item = items[index];

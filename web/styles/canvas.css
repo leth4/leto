@@ -16,7 +16,8 @@
     display: none;
     transform-origin: 0 0;
     position: absolute;
-    background-color: #ca454576;
+    background-color: var(--editor-muted-color);
+    opacity: .3;
 }
 
 .card {
@@ -26,6 +27,7 @@
     width: 200px;
     position: absolute;
     border: 1px solid var(--divider-color);
+    box-shadow: 0 0 5px #00000028;
     border-radius: 3px;
 }
 

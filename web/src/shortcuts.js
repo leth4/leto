@@ -9,16 +9,16 @@ export default class Shortcuts {
   constructor() {
     window.onkeydown = (e) => {
       if (!leto.focused) return;
-      var inEditor = document.activeElement === editor;
+      var inEditor = document.activeElement.nodeName == 'TEXTAREA';
       var selected = editor.selectionStart != editor.selectionEnd;
 
-      if (e.ctrlKey && !e.shiftKey && e.code === 'KeyY' && inEditor) {
+      if (e.ctrlKey && !e.shiftKey && e.code === 'KeyY' && document.activeElement === editor) {
         e.preventDefault();
         leto.undo.redo();
-      } else if (e.ctrlKey && e.shiftKey && e.code === 'KeyZ' && inEditor) {
+      } else if (e.ctrlKey && e.shiftKey && e.code === 'KeyZ' && document.activeElement === editor) {
         e.preventDefault();
         leto.undo.redo();
-      } else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyZ' && inEditor) {
+      } else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyZ' && document.activeElement === editor) {
         e.preventDefault();
         leto.undo.undo();  
       } 

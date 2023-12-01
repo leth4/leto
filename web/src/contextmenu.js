@@ -163,7 +163,7 @@ export default class ContextMenu {
       this.#addAction('Rename');
       this.#addAction(this.#deleting ? 'Delete?' : 'Delete');
       this.#addAction(leto.explorer.isPinned(this.#initialClickTarget) ? 'Unpin' : 'Pin');
-      this.#addAction('Preview');
+      this.#addAction('Preview', !this.#initialClickTarget.getAttribute('data-path').endsWith('.lea'));
       this.#addSeparator();
     } else if (leto.explorer.isFolder(this.#initialClickTarget)) {
       this.#addAction('Rename');
@@ -173,7 +173,7 @@ export default class ContextMenu {
       this.#addAction('Unpin');
       this.#addAction('Unpin All');
       this.#addSeparator();
-      this.#addAction('Preview');
+      this.#addAction('Preview', !this.#initialClickTarget.getAttribute('data-path').endsWith('.lea'));
       return;
     }
     this.#addAction('New Note');
