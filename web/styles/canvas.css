@@ -12,6 +12,13 @@
     height: 0;
 }
 
+#selection {
+    display: none;
+    transform-origin: 0 0;
+    position: absolute;
+    background-color: #ca454576;
+}
+
 .card {
     background-color: var(--editor-code-background-color);
     min-height: 100px;

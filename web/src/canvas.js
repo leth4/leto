@@ -5,12 +5,15 @@ const { convertFileSrc } = window.__TAURI__.tauri;
 
 const container = document.getElementById('canvas-container');
 const canvas = document.getElementById('canvas');
+const selection = document.getElementById('selection');
 
 export default class Canvas {
+
   #draggedItem;
   #previousCursorPosition;
   #startDragPosition;
   #startDragWidth;
+  #isSelecting;
 
   #canvasScale = 1;
   #canvasPosition = {x: 0, y: 0};
@@ -150,12 +153,14 @@ export default class Canvas {
   }
 
   pasteCopiedCards() {
+    this.#deselectAllCards();
     for (let i = 0; i < this.#copiedCards.length; i++) {
       var card = this.#copiedCards[i];
       var positionOffset = {x: 0, y: 0};
       if (i > 0) positionOffset = {x: this.#copiedCards[i].position.x - this.#copiedCards[0].position.x, y: this.#copiedCards[i].position.y - this.#copiedCards[0].position.y}
       var cursorPosition = this.#screenToCanvasSpace(this.#previousCursorPosition);
-      this.#createCard({x: cursorPosition.x + positionOffset.x, y: cursorPosition.y + positionOffset.y}, card.text, card.width, card.imagePath)
+      var newCard = this.#createCard({x: cursorPosition.x + positionOffset.x, y: cursorPosition.y + positionOffset.y}, card.text, card.width, card.imagePath)
+      this.#setSelected(newCard);
     }
   }
 
@@ -218,6 +223,14 @@ export default class Canvas {
       this.#draggedItem = canvas;
       container.style.cursor = 'grabbing';
       this.#startDragPosition = this.#getPosition(this.#draggedItem);
+    } else if (event.target == container && event.button == 1) {
+      this.#isSelecting = true;
+      selection.style.display = 'block';
+      this.#startDragPosition = this.#previousCursorPosition;
+      selection.style.left = this.#previousCursorPosition.x + 'px';
+      selection.style.top = this.#previousCursorPosition.y + 'px';
+      selection.style.width = '0px';
+      selection.style.height = '0px';
     } else if (event.target.classList.contains('handle')) {
       this.#draggedItem = event.target;
       this.#startDragWidth = parseInt(event.target.parentElement.style.width, 10);
@@ -228,16 +241,23 @@ export default class Canvas {
 
   #handleMouseMove(event) {
     var cursorPosition = {x: event.clientX - 204, y: event.clientY};
+    if (this.#isSelecting) {
+      var transformX = (cursorPosition.x < this.#startDragPosition.x) ? 'scaleX(-1)' : 'scaleX(1)';
+      var transformY =  (cursorPosition.y < this.#startDragPosition.y) ? 'scaleY(-1)' : 'scaleY(1)';
+      selection.style.transform = transformX + transformY;
+      selection.style.width = Math.abs(cursorPosition.x - this.#startDragPosition.x) + 'px';
+      selection.style.height = Math.abs(cursorPosition.y - this.#startDragPosition.y) + 'px';
+      this.#handleBoxSelection();
+    }
     if (this.#draggedItem == null) {
       document.querySelector(':root').style.setProperty('--cards-pointer-events', event.ctrlKey ? 'none' : 'auto');
       this.#previousCursorPosition = cursorPosition;
       return;
     }
-    else if (this.#draggedItem.classList.contains('handle')) {
+    if (this.#draggedItem.classList.contains('handle')) {
       if (this.#draggedItem.classList.contains('handle-right')) {
         var newWidth = this.#screenToCanvasSpaceX(event.clientX - 204) - this.#getPosition(this.#draggedItem.parentElement).x - 20;
-        if (newWidth > 500) newWidth = 500;
-        if (newWidth < 100) newWidth = 100;
+        newWidth = this.#clamp(newWidth, 100, 500);
         this.#draggedItem.parentElement.style.width = newWidth + 'px';
       }
       else {
@@ -251,9 +271,14 @@ export default class Canvas {
       this.#updateCard(this.#draggedItem.parentElement);
     }
     else if (this.#draggedItem == canvas) {
-      canvas.style.left = this.#getPosition(canvas).x + (cursorPosition.x - this.#previousCursorPosition.x) + 'px';
-      canvas.style.top = this.#getPosition(canvas).y + (cursorPosition.y - this.#previousCursorPosition.y) + 'px';
+      var newPositionX = this.#getPosition(canvas).x + (cursorPosition.x - this.#previousCursorPosition.x);
+      var newPositionY = this.#getPosition(canvas).y + (cursorPosition.y - this.#previousCursorPosition.y);
+      newPositionX = this.#clamp(newPositionX, -1000, 1000);
+      newPositionY = this.#clamp(newPositionY, -1000, 1000);
+      canvas.style.left = newPositionX + 'px';
+      canvas.style.top = newPositionY + 'px';
       this.#canvasPosition = this.#getPosition(canvas);
+
     } else {
       this.#selectedCards.forEach(card => {
         card.style.left = this.#getPosition(card).x + (cursorPosition.x - this.#previousCursorPosition.x) / this.#canvasScale + 'px';
@@ -267,6 +292,10 @@ export default class Canvas {
   }
 
   #handleMouseUp(event) {
+    if (this.#isSelecting) {
+      selection.style.display = 'none';
+      this.#isSelecting = false;
+    }
     if (this.#draggedItem == null) return;
     if (this.#draggedItem.classList.contains('card')) {
       this.#updateCard(this.#draggedItem);
@@ -283,10 +312,21 @@ export default class Canvas {
         action: {type: 'resize', position: this.#getPosition(this.#draggedItem.parentElement), width: parseInt(this.#draggedItem.parentElement.style.width, 10), index: parseInt(this.#draggedItem.parentElement.getAttribute('data-index'), 10)},
         inverse: {type: 'resize', position: this.#startDragPosition, width: this.#startDragWidth, index: parseInt(this.#draggedItem.parentElement.getAttribute('data-index'), 10)}
       });
-      console.log(this.#undoCommands);
     }
     container.style.cursor = 'auto';
     this.#draggedItem = null;
+  }
+
+  #handleBoxSelection() {
+    this.#deselectAllCards();
+    var selectionRect = selection.getBoundingClientRect();
+    var cards = document.getElementsByClassName('card');
+    for (let i = 0; i < cards.length; i++) {
+      const cardRect = cards[i].getBoundingClientRect();
+      if (selectionRect.left < cardRect.right && selectionRect.right > cardRect.left && selectionRect.top < cardRect.bottom && selectionRect.bottom > cardRect.top) {
+        this.#setSelected(cards[i]);
+      }
+    }
   }
 
   #createCard(position, text, width, imagePath = '', atIndex = -1, saveUndo = true) {
@@ -351,22 +391,23 @@ export default class Canvas {
     });
     
     this.#updateCard(newCard);
+
+    return newCard;
   }
 
   #handleZoom(event) {
     var factor = 0.9;
     if (event.deltaY < 0) factor = 1 / factor;
 
-    var oldScaleInBounds = this.#canvasScale < 3 && this.#canvasScale > 0.2;
+    var oldScaleInBounds = this.#canvasScale < 3 && this.#canvasScale > .1;
 
     this.#canvasScale *= factor;
-    if (this.#canvasScale > 3) this.#canvasScale = 3;
-    if (this.#canvasScale < 0.2) this.#canvasScale = 0.2;
+    this.#canvasScale = this.#clamp(this.#canvasScale, .1, 3);
     
     var dx = (this.#previousCursorPosition.x - this.#canvasPosition.x) * (factor - 1);
     var dy = (this.#previousCursorPosition.y - this.#canvasPosition.y) * (factor - 1);
     
-    if (oldScaleInBounds || (this.#canvasScale < 3 && this.#canvasScale > 0.2)) {
+    if (oldScaleInBounds || (this.#canvasScale < 3 && this.#canvasScale > .1)) {
       canvas.style.left = this.#getPosition(canvas).x - dx + 'px';
       canvas.style.top = this.#getPosition(canvas).y - dy + 'px';
       this.#canvasPosition = this.#getPosition(canvas);
@@ -425,6 +466,12 @@ export default class Canvas {
   #getCardCopy(card) {
     return new Card(card.position, card.text, card.width, card.height, card.imagePath);
   }
+
+  #clamp(number, min, max) {
+    if (number > max) number = max;
+    else if (number < min) number = min;
+    return number;
+  }
 }
 
 class Card {
@@ -438,13 +485,5 @@ class Card {
 
   isText() {
     return this.imagePath == '';
-  }
-}
-
-class Arrow {
-  constructor(fromIndex, toIndex) {
-    this.fromIndex = fromIndex;
-    this.toIndex = toIndex;
-    this.toPosition;
   }
 }
