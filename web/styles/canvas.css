@@ -22,18 +22,26 @@
 }
 
 .card {
-    background-color: var(--editor-code-background-color);
+    background-color: var(--canvas-card-color);
     min-height: 100px;
     height: auto;
     width: 200px;
     position: absolute;
-    border: 1px solid var(--divider-color);
+    border: .5px solid var(--editor-muted-color);
     box-shadow: 0 0 5px #00000028;
     border-radius: 3px;
     padding: 30px 10px 10px 10px;
 }
 
 .card.selected {
+    border: 1px solid var(--editor-accent-color);
+}
+
+.card.inversed {
+    background-color: var(--canvas-inversed-card-color);
+}
+
+.card.inversed.selected {
     border: 1px solid var(--editor-accent-color);
 }
 
@@ -61,6 +69,10 @@
     font-size: var(--font-size);
     font-weight: var(--font-weight);
 }
+
+.card.inversed .card-preview {
+    color: var(--canvas-inversed-card-text-color);
+} 
 
 .card-preview {
     z-index: 0;

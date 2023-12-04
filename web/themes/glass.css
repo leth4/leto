@@ -6,6 +6,10 @@
     --editor-muted-color: #555555dc;
     --selection-color: #4b4b4b;
 
+    --canvas-card-color: #242424;
+    --canvas-inversed-card-color: #888888;
+    --canvas-inversed-card-text-color: #000000;
+
     --sidebar-background-color:#141414b2;
     --sidebar-folder-color: #c1c1c1dc;
     --sidebar-file-color: #8c8c8cdc;

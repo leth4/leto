@@ -100,12 +100,12 @@ export default class ContextMenu {
     else if (action === 'Cut') {
       if (this.#initialClickTarget.classList.contains('card')) {
         leto.canvas.copySelectedCards();
-        leto.canvas.deleteSelected();
+        leto.canvas.deleteSelectedCards();
       } else leto.edit.cut();
     }
 
     else if (action === 'Delete') {
-      if (this.#initialClickTarget.classList.contains('card')) leto.canvas.deleteSelected();
+      if (this.#initialClickTarget.classList.contains('card')) leto.canvas.deleteSelectedCards();
       else {
         this.#deleting = true;
         this.#createFileSystemMenu();
@@ -134,6 +134,7 @@ export default class ContextMenu {
     else if (action === 'Align →') leto.canvas.alignSelectedHorizontally();
     else if (action === 'To Front') leto.canvas.sendSelectedToFront();
     else if (action === 'To Back') leto.canvas.sendSelectedToBack();
+    else if (action === 'Invert') leto.canvas.inverseSelectedCards();
 
     else leto.edit.replaceWord(action);
 
@@ -214,11 +215,15 @@ export default class ContextMenu {
     this.#addAction('Cut');
     this.#addAction('Delete');
     this.#addSeparator();
+    this.#addAction('Invert');
+    this.#addSeparator();
     this.#addAction('To Front');
     this.#addAction('To Back');
-    this.#addSeparator();
-    this.#addAction('Align ↓', leto.canvas.hasMultipleSelected());
-    this.#addAction('Align →', leto.canvas.hasMultipleSelected());
+    if (leto.canvas.hasMultipleSelected()) {
+      this.#addSeparator();
+      this.#addAction('Align ↓');
+      this.#addAction('Align →');
+    }
   }
 
   #addAction(name, isActive = true) {

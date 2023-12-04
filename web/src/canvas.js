@@ -41,6 +41,18 @@ export default class Canvas {
     container.addEventListener('drop', event => this.#handleDrop(event));
   }
 
+  #handleKeyPress(event) {
+    if (event.ctrlKey && event.code === 'Space') this.createEmptyCard();
+    if (!event.ctrlKey && event.code === 'Delete' || event.code === 'Backspace') this.deleteSelectedCards();
+    if (event.ctrlKey && event.code === 'KeyX') {this.copySelectedCards(); this.deleteSelectedCards();} 
+    if (event.ctrlKey && event.code === 'KeyC') this.copySelectedCards();
+    if (event.ctrlKey && event.code === 'KeyV') this.pasteCopiedCards();
+    if (event.ctrlKey && event.code === 'KeyA') this.#selectAllCards();
+    if (event.ctrlKey && event.code === 'KeyZ') this.#undo(event);
+    if (event.ctrlKey && event.code === 'KeyY') this.#redo(event);
+    if (event.ctrlKey && event.code === 'KeyI') this.inverseSelectedCards();
+  }
+
   #undo(event) {
     event.preventDefault();
 
@@ -91,9 +103,16 @@ export default class Canvas {
         this.#setCardZIndex(cards[i], command.zIndex, false);
       }
     }
+    if (command.type == 'inverse') {
+      const cards = document.getElementsByClassName('card');
+      for (let i = 0; i < cards.length; i++) {
+        if (cards[i].getAttribute('data-index') != command.index) continue;
+        this.#inverseCard(cards[i], false);
+      }
+    }
     if (command.type == 'create') {
       const card = command.card;
-      this.#createCard(card.position, card.text, card.width, card.imagePath, card.zIndex, command.index, false);
+      this.#createCard(card.position, card.text, card.width, card.imagePath, card.zIndex, card.isInversed, command.index, false);
     }
     if (command.type == 'delete') {
       const cards = document.getElementsByClassName('card');
@@ -101,7 +120,7 @@ export default class Canvas {
         if (cards[i].getAttribute('data-index') != command.index) continue;
         this.#deselectAllCards();
         this.#setSelected(cards[i]);
-        this.deleteSelected(false);
+        this.deleteSelectedCards(false);
       }
     }
     this.#deselectAllCards();
@@ -113,17 +132,6 @@ export default class Canvas {
 
   hasMultipleSelected() {
     return this.#selectedCards.length >= 2;
-  }
-
-  #handleKeyPress(event) {
-    if (event.ctrlKey && event.code === 'Space') this.createEmptyCard();
-    if (!event.ctrlKey && event.code === 'Delete' || event.code === 'Backspace') this.deleteSelected();
-    if (event.ctrlKey && event.code === 'KeyX') {this.copySelectedCards(); this.deleteSelected();} 
-    if (event.ctrlKey && event.code === 'KeyC') this.copySelectedCards();
-    if (event.ctrlKey && event.code === 'KeyV') this.pasteCopiedCards();
-    if (event.ctrlKey && event.code === 'KeyA') this.#selectAllCards();
-    if (event.ctrlKey && event.code === 'KeyZ') this.#undo(event);
-    if (event.ctrlKey && event.code === 'KeyY') this.#redo(event);
   }
   
   createEmptyCard() {
@@ -162,7 +170,7 @@ export default class Canvas {
     this.#save();
   }
 
-  deleteSelected(saveUndo = true) {
+  deleteSelectedCards(saveUndo = true) {
     if (document.activeElement.nodeName == 'TEXTAREA') return;
 
     this.#selectedCards.forEach(card => {
@@ -181,6 +189,21 @@ export default class Canvas {
         var cardIndex = parseInt(cardElements[i].getAttribute('data-index'));
         if (cardIndex > index) cardElements[i].setAttribute('data-index', cardIndex - 1); 
       }
+    });
+    this.#save();
+  }
+
+  inverseSelectedCards() {
+    this.#selectedCards.forEach(card => this.#inverseCard(card));
+  }
+
+  #inverseCard(card, saveUndo = true) {
+    var index = card.getAttribute('data-index');
+    this.#cards[index].isInversed = !this.#cards[index].isInversed;
+    this.#cards[index].isInversed ? card.classList.add('inversed') : card.classList.remove('inversed');
+    if (saveUndo) this.#undoCommands.push({
+      action: {type: 'inverse', index: parseInt(card.getAttribute('data-index'), 10)},
+      inverse: {type: 'inverse', index: parseInt(card.getAttribute('data-index'), 10)}
     });
     this.#save();
   }
@@ -230,7 +253,7 @@ export default class Canvas {
       var positionOffset = {x: 0, y: 0};
       if (i > 0) positionOffset = {x: this.#copiedCards[i].position.x - this.#copiedCards[0].position.x, y: this.#copiedCards[i].position.y - this.#copiedCards[0].position.y}
       var cursorPosition = this.#screenToCanvasSpace(this.#previousCursorPosition);
-      var newCard = this.#createCard({x: cursorPosition.x + positionOffset.x, y: cursorPosition.y + positionOffset.y}, card.text, card.width, card.imagePath)
+      var newCard = this.#createCard({x: cursorPosition.x + positionOffset.x, y: cursorPosition.y + positionOffset.y}, card.text, card.width, card.imagePath, this.#cards.length + 100, card.isInversed);
       this.#setSelected(newCard);
     }
   }
@@ -240,11 +263,8 @@ export default class Canvas {
     this.#selectedCards.sort((a, b) => this.#cards[a.getAttribute('data-index')].position.y - this.#cards[b.getAttribute('data-index')].position.y);
     for (let i = 1; i < this.#selectedCards.length; i++) {
       var previousCard = this.#cards[this.#selectedCards[i - 1].getAttribute('data-index')];
-      this.#selectedCards[i].style.left = previousCard.position.x + 'px';
-      this.#selectedCards[i].style.top = previousCard.position.y + previousCard.height + 25 + 'px'; 
-      this.#updateCard(this.#selectedCards[i]);
+      this.#moveCardToPosition(this.#selectedCards[i], {x: previousCard.position.x, y: previousCard.position.y + previousCard.height + 25});
     }
-    this.#save();
   }
   
   alignSelectedHorizontally() {
@@ -252,10 +272,19 @@ export default class Canvas {
     this.#selectedCards.sort((a, b) => this.#cards[a.getAttribute('data-index')].position.x - this.#cards[b.getAttribute('data-index')].position.x);
     for (let i = 1; i < this.#selectedCards.length; i++) {
       var previousCard = this.#cards[this.#selectedCards[i - 1].getAttribute('data-index')];
-      this.#selectedCards[i].style.top = previousCard.position.y + 'px';
-      this.#selectedCards[i].style.left = previousCard.position.x + previousCard.width + 45 + 'px'; 
-      this.#updateCard(this.#selectedCards[i]);
+      this.#moveCardToPosition(this.#selectedCards[i], {x: previousCard.position.x + previousCard.width + 45, y: previousCard.position.y});
     }
+  }
+
+  #moveCardToPosition(card, position) {
+    var previousPosition = this.#getPosition(card);
+    card.style.left = position.x + 'px'; 
+    card.style.top = position.y + 'px';
+    this.#updateCard(card);
+    this.#undoCommands.push({
+      action: {type: 'move', position: position, index: parseInt(card.getAttribute('data-index'), 10)},
+      inverse: {type: 'move', position: previousPosition, index: parseInt(card.getAttribute('data-index'), 10)}
+    });
     this.#save();
   }
 
@@ -396,9 +425,11 @@ export default class Canvas {
     }
   }
 
-  #createCard(position, text, width, imagePath = '', zIndex = 100 + this.#cards.length, atIndex = -1, saveUndo = true) {
+  #createCard(position, text, width, imagePath = '', zIndex = 100 + this.#cards.length, isInversed = false, atIndex = -1, saveUndo = true) {
     var newCard = document.createElement('div');
     newCard.classList.add('card');
+
+    if (isInversed) newCard.classList.add('inversed');
 
     var preview = document.createElement('code');
     preview.classList.add('card-preview');
@@ -439,11 +470,11 @@ export default class Canvas {
     
     if (atIndex == -1) {
       newCard.setAttribute("data-index", this.#cards.length);
-      this.#cards.push(new Card({x: newCard.style.left, y: newCard.style.top}, '', 100, 200, '', zIndex));
+      this.#cards.push(new Card({x: newCard.style.left, y: newCard.style.top}, '', 100, 200, '', zIndex, isInversed));
       this.#cards[this.#cards.length - 1].imagePath = imagePath;
     }
     else {
-      this.#cards.splice(atIndex, 0, new Card({x: newCard.style.left, y: newCard.style.top}, '', 100, 200, '', zIndex));
+      this.#cards.splice(atIndex, 0, new Card({x: newCard.style.left, y: newCard.style.top}, '', 100, 200, '', zIndex, isInversed));
       this.#cards[atIndex].imagePath = imagePath;
       const cardElements = canvas.getElementsByClassName('card');
       for (let i = 0; i < cardElements.length; i++) {
@@ -454,7 +485,7 @@ export default class Canvas {
     }
 
     if (saveUndo) this.#undoCommands.push({
-      action: {type: 'create', index: atIndex == -1 ? this.#cards.length - 1 : atIndex, card: new Card(position, text, width, 200, imagePath, zIndex)},
+      action: {type: 'create', index: atIndex == -1 ? this.#cards.length - 1 : atIndex, card: new Card(position, text, width, 200, imagePath, zIndex, isInversed)},
       inverse: {type: 'delete', index: atIndex == -1 ? this.#cards.length - 1 : atIndex }
     });
     
@@ -525,7 +556,7 @@ export default class Canvas {
     canvas.innerHTML = '';
     this.#cards = [];
     this.#previews = [];
-    file.cards.forEach(card => { this.#createCard(card.position, card.text, card.width, card.imagePath, card.zIndex, -1, false); });
+    file.cards.forEach(card => { this.#createCard(card.position, card.text, card.width, card.imagePath, card.zIndex, card.isInversed, -1, false); });
   }
 
   #getPosition(element) {
@@ -541,7 +572,7 @@ export default class Canvas {
   }
 
   #getCardCopy(card) {
-    return new Card(card.position, card.text, card.width, card.height, card.imagePath, card.zIndex);
+    return new Card(card.position, card.text, card.width, card.height, card.imagePath, card.zIndex, card.isInversed);
   }
 
   #clamp(number, min, max) {
@@ -552,13 +583,14 @@ export default class Canvas {
 }
 
 class Card {
-  constructor(position, text, width, height, imagePath = '', zIndex) {
+  constructor(position, text, width, height, imagePath = '', zIndex, isInversed = false) {
     this.position = position;
     this.text = text;
     this.width = width;
     this.height = height;
     this.imagePath = imagePath;
     this.zIndex = zIndex;
+    this.isInversed = isInversed;
   }
 
   isText() {
