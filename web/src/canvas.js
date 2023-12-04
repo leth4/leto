@@ -13,7 +13,9 @@ export default class Canvas {
   #previousCursorPosition;
   #startDragPosition;
   #startDragWidth;
-  #isSelecting;
+
+  #isBoxSelecting;
+  #previouslySelectedCards;
 
   #canvasScale = 1;
   #canvasPosition = {x: 0, y: 0};
@@ -95,6 +97,7 @@ export default class Canvas {
         this.deleteSelected(false);
       }
     }
+    this.#deselectAllCards();
   }
 
   hasCopiedCards() {
@@ -143,10 +146,29 @@ export default class Canvas {
     this.#save();
   }
 
+  #deselectAllCards() {
+    this.#selectedCards.forEach(card => card.classList.remove('selected'));
+    this.#selectedCards = [];
+  }
+
+  #selectAllCards() {
+    this.#selectedCards = [];
+    const cardElements = canvas.getElementsByClassName('card');
+    for (let i = 0; i < cardElements.length; i++) {
+      this.#setSelected(cardElements[i]);
+    }
+  }
+
   #setSelected(card) {
     if (this.#selectedCards.includes(card)) return;
     card.classList.add('selected');
     this.#selectedCards.push(card);
+  }
+
+  #setDeselected(card) {
+    if (!this.#selectedCards.includes(card)) return;
+    card.classList.remove('selected');
+    this.#selectedCards.splice(this.#selectedCards.indexOf(card), 1);
   }
 
   copySelectedCards() {
@@ -198,19 +220,6 @@ export default class Canvas {
     this.#save();
   }
 
-  #deselectAllCards() {
-    this.#selectedCards.forEach(card => card.classList.remove('selected'));
-    this.#selectedCards = [];
-  }
-
-  #selectAllCards() {
-    this.#selectedCards = [];
-    const cardElements = canvas.getElementsByClassName('card');
-    for (let i = 0; i < cardElements.length; i++) {
-      this.#setSelected(cardElements[i]);
-    }
-  }
-
   async #handleDrop(event) {
     var filePath = event.dataTransfer.getData('text/path');
     if (leto.directory.isFileAnImage(filePath)) {
@@ -225,8 +234,10 @@ export default class Canvas {
     this.#previousCursorPosition = {x: event.clientX - 204, y: event.clientY};
     if (event.target.classList.contains('card')) {
       this.#draggedItem = event.target;
-      if (!event.shiftKey && event.button == 0 && (this.#selectedCards.length < 2 || !this.#selectedCards.includes(event.target))) this.#deselectAllCards()
-      this.#setSelected(event.target);
+      var isSelected = this.#selectedCards.includes(event.target);
+      if (!event.shiftKey && event.button == 0 && (this.#selectedCards.length < 2 || !isSelected)) this.#deselectAllCards()
+      if (!event.shiftKey || !isSelected) this.#setSelected(event.target);
+      else this.#setDeselected(event.target);
       this.#startDragPosition = this.#getPosition(this.#draggedItem);
     } else if (event.target == container && event.button == 0) {
       this.#deselectAllCards();
@@ -234,7 +245,8 @@ export default class Canvas {
       container.style.cursor = 'grabbing';
       this.#startDragPosition = this.#getPosition(this.#draggedItem);
     } else if (event.target == container && event.button == 1) {
-      this.#isSelecting = true;
+      this.#isBoxSelecting = true;
+      this.#previouslySelectedCards = event.shiftKey ? [...this.#selectedCards] : [];
       selection.style.display = 'block';
       this.#startDragPosition = this.#previousCursorPosition;
       selection.style.left = this.#previousCursorPosition.x + 'px';
@@ -251,7 +263,7 @@ export default class Canvas {
 
   #handleMouseMove(event) {
     var cursorPosition = {x: event.clientX - 204, y: event.clientY};
-    if (this.#isSelecting) {
+    if (this.#isBoxSelecting) {
       var transformX = (cursorPosition.x < this.#startDragPosition.x) ? 'scaleX(-1)' : 'scaleX(1)';
       var transformY =  (cursorPosition.y < this.#startDragPosition.y) ? 'scaleY(-1)' : 'scaleY(1)';
       selection.style.transform = transformX + transformY;
@@ -261,7 +273,7 @@ export default class Canvas {
       this.#handleBoxSelection();
     }
     if (this.#draggedItem == null) {
-      document.querySelector(':root').style.setProperty('--cards-pointer-events', event.ctrlKey || this.#isSelecting ? 'none' : 'auto');
+      document.querySelector(':root').style.setProperty('--cards-pointer-events', event.ctrlKey || this.#isBoxSelecting ? 'none' : 'auto');
       this.#previousCursorPosition = cursorPosition;
       return;
     }
@@ -303,17 +315,20 @@ export default class Canvas {
   }
 
   #handleMouseUp(event) {
-    if (this.#isSelecting) {
+    if (this.#isBoxSelecting) {
       selection.style.display = 'none';
-      this.#isSelecting = false;
+      this.#isBoxSelecting = false;
     }
     if (this.#draggedItem == null) return;
     if (this.#draggedItem.classList.contains('card')) {
       this.#updateCard(this.#draggedItem);
-      var cardPosition = this.#getPosition(this.#draggedItem);
-      if (!event.shiftKey && event.button == 0 && cardPosition.x == this.#startDragPosition.x && cardPosition.y ==  this.#startDragPosition.y) this.#deselectAllCards()
-      this.#setSelected(this.#draggedItem);
-      this.#undoCommands.push({
+      const cardPosition = this.#getPosition(this.#draggedItem);
+      const hasMoved = cardPosition.x != this.#startDragPosition.x || cardPosition.y !=  this.#startDragPosition.y;
+      if (!event.shiftKey && event.button == 0 && !hasMoved) {
+        this.#deselectAllCards()
+        this.#setSelected(this.#draggedItem);
+      }
+      if (hasMoved) this.#undoCommands.push({
         action: {type: 'move', position: cardPosition, index: parseInt(this.#draggedItem.getAttribute('data-index'), 10)},
         inverse: {type: 'move', position: this.#startDragPosition, index: parseInt(this.#draggedItem.getAttribute('data-index'), 10)}
       });
@@ -335,6 +350,8 @@ export default class Canvas {
     for (let i = 0; i < cards.length; i++) {
       const cardRect = cards[i].getBoundingClientRect();
       if (selectionRect.left < cardRect.right && selectionRect.right > cardRect.left && selectionRect.top < cardRect.bottom && selectionRect.bottom > cardRect.top) {
+        this.#previouslySelectedCards.includes(cards[i]) ? this.#setDeselected(cards[i]) : this.#setSelected(cards[i]);
+      } else if (this.#previouslySelectedCards.includes(cards[i])) {
         this.#setSelected(cards[i]);
       }
     }
@@ -468,7 +485,7 @@ export default class Canvas {
     canvas.innerHTML = '';
     this.#cards = [];
     this.#previews = [];
-    file.cards.forEach(card => { this.#createCard(card.position, card.text, card.width, card.imagePath); });
+    file.cards.forEach(card => { this.#createCard(card.position, card.text, card.width, card.imagePath, -1, false); });
   }
 
   #getPosition(element) {
