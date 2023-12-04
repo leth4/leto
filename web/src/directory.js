@@ -75,6 +75,7 @@ export default class Directory {
     else if (this.isFileACanvas(this.activeFile)) {
       canvas.style.display = 'block';
       editor.value = '';
+      leto.handleEditorInput();
       leto.canvas.load(this.activeFile);
     }
     else {

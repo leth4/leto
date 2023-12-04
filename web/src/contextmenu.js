@@ -132,6 +132,8 @@ export default class ContextMenu {
     else if (action === 'New Card') leto.canvas.createEmptyCard();
     else if (action === 'Align ↓') leto.canvas.alignSelectedVertically();
     else if (action === 'Align →') leto.canvas.alignSelectedHorizontally();
+    else if (action === 'To Front') leto.canvas.sendSelectedToFront();
+    else if (action === 'To Back') leto.canvas.sendSelectedToBack();
 
     else leto.edit.replaceWord(action);
 
@@ -211,6 +213,9 @@ export default class ContextMenu {
     this.#addAction('Copy');
     this.#addAction('Cut');
     this.#addAction('Delete');
+    this.#addSeparator();
+    this.#addAction('To Front');
+    this.#addAction('To Back');
     this.#addSeparator();
     this.#addAction('Align ↓', leto.canvas.hasMultipleSelected());
     this.#addAction('Align →', leto.canvas.hasMultipleSelected());

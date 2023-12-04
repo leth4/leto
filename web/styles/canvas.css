@@ -1,9 +1,9 @@
 #canvas-container {
-    z-index: 100;
+    z-index: 50;
     display: flex;
     position: absolute;
     left: 0; top: 0; right: 0; bottom: 0;
-    background-color: var(--editor-background-color);
+    background-color: transparent;
 }
 
 #canvas {
@@ -12,7 +12,8 @@
     height: 0;
 }
 
-#selection {
+#box-selection {
+    z-index: 900;
     display: none;
     transform-origin: 0 0;
     position: absolute;
@@ -29,15 +30,11 @@
     border: 1px solid var(--divider-color);
     box-shadow: 0 0 5px #00000028;
     border-radius: 3px;
+    padding: 30px 10px 10px 10px;
 }
 
 .card.selected {
     border: 1px solid var(--editor-accent-color);
-}
-
-.card:has(textarea) {
-    padding: 10px;
-    padding-top: 30px;
 }
 
 .card:has(img) {
@@ -62,19 +59,19 @@
     overflow-y : auto;
     overflow-x : hidden;
     font-size: var(--font-size);
+    font-weight: var(--font-weight);
 }
 
 .card-preview {
-    z-index: 200;
+    z-index: 0;
     position: relative;
 }
 
 .card textarea {
     position: absolute;
-    height: 100%;
-    right: 10px;
-    top: 30px; left: 10px;
-    z-index: 200;
+    left: 0; top: 0; right: 0; bottom: 0;
+    margin: 30px 10px 10px 10px;
+    height: auto;
     background-color: transparent;
     resize: none;
     box-sizing: border-box;
