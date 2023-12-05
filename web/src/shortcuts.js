@@ -10,17 +10,21 @@ export default class Shortcuts {
     window.onkeydown = (e) => {
       if (!leto.focused) return;
       var inEditor = document.activeElement.nodeName == 'TEXTAREA';
+      var inCanvas = leto.directory.isFileACanvas(leto.directory.activeFile) && !inEditor;
       var selected = editor.selectionStart != editor.selectionEnd;
 
-      if (e.ctrlKey && !e.shiftKey && e.code === 'KeyY' && document.activeElement === editor) {
+      if (e.ctrlKey && !e.shiftKey && e.code === 'KeyY' && (inCanvas || inEditor)) {
         e.preventDefault();
-        leto.undo.redo();
-      } else if (e.ctrlKey && e.shiftKey && e.code === 'KeyZ' && document.activeElement === editor) {
+        if (leto.directory.isFileACanvas(leto.directory.activeFile)) leto.canvas.redo();
+        else leto.undo.redo();
+      } else if (e.ctrlKey && e.shiftKey && e.code === 'KeyZ' && (inCanvas || inEditor)) {
         e.preventDefault();
-        leto.undo.redo();
-      } else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyZ' && document.activeElement === editor) {
+        if (leto.directory.isFileACanvas(leto.directory.activeFile)) leto.canvas.redo();
+        else leto.undo.redo();
+      } else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyZ' && (inCanvas || inEditor)) {
         e.preventDefault();
-        leto.undo.undo();  
+        if (leto.directory.isFileACanvas(leto.directory.activeFile)) leto.canvas.undo();
+        else leto.undo.undo(); 
       } 
 
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyX') {
@@ -38,6 +42,19 @@ export default class Shortcuts {
 
       else if (document.activeElement === nameInput && e.code === 'Enter') nameInput.blur();
       else if (document.activeElement === fontInput && e.code === 'Enter') fontInput.blur();
+
+      else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'Space') leto.canvas.createEmptyCard();
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'Delete') leto.canvas.deleteSelectedCards();
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'Backspace') leto.canvas.deleteSelectedCards();
+      else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyX') leto.canvas.cutSelectedCards();
+      else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyC') leto.canvas.copySelectedCards();
+      else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyV') leto.canvas.pasteCopiedCards();
+      else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyA') leto.canvas.selectAllCards();
+      else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyI') leto.canvas.inverseSelectedCards();
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'BracketRight') leto.canvas.sendSelectedToFront();
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'BracketLeft') leto.canvas.sendSelectedToBack();
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyV') leto.canvas.alignSelectedVertically();
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyH') leto.canvas.alignSelectedHorizontally();
 
       else if (e.key == '*' && inEditor) leto.edit.insertDoubleSymbol('*');
       else if (e.key == '\"' && inEditor) leto.edit.insertDoubleSymbol('\"');

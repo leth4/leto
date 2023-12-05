@@ -14,6 +14,7 @@ const NO_DIRECTORY_MESSAGE = "Press `Ctrl+O` to open a directory.";
 export default class Directory {
 
   #previousActiveFile;
+  #previousCanvas;
 
   constructor() {
     this.activeFile;
@@ -65,6 +66,7 @@ export default class Directory {
     if (this.activeDirectory) leto.explorer.highlightSelectedFile(this.activeFile);
 
     if (this.isFileAnImage(this.activeFile)) {
+      leto.canvas.reset();
       canvas.style.display = 'none';
       imageDisplay.setAttribute('src', convertFileSrc(this.activeFile));
       imageDisplay.style.display = 'block';
@@ -73,6 +75,8 @@ export default class Directory {
       leto.handleEditorInput();
     }
     else if (this.isFileACanvas(this.activeFile)) {
+      if (this.activeFile != this.#previousCanvas) leto.canvas.reset();
+      this.#previousCanvas = this.activeFile;
       canvas.style.display = 'block';
       editor.value = '';
       leto.handleEditorInput();
@@ -81,6 +85,7 @@ export default class Directory {
     else {
       imageDisplay.setAttribute('src', '');
       imageDisplay.style.display = 'none';
+      leto.canvas.reset();
       canvas.style.display = 'none';
       var newEditorValue = await readTextFile(this.activeFile);
       var isNewValue = editor.value != newEditorValue;

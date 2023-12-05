@@ -34,37 +34,19 @@ export default class Canvas {
     container.addEventListener('mousemove', event => this.#handleMouseMove(event));
     container.addEventListener('mouseup', event => this.#handleMouseUp(event));
     container.addEventListener('wheel', event => this.#handleZoom(event));
-    document.addEventListener('keydown', event => this.#handleKeyPress(event));
 
     container.addEventListener('dragenter', event => event.preventDefault());
     container.addEventListener('dragover', event => event.preventDefault());
     container.addEventListener('drop', event => this.#handleDrop(event));
   }
-
-  #handleKeyPress(event) {
-    if (event.ctrlKey && event.code === 'Space') this.createEmptyCard();
-    if (!event.ctrlKey && event.code === 'Delete' || event.code === 'Backspace') this.deleteSelectedCards();
-    if (event.ctrlKey && event.code === 'KeyX') {this.copySelectedCards(); this.deleteSelectedCards();} 
-    if (event.ctrlKey && event.code === 'KeyC') this.copySelectedCards();
-    if (event.ctrlKey && event.code === 'KeyV') this.pasteCopiedCards();
-    if (event.ctrlKey && event.code === 'KeyA') this.#selectAllCards();
-    if (event.ctrlKey && event.code === 'KeyZ') this.#undo(event);
-    if (event.ctrlKey && event.code === 'KeyY') this.#redo(event);
-    if (event.ctrlKey && event.code === 'KeyI') this.inverseSelectedCards();
-  }
-
-  #undo(event) {
-    event.preventDefault();
-
+  undo() {
     const command = this.#undoCommands.pop();
     if (!command) return;
     this.#redoCommands.push(command);
     this.#handleUndoRedoCommand(command.inverse);
   }
 
-  #redo(event) {
-    event.preventDefault();
-
+  redo() {
     const command = this.#redoCommands.pop();
     if (!command) return;
     this.#undoCommands.push(command);
@@ -213,7 +195,7 @@ export default class Canvas {
     this.#selectedCards = [];
   }
 
-  #selectAllCards() {
+  selectAllCards() {
     this.#selectedCards = [];
     const cardElements = canvas.getElementsByClassName('card');
     for (let i = 0; i < cardElements.length; i++) {
@@ -231,6 +213,11 @@ export default class Canvas {
     if (!this.#selectedCards.includes(card)) return;
     card.classList.remove('selected');
     this.#selectedCards.splice(this.#selectedCards.indexOf(card), 1);
+  }
+
+  cutSelectedCards() {
+    this.copySelectedCards();
+    this.deleteSelectedCards();
   }
 
   copySelectedCards() {
@@ -407,6 +394,7 @@ export default class Canvas {
         inverse: {type: 'resize', position: this.#startDragPosition, width: this.#startDragWidth, index: parseInt(this.#draggedItem.parentElement.getAttribute('data-index'), 10)}
       });
     }
+    else this.#save();
     container.style.cursor = 'auto';
     this.#draggedItem = null;
   }
@@ -495,11 +483,14 @@ export default class Canvas {
   }
 
   #handleZoom(event) {
+    if (event.ctrlKey || event.shiftKey) return;
+
+    
     var factor = 0.9;
     if (event.deltaY < 0) factor = 1 / factor;
-
+    
     var oldScaleInBounds = this.#canvasScale < 3 && this.#canvasScale > .1;
-
+    
     this.#canvasScale *= factor;
     this.#canvasScale = this.#clamp(this.#canvasScale, .1, 3);
     
@@ -513,6 +504,8 @@ export default class Canvas {
     }
     
     canvas.style.transform = `scale(${this.#canvasScale})`;
+    
+    this.#save();
   }
 
   #updateCard(card, saveUndo = true) {
@@ -544,23 +537,35 @@ export default class Canvas {
   }
 
   async #save() {
-    const configObject = { cards: this.#cards };
+    const configObject = { cards: this.#cards, scale: this.#canvasScale, position: this.#canvasPosition };
     await writeTextFile(leto.directory.activeFile, JSON.stringify(configObject, null, 2));
   }
 
   async load(file) {
-    canvas.style.left = '0px';
-    canvas.style.top = '0px';
     var fileJson = await readTextFile(leto.directory.activeFile);
     var file = JSON.parse(fileJson);
+    this.#canvasPosition = file.position;
+    canvas.style.left = this.#canvasPosition.x ?? 0 + 'px';
+    canvas.style.top = this.#canvasPosition.y ?? 0 + 'px';
+    this.#canvasScale = file.scale;
+    canvas.style.transform = `scale(${this.#canvasScale})`;
     canvas.innerHTML = '';
     this.#cards = [];
     this.#previews = [];
     file.cards.forEach(card => { this.#createCard(card.position, card.text, card.width, card.imagePath, card.zIndex, card.isInversed, -1, false); });
   }
 
+  reset() {
+    this.#undoCommands = [];
+    this.#redoCommands = [];
+    this.#selectedCards = [];
+    this.#cards = [];
+    this.#previews = [];
+    canvas.innerHTML = '';
+  }
+
   #getPosition(element) {
-    return {x: parseInt(element.style.left, 10), y: parseInt(element.style.top, 10)};
+    return {x: parseFloat(element.style.left), y: parseFloat(element.style.top, 10)};
   }
 
   #screenToCanvasSpaceX(x) {
