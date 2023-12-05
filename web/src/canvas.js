@@ -10,7 +10,7 @@ const boxSelection = document.getElementById('box-selection');
 export default class Canvas {
 
   #draggedItem;
-  #previousCursorPosition;
+  #previousCursorPosition = {x: 0, y: 0};
   #startDragPosition;
   #startDragWidth;
 
@@ -39,18 +39,33 @@ export default class Canvas {
     container.addEventListener('dragover', event => event.preventDefault());
     container.addEventListener('drop', event => this.#handleDrop(event));
   }
+
   undo() {
     const command = this.#undoCommands.pop();
     if (!command) return;
+    if (command.amount) {
+      for (let i = 0; i < command.amount; i++) {
+        const nextCommand = this.#undoCommands.pop();
+        if (!nextCommand) return;
+        this.#redoCommands.push(nextCommand);
+        this.#handleUndoRedoCommand(nextCommand.inverse);
+      }
+    } else this.#handleUndoRedoCommand(command.inverse);
     this.#redoCommands.push(command);
-    this.#handleUndoRedoCommand(command.inverse);
   }
 
   redo() {
     const command = this.#redoCommands.pop();
     if (!command) return;
+    if (command.amount) {
+      for (let i = 0; i < command.amount; i++) {
+        const nextCommand = this.#redoCommands.pop();
+        if (!nextCommand) return;
+        this.#undoCommands.push(nextCommand);
+        this.#handleUndoRedoCommand(nextCommand.action);
+      }
+    } else this.#handleUndoRedoCommand(command.action);
     this.#undoCommands.push(command);
-    this.#handleUndoRedoCommand(command.action);
   }
 
   #handleUndoRedoCommand(command) {
@@ -122,10 +137,12 @@ export default class Canvas {
 
   sendSelectedToFront() {
     this.#selectedCards.forEach(card => this.#setCardZIndex(card, 100 + this.#cards.length));
+    this.#undoCommands.push({amount: this.#selectedCards.length});
   }
 
   sendSelectedToBack() {
     this.#selectedCards.forEach(card => this.#setCardZIndex(card, 100));
+    this.#undoCommands.push({amount: this.#selectedCards.length});
   }
 
   #setCardZIndex(card, newZIndex, saveUndo = true) {
@@ -172,11 +189,14 @@ export default class Canvas {
         if (cardIndex > index) cardElements[i].setAttribute('data-index', cardIndex - 1); 
       }
     });
+    this.#undoCommands.push({amount: this.#selectedCards.length});
+    this.#deselectAllCards();
     this.#save();
   }
 
   inverseSelectedCards() {
     this.#selectedCards.forEach(card => this.#inverseCard(card));
+    this.#undoCommands.push({amount: this.#selectedCards.length});
   }
 
   #inverseCard(card, saveUndo = true) {
@@ -252,6 +272,7 @@ export default class Canvas {
       var previousCard = this.#cards[this.#selectedCards[i - 1].getAttribute('data-index')];
       this.#moveCardToPosition(this.#selectedCards[i], {x: previousCard.position.x, y: previousCard.position.y + previousCard.height + 25});
     }
+    this.#undoCommands.push({amount: this.#selectedCards.length - 1});
   }
   
   alignSelectedHorizontally() {
@@ -261,6 +282,7 @@ export default class Canvas {
       var previousCard = this.#cards[this.#selectedCards[i - 1].getAttribute('data-index')];
       this.#moveCardToPosition(this.#selectedCards[i], {x: previousCard.position.x + previousCard.width + 45, y: previousCard.position.y});
     }
+    this.#undoCommands.push({amount: this.#selectedCards.length - 1});
   }
 
   #moveCardToPosition(card, position) {
@@ -378,15 +400,22 @@ export default class Canvas {
     if (this.#draggedItem.classList.contains('card')) {
       this.#updateCard(this.#draggedItem);
       const cardPosition = this.#getPosition(this.#draggedItem);
-      const hasMoved = cardPosition.x != this.#startDragPosition.x || cardPosition.y !=  this.#startDragPosition.y;
+      const xDelta = cardPosition.x - this.#startDragPosition.x;
+      const yDelta = cardPosition.y - this.#startDragPosition.y;
+      const hasMoved = xDelta != 0 || yDelta != 0;
       if (!event.shiftKey && event.button == 0 && !hasMoved) {
         this.#deselectAllCards()
         this.#setSelected(this.#draggedItem);
       }
-      if (hasMoved) this.#undoCommands.push({
-        action: {type: 'move', position: cardPosition, index: parseInt(this.#draggedItem.getAttribute('data-index'), 10)},
-        inverse: {type: 'move', position: this.#startDragPosition, index: parseInt(this.#draggedItem.getAttribute('data-index'), 10)}
-      });
+      if (hasMoved) {
+        this.#selectedCards.forEach(card => {
+          this.#undoCommands.push({
+            action: {type: 'move', position: this.#getPosition(card), index: parseInt(card.getAttribute('data-index'), 10)},
+            inverse: {type: 'move', position: {x: this.#getPosition(card).x - xDelta, y: this.#getPosition(card).y - yDelta}, index: parseInt(card.getAttribute('data-index'), 10)}
+          });
+        });
+        this.#undoCommands.push({amount: this.#selectedCards.length});
+      }
     }
     else if (this.#draggedItem.classList.contains('handle')) {
       this.#undoCommands.push({
@@ -477,17 +506,14 @@ export default class Canvas {
       inverse: {type: 'delete', index: atIndex == -1 ? this.#cards.length - 1 : atIndex }
     });
     
-    this.#updateCard(newCard);
+    this.#updateCard(newCard, false);
 
     return newCard;
   }
 
-  #handleZoom(event) {
-    if (event.ctrlKey || event.shiftKey) return;
-
-    
+  zoom(amount) {
     var factor = 0.9;
-    if (event.deltaY < 0) factor = 1 / factor;
+    if (amount < 0) factor = 1 / factor;
     
     var oldScaleInBounds = this.#canvasScale < 3 && this.#canvasScale > .1;
     
@@ -504,8 +530,12 @@ export default class Canvas {
     }
     
     canvas.style.transform = `scale(${this.#canvasScale})`;
-    
     this.#save();
+  }
+
+  #handleZoom(event) {
+    if (event.ctrlKey || event.shiftKey) return;
+    this.zoom(event.deltaY);
   }
 
   #updateCard(card, saveUndo = true) {
@@ -544,9 +574,9 @@ export default class Canvas {
   async load(file) {
     var fileJson = await readTextFile(leto.directory.activeFile);
     var file = JSON.parse(fileJson);
-    this.#canvasPosition = file.position;
-    canvas.style.left = this.#canvasPosition.x ?? 0 + 'px';
-    canvas.style.top = this.#canvasPosition.y ?? 0 + 'px';
+    this.#canvasPosition = {x: file.position.x ?? 0, y: file.position.y ?? 0};
+    canvas.style.left = this.#canvasPosition.x + 'px';
+    canvas.style.top = this.#canvasPosition.y + 'px';
     this.#canvasScale = file.scale;
     canvas.style.transform = `scale(${this.#canvasScale})`;
     canvas.innerHTML = '';
