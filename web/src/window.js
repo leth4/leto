@@ -22,10 +22,10 @@ const themes = [
 export default class Window {
 
   #prefsToggled = false;
-  #sidebarToggled = true;
   #draggableElements;
-
+  
   constructor() {
+    this.sidebarToggled = true;
     this.currentTheme = 0;
     this.currentFont = 'inter';
     this.fontSize = 20;
@@ -34,8 +34,9 @@ export default class Window {
     this.isFullscreen = false;
 
     document.getElementById('minimize-button').addEventListener('click', () => this.minimizeWindow());
+    document.getElementById('fold-button').addEventListener('click', () => this.toggleSidebar());
     document.getElementById('close-button').addEventListener('click', () => this.closeWindow());
-
+    
     themeSelector.addEventListener('change', () => this.setTheme(themeSelector.value), false);
     fontInput.addEventListener('input', () => this.setFont(fontInput.value), false);
     document.addEventListener('wheel', e => this.#handleMouseWheel(e), false);
@@ -102,14 +103,15 @@ export default class Window {
   }
 
   toggleSidebar() {
-    this.#sidebarToggled = !this.#sidebarToggled;
-    document.getElementById('sidebar').style.maxWidth = this.#sidebarToggled ? '200px' : '50px';
-    document.getElementById('sidebar').style.overflowY = this.#sidebarToggled ? 'auto' : 'hidden';
-    document.getElementById('sidebar-content').style.opacity = this.#sidebarToggled ? '1' : '0';
-    document.getElementById('sidebar-content').style.pointerEvents = this.#sidebarToggled ? 'all' : 'none';
-    document.getElementById('preferences').style.opacity = this.#sidebarToggled ? '1' : '0';
-    document.getElementById('preferences').style.pointerEvents = this.#sidebarToggled ? 'all' : 'none';
-    root.style.setProperty('--additional-padding-left', this.#sidebarToggled ? '50px' : '200px');
+    this.sidebarToggled = !this.sidebarToggled;
+    document.getElementById('sidebar').style.maxWidth = this.sidebarToggled ? '200px' : '50px';
+    document.getElementById('sidebar').style.overflowY = this.sidebarToggled ? 'auto' : 'hidden';
+    document.getElementById('sidebar-content').style.opacity = this.sidebarToggled ? '1' : '0';
+    document.getElementById('sidebar-content').style.pointerEvents = this.sidebarToggled ? 'all' : 'none';
+    document.getElementById('preferences').style.opacity = this.sidebarToggled ? '1' : '0';
+    document.getElementById('preferences').style.pointerEvents = this.sidebarToggled ? 'all' : 'none';
+    root.style.setProperty('--additional-padding-left', this.sidebarToggled ? '50px' : '200px');
+    document.getElementById('fold-button').querySelector('polyline').setAttribute('points', this.sidebarToggled ? '8.5,0 2,5 8.5,10' : '2,0 8.5,5 2,10');
   }
 
   #handleMouseWheel(event) {
