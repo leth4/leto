@@ -53,7 +53,7 @@
 }
 
 .canvas-file::before {
-    content: "□ ";
+    content: "▲ ";
 }
 
 .folder-button {

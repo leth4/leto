@@ -13,7 +13,7 @@ const canvas = document.getElementById('canvas-container');
 export default class ContextMenu {
   
   #initialClickTarget;
-  #deleting;
+  #isDeleting;
   #showingImagePreview;
 
   constructor() {
@@ -71,13 +71,14 @@ export default class ContextMenu {
   }
 
   async #show(event) {
-    if (event.target === editor) this.#createEditorMenu();
+    this.#isDeleting = false;
+    
+    if (event.target.nodeName === 'TEXTAREA') this.#createEditorMenu();
     else if (explorer.contains(event.target)) this.#createFileSystemMenu();
     else if (event.target === canvas) this.#createCanvasMenu();
     else if (event.target.classList.contains('card')) this.#createCardMenu();
     else return;
 
-    this.#deleting = false;
     const size = await appWindow.innerSize();
     contextMenu.classList.add('show');
 
@@ -88,7 +89,8 @@ export default class ContextMenu {
   }
 
   async #handleClick(action) {
-    editor.focus();
+    this.#initialClickTarget.focus();
+
     if (action === 'Copy') {
       if (this.#initialClickTarget.classList.contains('card')) leto.canvas.copySelectedCards();
       else leto.edit.copy();
@@ -107,7 +109,7 @@ export default class ContextMenu {
     else if (action === 'Delete') {
       if (this.#initialClickTarget.classList.contains('card')) leto.canvas.deleteSelectedCards();
       else {
-        this.#deleting = true;
+        this.#isDeleting = true;
         this.#createFileSystemMenu();
         return;
       }
@@ -142,7 +144,6 @@ export default class ContextMenu {
   }
 
   #createFile(target, extension) {
-    console.log(extension);
     if (!target || !leto.explorer.isFile(target) && !leto.explorer.isFolder(target)) leto.directory.createNewFile(null, extension);
     else if (leto.explorer.isFile(target)) 
       leto.directory.createNewFile(target.getAttribute('data-path').substring(0, target.getAttribute('data-path').lastIndexOf('\\')), extension);
@@ -164,13 +165,13 @@ export default class ContextMenu {
 
     if (leto.explorer.isFile(this.#initialClickTarget)) {
       this.#addAction('Rename');
-      this.#addAction(this.#deleting ? 'Delete?' : 'Delete');
+      this.#addAction(this.#isDeleting ? 'Delete?' : 'Delete');
       this.#addAction(leto.explorer.isPinned(this.#initialClickTarget) ? 'Unpin' : 'Pin');
       this.#addAction('Preview', !this.#initialClickTarget.getAttribute('data-path').endsWith('.lea'));
       this.#addSeparator();
     } else if (leto.explorer.isFolder(this.#initialClickTarget)) {
       this.#addAction('Rename');
-      this.#addAction(this.#deleting ? 'Delete?' : 'Delete');
+      this.#addAction(this.#isDeleting ? 'Delete?' : 'Delete');
       this.#addSeparator();
     } else if (leto.explorer.isPinned(this.#initialClickTarget)) {
       this.#addAction('Unpin');
@@ -192,7 +193,7 @@ export default class ContextMenu {
     this.#addAction('Copy');
     this.#addAction('Paste');
     this.#addAction('Cut');
-    if (leto.spellcheck.toggled && !leto.spellcheck.checkCurrentWord()) {
+    if (this.#initialClickTarget == editor && leto.spellcheck.toggled && !leto.spellcheck.checkCurrentWord()) {
       this.#addSeparator();
       this.#addAction("Add to Dictionary");
       var words = leto.spellcheck.correctCurrentWord();

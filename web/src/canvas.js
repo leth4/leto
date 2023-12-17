@@ -298,12 +298,13 @@ export default class Canvas {
   }
 
   async #handleDrop(event) {
+    event.preventDefault();
     var filePath = event.dataTransfer.getData('text/path');
     if (leto.directory.isFileAnImage(filePath)) {
-      this.#createCard({x: event.clientX - 204, y: event.clientY}, '', 200, filePath);
+      this.#createCard(this.#screenToCanvasSpace({x: event.clientX - 204, y: event.clientY}), '', 200, filePath);
     }
     else if (leto.directory.isFileANote(filePath)) {
-      this.#createCard({x: event.clientX - 204, y: event.clientY}, await readTextFile(filePath), 200);
+      this.#createCard(this.#screenToCanvasSpace({x: event.clientX - 204, y: event.clientY}), await readTextFile(filePath), 200);
     }
   }
 
@@ -357,15 +358,15 @@ export default class Canvas {
     if (this.#draggedItem.classList.contains('handle')) {
       if (this.#draggedItem.classList.contains('handle-right')) {
         var newWidth = this.#screenToCanvasSpaceX(event.clientX - 204) - this.#getPosition(this.#draggedItem.parentElement).x - 20;
-        newWidth = this.#clamp(newWidth, 100, 500);
+        newWidth = this.#clamp(newWidth, 100, 800);
         this.#draggedItem.parentElement.style.width = newWidth + 'px';
       }
       else {
         var previousLeft = this.#getPosition(this.#draggedItem.parentElement).x;
         this.#draggedItem.parentElement.style.left = this.#screenToCanvasSpaceX(event.clientX - 204) + 'px';
         var newLeft = this.#getPosition(this.#draggedItem.parentElement).x;
-        var newWidth = parseInt(this.#draggedItem.parentElement.style.width, 10) - newLeft + previousLeft;
-        if (newWidth > 500 || newWidth < 100) this.#draggedItem.parentElement.style.left = previousLeft + 'px';
+        var newWidth = parseFloat(this.#draggedItem.parentElement.style.width, 10) - newLeft + previousLeft;
+        if (newWidth > 800 || newWidth < 100) this.#draggedItem.parentElement.style.left = previousLeft + 'px';
         else this.#draggedItem.parentElement.style.width = newWidth + 'px';
       }
       this.#updateCard(this.#draggedItem.parentElement);
@@ -572,17 +573,25 @@ export default class Canvas {
   }
 
   async load(file) {
-    var fileJson = await readTextFile(leto.directory.activeFile);
-    var file = JSON.parse(fileJson);
-    this.#canvasPosition = {x: file.position.x ?? 0, y: file.position.y ?? 0};
-    canvas.style.left = this.#canvasPosition.x + 'px';
-    canvas.style.top = this.#canvasPosition.y + 'px';
-    this.#canvasScale = file.scale;
-    canvas.style.transform = `scale(${this.#canvasScale})`;
-    canvas.innerHTML = '';
     this.#cards = [];
     this.#previews = [];
-    file.cards.forEach(card => { this.#createCard(card.position, card.text, card.width, card.imagePath, card.zIndex, card.isInversed, -1, false); });
+    canvas.innerHTML = '';
+
+    var fileJson = await readTextFile(leto.directory.activeFile);
+    if (fileJson === '') {
+      this.#canvasPosition = {x: 0, y: 0};
+      this.#canvasScale = 1;
+    }
+    else {
+      var file = JSON.parse(fileJson);
+      this.#canvasPosition = {x: file.position.x ?? 0, y: file.position.y ?? 0};
+      this.#canvasScale = file.scale;
+      file.cards.forEach(card => { this.#createCard(card.position, card.text, card.width, card.imagePath, card.zIndex, card.isInversed, -1, false); });
+    }
+    
+    canvas.style.left = this.#canvasPosition.x + 'px';
+    canvas.style.top = this.#canvasPosition.y + 'px';
+    canvas.style.transform = `scale(${this.#canvasScale})`;
   }
 
   reset() {

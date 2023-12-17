@@ -74,6 +74,10 @@
     color: var(--canvas-inversed-card-text-color);
 } 
 
+.card.inversed textarea {
+    caret-color: var(--canvas-inversed-card-text-color);
+}
+
 .card-preview {
     z-index: 0;
     position: relative;

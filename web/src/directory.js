@@ -77,6 +77,8 @@ export default class Directory {
     else if (this.isFileACanvas(this.activeFile)) {
       if (this.activeFile != this.#previousCanvas) leto.canvas.reset();
       this.#previousCanvas = this.activeFile;
+      imageDisplay.setAttribute('src', '');
+      imageDisplay.style.display = 'none';
       canvas.style.display = 'block';
       editor.value = '';
       leto.handleEditorInput();

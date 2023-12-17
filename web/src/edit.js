@@ -18,13 +18,13 @@ export default class Edit {
   selectWord() {
     var alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'";
 
-    for (var i = editor.selectionStart; i < editor.value.length + 1; i++) {
-      editor.selectionEnd = i;
-      if (!alphabet.includes(editor.value[i])) break;
+    for (var i = this.#activeEditor().selectionStart; i < this.#activeEditor().value.length + 1; i++) {
+      this.#activeEditor().selectionEnd = i;
+      if (!alphabet.includes(this.#activeEditor().value[i])) break;
     }
-    for (var i = editor.selectionStart; i >= -1; i--) {
-      editor.selectionStart = i + 1;
-      if (!alphabet.includes(editor.value[i])) break;
+    for (var i = this.#activeEditor().selectionStart; i >= -1; i--) {
+      this.#activeEditor().selectionStart = i + 1;
+      if (!alphabet.includes(this.#activeEditor().value[i])) break;
     }
   }
 
@@ -64,8 +64,8 @@ export default class Edit {
   renameLinks(oldLink, newFile) {
     var oldLink = `\[\[${oldLink}\]\]`
     var newLink = `[[${leto.explorer.getUniqueLink(newFile)}]]`
-    while (editor.value.indexOf(oldLink) != -1) {
-      this.#setSelectionAndFocus(editor.value.indexOf(oldLink), editor.value.indexOf(oldLink) + oldLink.length);
+    while (this.#activeEditor().value.indexOf(oldLink) != -1) {
+      this.#setSelectionAndFocus(this.#activeEditor().value.indexOf(oldLink), this.#activeEditor().value.indexOf(oldLink) + oldLink.length);
       document.execCommand('insertText', false, newLink);
     }
   }

@@ -9,8 +9,9 @@ export default class Shortcuts {
   constructor() {
     window.onkeydown = (e) => {
       if (!leto.focused) return;
+      var inInput = document.activeElement.nodeName == 'INPUT';
       var inEditor = document.activeElement.nodeName == 'TEXTAREA';
-      var inCanvas = leto.directory.isFileACanvas(leto.directory.activeFile) && !inEditor;
+      var inCanvas = leto.directory.isFileACanvas(leto.directory.activeFile) && !inEditor && !inInput;
       var selected = editor.selectionStart != editor.selectionEnd;
 
       if (e.ctrlKey && !e.shiftKey && e.code === 'KeyY' && (inCanvas || inEditor)) {
