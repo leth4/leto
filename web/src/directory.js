@@ -244,6 +244,15 @@ export default class Directory {
     this.tryOpenActiveFile();
   }
 
+  async copyActiveImage() {
+    if (!this.isFileAnImage(this.activeFile)) return;
+
+    var data = await fetch(convertFileSrc(this.activeFile));
+    var blob = await data.blob();
+    
+    navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
+  }
+
   async renameFile(filePath, newName) {
     var extension = this.#getFileExtension(filePath);
     var newFile = `${filePath.substring(0, filePath.lastIndexOf('\\') + 1)}${newName}.${extension}`;

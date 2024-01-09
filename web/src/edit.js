@@ -64,6 +64,7 @@ export default class Edit {
   renameLinks(oldLink, newFile) {
     var oldLink = `\[\[${oldLink}\]\]`
     var newLink = `[[${leto.explorer.getUniqueLink(newFile)}]]`
+    if (this.#activeEditor() == null) return;
     while (this.#activeEditor().value.indexOf(oldLink) != -1) {
       this.#setSelectionAndFocus(this.#activeEditor().value.indexOf(oldLink), this.#activeEditor().value.indexOf(oldLink) + oldLink.length);
       document.execCommand('insertText', false, newLink);

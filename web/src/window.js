@@ -5,6 +5,7 @@ const { invoke } = window.__TAURI__.tauri;
 
 const themeSelector = document.getElementById('theme-selector');
 const editor = document.getElementById('text-editor')
+const preview = document.getElementById('text-preview')
 const root = document.querySelector(':root');
 
 const fontInput = document.getElementById('font-input');
@@ -42,7 +43,10 @@ export default class Window {
     document.addEventListener('wheel', e => this.#handleMouseWheel(e), false);
     document.addEventListener('keydown', e => {if (e.key === 'Control') editor.style.pointerEvents = 'none'}, false);
     document.addEventListener('keyup', e => {if (e.key === 'Control') editor.style.pointerEvents = 'auto'}, false);
-    document.addEventListener('mousemove', e => editor.style.pointerEvents = e.ctrlKey ? 'none' : 'auto');
+    document.addEventListener('mousemove', e => {
+      editor.style.pointerEvents = e.ctrlKey ? 'none' : 'auto'
+      preview.style.pointerEvents = e.ctrlKey ? 'auto' : 'none'
+    });
     this.populateThemes();
 
     document.onpaste = function (event) {

@@ -3,6 +3,7 @@
 const { appWindow } = window.__TAURI__.window;
 const { convertFileSrc } = window.__TAURI__.tauri;
 
+const imageDisplay = document.getElementById('image-display');
 const imagePreview = document.getElementById('image-preview');
 const imagePreviewImage = document.getElementById('image-preview-image');
 const contextMenu = document.getElementById('context-menu');
@@ -72,10 +73,11 @@ export default class ContextMenu {
 
   async #show(event) {
     this.#isDeleting = false;
-    
+
     if (event.target.nodeName === 'TEXTAREA') this.#createEditorMenu();
     else if (explorer.contains(event.target)) this.#createFileSystemMenu();
     else if (event.target === canvas) this.#createCanvasMenu();
+    else if (event.target === imageDisplay) this.#createImageMenu();
     else if (event.target.classList.contains('card')) this.#createCardMenu();
     else return;
 
@@ -93,6 +95,7 @@ export default class ContextMenu {
 
     if (action === 'Copy') {
       if (this.#initialClickTarget.classList.contains('card')) leto.canvas.copySelectedCards();
+      else if (this.#initialClickTarget === imageDisplay) leto.directory.copyActiveImage();
       else leto.edit.copy();
     }
     else if (action === 'Paste') {
@@ -208,6 +211,11 @@ export default class ContextMenu {
     contextMenu.innerHTML = '';
     this.#addAction('New Card');
     this.#addAction('Paste', leto.canvas.hasCopiedCards());
+  }
+
+  #createImageMenu() {
+    contextMenu.innerHTML = '';
+    this.#addAction('Copy');
   }
 
   #createCardMenu() {

@@ -217,20 +217,6 @@ h1, h2, h3, h4 {
     font-weight: bold;
     background-color: transparent;
     color: var(--editor-accent-color);
-    cursor: pointer;
-}
-
-.folded::after {
-    content: "\a\a";
-    white-space: pre;
-}
-
-.folded::before {
-    content: "↓ ";
-}
-
-.collapsible {
-    display: inline;
 }
 
 ::selection {

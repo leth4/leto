@@ -46,6 +46,7 @@ main {
     left: 0; top: 0; right: 0; bottom: 0;
     color: var(--editor-text-color);
     content: var(--preview-text);
+    pointer-events: none;
 }
 
 #image-container {
@@ -226,10 +227,6 @@ main {
     color: var(--editor-text-color);
 }
 
-.collapsible {
-    display: inline;
-}
-
 span.code, span.inline-code {
     display: block;
     position: relative;
@@ -266,6 +263,10 @@ mark.inline-code, mark.inline-code .italic {
     border-radius: 3px;
 }
 
+mark.muted, mark.comment, mark.comment .keyword, mark.code-marker {
+    color: var(--editor-muted-color);
+}
+
 h1, h2, h3, h4 {
     display: inline;
     font-size: 1em;
@@ -283,10 +284,6 @@ mark.italic, mark.keyword {
     color: var(--editor-accent-color);
     font-style: var(--italic-style);
     text-shadow: 0 0 calc(var(--shadow) * 2) var(--editor-muted-color);
-}
-
-mark.muted, mark.comment, mark.comment .keyword, mark.code-marker {
-    color: var(--editor-muted-color);
 }
 
 mark.search {
