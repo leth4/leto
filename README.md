@@ -14,7 +14,7 @@ You can open a preview window for any file; task items in a preview window are c
 
 You can open `.png`, `.jpg` and `.gif` images and `[[link]]` them just like regular files. Hover on a link while holding `Ctrl` to preview the image; you can also open a separate preview window for it, where you can zoom and move it. Paste an image directly into the text, and leto will make a file for it and link it automatically.
 
-There's a canvas mode with cards, called Lea. Right-click the sidebar and select `New Lea` to make a `.lea` file. Use context menu to create, copy, delete and cut cards, as well as send them to back or front and invert their colors. Scroll to zoom in or out. Use left mouse button to drag cards and the canvas, and right mouse button to select cards. If multiple cards are selected, you can align them via the context menu. Drag a card by its sides to resize it. You can drag notes and images from the sidebar directly onto the canvas.
+There's a canvas mode with cards, called Lea. Right-click the sidebar and select `New Lea` to make a `.lea` file. Use context menu to create, copy, delete and cut cards, as well as send them to back or front, invert their colors and connect them via arrows. Right-click an arrow to remove it, reverse it, or make it double-headed. Scroll to zoom in or out. Use left mouse button to drag cards and the canvas, and right mouse button to select cards. If multiple cards are selected, you can align them via the context menu. Drag a card by its sides to resize it. You can drag notes and images from the sidebar directly onto the canvas.
 
 The default font is [Inter](https://github.com/rsms/inter), but you can input any font via the Preferences menu (opened with `Ctrl+P`). Note that you need the font installed locally. Real italics and bold are only displayed for monospace fonts; otherwise those are just colored.
 
@@ -56,4 +56,5 @@ Shortcut | Action
 `Ctrl + ] / [` | Send to front/back
 `V` | Align selected cards vertically
 `H` | Align selected cards horizontally
+`L` | Connect selected cards
 `Plus / Minus` | Zoom in/out

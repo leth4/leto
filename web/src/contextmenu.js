@@ -79,6 +79,7 @@ export default class ContextMenu {
     else if (event.target === canvas) this.#createCanvasMenu();
     else if (event.target === imageDisplay) this.#createImageMenu();
     else if (event.target.classList.contains('card')) this.#createCardMenu();
+    else if (event.target.classList.contains('arrow')) this.#createArrowMenu();
     else return;
 
     const size = await appWindow.innerSize();
@@ -134,12 +135,16 @@ export default class ContextMenu {
       leto.directory.showInExplorer(path);
     }
 
+    else if (action === 'Connect') leto.canvas.connectSelectedCards();
     else if (action === 'New Card') leto.canvas.createEmptyCard();
     else if (action === 'Align ↓') leto.canvas.alignSelectedVertically();
     else if (action === 'Align →') leto.canvas.alignSelectedHorizontally();
     else if (action === 'To Front') leto.canvas.sendSelectedToFront();
     else if (action === 'To Back') leto.canvas.sendSelectedToBack();
     else if (action === 'Invert') leto.canvas.inverseSelectedCards();
+    else if (action === 'Remove') leto.canvas.removeSelectedArrow();
+    else if (action === 'Reverse') leto.canvas.reverseSelectedArrow();
+    else if (action === 'Make Double' || action === 'Make Single') leto.canvas.toggleDoubleSelectedArrow();
 
     else leto.edit.replaceWord(action);
 
@@ -220,6 +225,8 @@ export default class ContextMenu {
 
   #createCardMenu() {
     contextMenu.innerHTML = '';
+    this.#addAction('Connect');
+    this.#addSeparator();
     this.#addAction('Copy');
     this.#addAction('Cut');
     this.#addAction('Delete');
@@ -232,6 +239,17 @@ export default class ContextMenu {
       this.#addSeparator();
       this.#addAction('Align ↓');
       this.#addAction('Align →');
+    }
+  }
+
+  #createArrowMenu() {
+    contextMenu.innerHTML = '';
+    this.#addAction('Remove');
+    if (leto.canvas.isSelectedArrowDouble()) {
+      this.#addAction('Make Single')
+    } else {
+      this.#addAction('Reverse');
+      this.#addAction('Make Double');
     }
   }
 

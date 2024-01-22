@@ -23,14 +23,15 @@
 
 .card {
     background-color: var(--canvas-card-color);
-    min-height: 100px;
+    min-height: 35px;
     height: auto;
     width: 200px;
     position: absolute;
     border: .5px solid var(--editor-muted-color);
     box-shadow: 0 0 5px #00000028;
     border-radius: 3px;
-    padding: 30px 10px 10px 10px;
+    padding: 25px 12px 12px 12px;
+    transition: top .05s ease-out, left .05s ease-out;
 }
 
 .card.selected {
@@ -86,7 +87,7 @@
 .card textarea {
     position: absolute;
     left: 0; top: 0; right: 0; bottom: 0;
-    margin: 30px 10px 10px 10px;
+    margin: 25px 12px 12px 12px;
     height: auto;
     background-color: transparent;
     resize: none;
@@ -117,4 +118,36 @@
 
 .handle-right {
     right: 0;
+}
+
+svg {
+    pointer-events: none;
+    z-index: 500;
+    position: absolute;
+    left: -5000px;
+    top: -5000px;
+    width: 10000px;
+    height: 10000px;
+}
+
+svg line {
+    pointer-events: auto;
+    stroke: var(--editor-muted-color);
+    stroke-width: 3;
+    stroke-linecap: round;
+    margin: 3px;
+    marker-end: url(#arrowHeadUnselected)
+}
+
+#arrowHeadSelected {
+    fill: var(--editor-accent-color);
+}
+
+#arrowHeadUnselected {
+    fill: var(--editor-muted-color);
+}
+
+svg line.selected {
+    marker-end: url(#arrowHeadSelected);
+    stroke: var(--editor-accent-color);
 }
