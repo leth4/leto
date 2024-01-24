@@ -120,7 +120,7 @@
     right: 0;
 }
 
-svg {
+#canvas svg {
     pointer-events: none;
     z-index: 500;
     position: absolute;
@@ -130,7 +130,7 @@ svg {
     height: 10000px;
 }
 
-svg line {
+#canvas svg line {
     pointer-events: auto;
     stroke: var(--editor-muted-color);
     stroke-width: 3;
@@ -147,7 +147,7 @@ svg line {
     fill: var(--editor-muted-color);
 }
 
-svg line.selected {
+#canvas svg line.selected {
     marker-end: url(#arrowHeadSelected);
     stroke: var(--editor-accent-color);
 }

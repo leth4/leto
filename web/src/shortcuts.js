@@ -44,7 +44,6 @@ export default class Shortcuts {
       else if (document.activeElement === nameInput && e.code === 'Enter') nameInput.blur();
       else if (document.activeElement === fontInput && e.code === 'Enter') fontInput.blur();
 
-      else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'Space') leto.canvas.createEmptyCard();
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'Delete') leto.canvas.deleteSelectedCards();
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'Backspace') leto.canvas.deleteSelectedCards();
       else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyX') leto.canvas.cutSelectedCards();
@@ -52,13 +51,14 @@ export default class Shortcuts {
       else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyV') leto.canvas.pasteCopiedCards();
       else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyA') leto.canvas.selectAllCards();
       else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyI') leto.canvas.inverseSelectedCards();
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'Space') leto.canvas.createEmptyCard();
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'BracketRight') leto.canvas.sendSelectedToFront();
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'BracketLeft') leto.canvas.sendSelectedToBack();
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyV') leto.canvas.alignSelectedVertically();
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyH') leto.canvas.alignSelectedHorizontally();
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'Equal') leto.canvas.zoom(-1);
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'Minus') leto.canvas.zoom(+1);
-      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyL') leto.canvas.connectSelectedCards();
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyC') leto.canvas.connectSelectedCards();
 
       else if (e.key == '*' && inEditor) leto.edit.insertDoubleSymbol('*');
       else if (e.key == '\"' && inEditor) leto.edit.insertDoubleSymbol('\"');

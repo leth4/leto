@@ -43,7 +43,7 @@ export default class Canvas {
     container.addEventListener('dragover', event => event.preventDefault());
     container.addEventListener('drop', event => this.#handleDrop(event));
   }
-
+    
   undo() {
     const state = this.#undoHistory.pop();
     if (!state) return;
@@ -75,7 +75,6 @@ export default class Canvas {
         this.#setSelected(cardElements[i]);
     }
 
-
     this.#isSavingUndoState = true;
   }
 
@@ -104,7 +103,8 @@ export default class Canvas {
   
   createEmptyCard() {
     this.#saveUndoState();
-    this.#createCard(this.#screenToCanvasSpace({x: this.#previousCursorPosition.x - 100, y: this.#previousCursorPosition.y - 17}), '', 200);
+    var newCard = this.#createCard(this.#screenToCanvasSpace({x: this.#previousCursorPosition.x, y: this.#previousCursorPosition.y}), '', 200);
+    newCard.querySelector('textarea').focus();
   }
 
   sendSelectedToFront() {
@@ -155,7 +155,7 @@ export default class Canvas {
         if (this.#arrows[i].toIndex == index || this.#arrows[i].fromIndex == index) {
           this.#arrows.splice(i, 1);
           const arrowElements = canvas.getElementsByClassName('arrow');
-          for (let j = 0; j < arrowElements.length; j++) {
+          for (let j = arrowElements.length - 1; j >= 0; j--) {
             var arrowIndex = parseInt(arrowElements[j].getAttribute('data-index'), 10);
             if (arrowIndex == i) arrowElements[j].parentElement.remove();
             else if (arrowIndex > i) arrowElements[j].setAttribute('data-index', arrowIndex - 1);
@@ -164,7 +164,7 @@ export default class Canvas {
       }
       for (let i = 0; i < this.#arrows.length; i++) {
         if (this.#arrows[i].toIndex > index) this.#arrows[i].toIndex = parseInt(this.#arrows[i].toIndex, 10) - 1; 
-        if (this.#arrows[i].fromIndex > index)this.#arrows[i].fromIndex = parseInt(this.#arrows[i].fromIndex, 10) - 1; 
+        if (this.#arrows[i].fromIndex > index) this.#arrows[i].fromIndex = parseInt(this.#arrows[i].fromIndex, 10) - 1; 
       }
     });
     this.#deselectAllCards();
@@ -544,11 +544,18 @@ export default class Canvas {
       const arrow = this.#arrows[arrows[i].getAttribute('data-index')];
 
       arrows[i].style.pointerEvents = arrow.toIndex == -1 ? 'none' : 'auto';
-      
+
       var fromPosition = {x: this.#cards[arrow.fromIndex].position.x, y: this.#cards[arrow.fromIndex].position.y};
       var toPosition = arrow.toIndex == -1 ? arrow.toPosition : this.#cards[arrow.toIndex].position;
-      var fromSize = {x: this.#cards[arrow.fromIndex].width + 23, y: this.#cards[arrow.fromIndex].height};
-      var toSize = arrow.toIndex == -1 ? null : {x: this.#cards[arrow.toIndex].width + 23, y: this.#cards[arrow.toIndex].height};
+      var fromSize = {x: this.#cards[arrow.fromIndex].width + 25, y: this.#cards[arrow.fromIndex].height};
+      var toSize = arrow.toIndex == -1 ? null : {x: this.#cards[arrow.toIndex].width + 25, y: this.#cards[arrow.toIndex].height};
+      
+      if (arrow.toIndex != -1 && this.#intersectCards(fromPosition, fromSize, toPosition, toSize)) {
+        arrows[i].style.display = 'none';
+      } else {
+        arrows[i].style.display = 'block';
+      }
+
       [toPosition, fromPosition] = this.#getArrowPosition(fromPosition, fromSize, toPosition, toSize);
 
       arrows[i].setAttribute('x1', fromPosition.x + 5000);
@@ -676,9 +683,6 @@ export default class Canvas {
     this.#cards[index].position = this.#getPosition(card);
     this.#cards[index].width = parseInt(card.style.width, 10);
     
-    var cardRect = card.getBoundingClientRect();
-    this.#cards[index].height = parseInt(cardRect.height, 10) / this.#canvasScale;
-    
     if (this.#cards[index].isText()) {
       var text = card.children[1].value + (card.children[1].value.slice(-1) === '\n' ? ' ' : '');
       var [preview, _] = leto.preview.getPreview(text);
@@ -692,6 +696,11 @@ export default class Canvas {
         this.#cards[index].text = card.children[1].value;
       }
     }
+    
+    var cardRect = card.getBoundingClientRect();
+    this.#cards[index].height = parseInt(cardRect.height, 10) / this.#canvasScale;
+    
+    this.#updateArrows();
 
     this.#save();
   }
@@ -709,6 +718,7 @@ export default class Canvas {
     canvas.innerHTML = '';
 
     var fileJson = await readTextFile(leto.directory.activeFile);
+
     if (fileJson === '') {
       this.#canvasPosition = {x: 0, y: 0};
       this.#canvasScale = 1;
@@ -717,13 +727,17 @@ export default class Canvas {
       var file = JSON.parse(fileJson);
       this.#canvasPosition = {x: file.position.x ?? 0, y: file.position.y ?? 0};
       this.#canvasScale = file.scale;
-      file.cards.forEach(card => this.#createCard(card.position, card.text, card.width, card.imagePath, card.zIndex, card.isInversed, -1));
-      file.arrows.forEach(arrow => this.#createArrow(arrow.fromIndex, arrow.toIndex));
     }
 
     canvas.style.left = this.#canvasPosition.x + 'px';
     canvas.style.top = this.#canvasPosition.y + 'px';
     canvas.style.transform = `scale(${this.#canvasScale})`;
+    
+    if (fileJson !== '') {
+      file.cards.forEach(card => this.#createCard(card.position, card.text, card.width, card.imagePath, card.zIndex, card.isInversed, -1));
+      file.arrows.forEach(arrow => this.#createArrow(arrow.fromIndex, arrow.toIndex));
+    }
+
     this.#isSavingUndoState = true;
   }
 
@@ -740,7 +754,8 @@ export default class Canvas {
   #getArrowPosition(from, fromSize, to, toSize) {
     if (toSize != null) {
       var centers = [{x: from.x + fromSize.x / 2, y: from.y + fromSize.y / 2}, {x: to.x + toSize.x / 2, y: to.y + toSize.y / 2}];
-      return [this.#moveFirstCoordinatesToBounds([centers[1], centers[0]], fromSize), this.#moveFirstCoordinatesToBounds([centers[0], centers[1]], toSize)];
+      var atBounds = [this.#moveFirstCoordinatesToBounds([centers[1], centers[0]], toSize), this.#moveFirstCoordinatesToBounds([centers[0], centers[1]], fromSize)];
+      return this.#truncateLine(atBounds);
     }
     else {
       var centers = [{x: from.x + fromSize.x / 2, y: from.y + fromSize.y / 2}, {x: to.x, y: to.y}];
@@ -755,8 +770,6 @@ export default class Canvas {
     var yCoeff = (size.y / 2) / (points[1].y - points[0].y)
     var xCoeff = (size.x / 2) / (points[1].x - points[0].x)
 
-    var length = Math.sqrt((xDiff ** 2) + (yDiff ** 2));
-
     if (Math.abs(xCoeff) > Math.abs(yCoeff)) {
       var xDelta = yCoeff * xDiff;
       var yDelta = size.y / 2;
@@ -768,10 +781,27 @@ export default class Canvas {
       points[0].x += xDiff > 0 ? xDelta : -xDelta;
       points[0].y += xDiff > 0 ? yDelta : -yDelta;
     }
-    points[0].x += xDiff * (20 / length);
-    points[0].y += yDiff * (20 / length);
 
     return points[0];
+  }
+
+  #truncateLine(points) {
+    const truncateLength = 20;
+
+    var xDiff = points[1].x - points[0].x;
+    var yDiff = points[1].y - points[0].y;
+
+    var length = Math.sqrt((xDiff ** 2) + (yDiff ** 2));
+
+    if (length < truncateLength * 2 + 15) return points;
+
+    points[0].x += xDiff * (truncateLength / length);
+    points[0].y += yDiff * (truncateLength / length);
+
+    points[1].x -= xDiff * (truncateLength / length);
+    points[1].y -= yDiff * (truncateLength / length);
+
+    return points;
   }
 
   #getPosition(element) {
@@ -798,6 +828,10 @@ export default class Canvas {
     if (number > max) number = max;
     else if (number < min) number = min;
     return number;
+  }
+
+  #intersectCards(from, fromSize, to, toSize) {
+    return !(to.x > from.x + fromSize.x || to.x + toSize.x < from.x || to.y > from.y + fromSize.y || to.y + toSize.y < from.y);
   }
 }
 
