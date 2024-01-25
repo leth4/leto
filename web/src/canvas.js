@@ -33,6 +33,8 @@ export default class Canvas {
   #redoHistory = [];
   #isSavingUndoState = true;
 
+  #isLoading = false;
+
   constructor() {
     container.addEventListener('mousedown', event => this.#handleMouseDown(event))
     container.addEventListener('mousemove', event => this.#handleMouseMove(event));
@@ -230,6 +232,7 @@ export default class Canvas {
     this.#removeArrow(this.#selectedArrow);
     var pairedArrow = this.#getPairedArrow(this.#selectedArrow);
     if (pairedArrow != null) this.#removeArrow(this.#selectedArrow);
+    this.#save();
   }
 
   #removeArrow(arrow) {
@@ -249,15 +252,21 @@ export default class Canvas {
     this.#createArrow(this.#arrows[index].toIndex, this.#arrows[index].fromIndex);
     this.#removeArrow(this.#selectedArrow);
     this.#selectedArrow = null;
+    this.#save();
   }
 
   toggleDoubleSelectedArrow() {
     if (this.isSelectedArrowDouble()) {
+      this.#getPairedArrow(this.#selectedArrow)?.classList.remove('selected');
       this.#removeArrow(this.#selectedArrow);
+      this.#selectedArrow = null;
     } else {
       var index = this.#selectedArrow.getAttribute('data-index');
       this.#createArrow(this.#arrows[index].toIndex, this.#arrows[index].fromIndex);
+      this.#selectedArrow?.classList.remove('selected');
+      this.#selectedArrow = null;
     }
+    this.#save();
   }
 
   isSelectedArrowDouble() {
@@ -481,14 +490,17 @@ export default class Canvas {
     if (fromIndex == toIndex) return;
     
     var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.classList.add('arrow');
-    svg.appendChild(line);
+    var visualLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    var selectionLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    visualLine.classList.add('visual-arrow');
+    selectionLine.classList.add('arrow');
+    svg.appendChild(selectionLine);
+    svg.appendChild(visualLine);
     canvas.appendChild(svg);
 
     this.#arrows.push(new Arrow(fromIndex, toIndex));
     this.#arrows[this.#arrows.length - 1].toPosition = toPosition;
-    line.setAttribute('data-index', this.#arrows.length - 1);
+    selectionLine.setAttribute('data-index', this.#arrows.length - 1);
 
     this.#updateArrows();
 
@@ -544,6 +556,7 @@ export default class Canvas {
       const arrow = this.#arrows[arrows[i].getAttribute('data-index')];
 
       arrows[i].style.pointerEvents = arrow.toIndex == -1 ? 'none' : 'auto';
+      var visualLine = arrows[i].parentElement.querySelector('.visual-arrow');
 
       var fromPosition = {x: this.#cards[arrow.fromIndex].position.x, y: this.#cards[arrow.fromIndex].position.y};
       var toPosition = arrow.toIndex == -1 ? arrow.toPosition : this.#cards[arrow.toIndex].position;
@@ -562,6 +575,11 @@ export default class Canvas {
       arrows[i].setAttribute('y1', fromPosition.y + 5000);
       arrows[i].setAttribute('x2', toPosition.x + 5000);
       arrows[i].setAttribute('y2', toPosition.y + 5000);
+      
+      visualLine.setAttribute('x1', fromPosition.x + 5000);
+      visualLine.setAttribute('y1', fromPosition.y + 5000);
+      visualLine.setAttribute('x2', toPosition.x + 5000);
+      visualLine.setAttribute('y2', toPosition.y + 5000);
     }
   }
 
@@ -706,12 +724,14 @@ export default class Canvas {
   }
 
   async #save() {
+    if (this.#isLoading) return;
     const configObject = { cards: this.#cards, arrows: this.#arrows, scale: this.#canvasScale, position: this.#canvasPosition };
     await writeTextFile(leto.directory.activeFile, JSON.stringify(configObject, null, 2));
   }
 
   async load(file) {
     this.#isSavingUndoState = false;
+    this.#isLoading = true;
     this.#cards = [];
     this.#arrows = [];
     this.#previews = [];
@@ -739,6 +759,7 @@ export default class Canvas {
     }
 
     this.#isSavingUndoState = true;
+    this.#isLoading = false;
   }
 
   reset() {

@@ -52,8 +52,8 @@ Shortcut | Action
 Shortcut | Action
 :-|:-
 `Space` | Create a new card
-`Ctrl + I` | Invert the card's color
-`Ctrl + ] / [` | Send to front/back
+`] / [` | Send to front/back
+`I` | Invert the card's color
 `V` | Align selected cards vertically
 `H` | Align selected cards horizontally
 `C` | Connect selected cards
