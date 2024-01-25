@@ -86,11 +86,10 @@ export default class Preview {
   }
 
   #setCounterValues() {
-    var words = editor.value.match(/(\w+)/g);
-    if (editor.selectionStart == editor.selectionEnd) 
-      counter.innerHTML = `L${editor.value.length} W${words ? words.length : 0}`;
-    else
-      counter.innerHTML = `S${editor.selectionEnd - editor.selectionStart} L${editor.value.length} W${words ? words.length : 0}`;
+    var text = editor.selectionStart == editor.selectionEnd ? editor.value : editor.value.slice(editor.selectionStart, editor.selectionEnd);
+    var words = text.match(/(\w+)/g);
+    var lines = text.split(/\r\n|\r|\n/).length;
+    counter.innerHTML = `${editor.selectionStart == editor.selectionEnd ? "" : "→ "} S${text.length} W${words ? words.length : 0} L${lines}`;
   }
 
   #previewSpell(editorText, excludeRanges) {

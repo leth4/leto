@@ -1,6 +1,7 @@
 const { appWindow } = window.__TAURI__.window;
 const { listen, emit } = window.__TAURI__.event;
 const { invoke } = window.__TAURI__.tauri;
+
 const content = document.getElementById('content');
 const imageDisplay = document.getElementById('image-display');
 const imageContainer = document.getElementById('image-container');
@@ -43,6 +44,7 @@ window.onkeydown = (e) => {
   else if (e.ctrlKey && !e.shiftKey && e.code === 'Minus') changeFontSize(-1);
   else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyP') toggleAlwaysOnTop();
   else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyO') openFile();
+  else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyH') setNonScrollableHeight();
   else return;
 
   e.preventDefault();
@@ -87,6 +89,14 @@ function setImageTransform() {
   imageDisplay.style.transform = "translate(" + currentImagePosition.x + "px, " + currentImagePosition.y + "px) scale(" + currentImageZoom + ")";
   if (currentImageZoom <= 1) imageDisplay.style.cursor = 'default';
   else imageDisplay.style.cursor = isPanningImage ? 'grabbing' : 'grab';
+}
+
+async function setNonScrollableHeight() {
+  var size = await appWindow.innerSize();
+  if (content.offsetHeight + 15 < 800) {
+    size.height = content.offsetHeight + 15;
+  }
+  appWindow.setSize(size);  
 }
 
 function closeWindow() {
@@ -165,6 +175,8 @@ await listen('renderWindowUpdate', (event) => {
   for (let i = 0; i < innerLinks.length; i++) {
     innerLinks[i].addEventListener('click', event => emit('renderOpenLink', { file: event.target.getAttribute('data-link') }));
   }
+
+  setNonScrollableHeight();
 
 });
 
