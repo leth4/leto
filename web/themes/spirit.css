@@ -1,12 +1,12 @@
 :root {
     --editor-background-color: #1d1d1d;
-    --editor-code-background-color: #000000;
+    --editor-code-background-color: #141414;
     --editor-text-color: #cccccc;
     --editor-accent-color: #d56a6a;
     --editor-muted-color: #515151;
     --selection-color: #3d3d3d;
 
-    --canvas-card-color: #000000;
+    --canvas-card-color: #141414;
     --canvas-inversed-card-color: #171717;
 
     --sidebar-background-color:#1d1d1d;

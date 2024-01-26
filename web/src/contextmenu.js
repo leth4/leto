@@ -144,7 +144,6 @@ export default class ContextMenu {
     else if (action === 'Invert') leto.canvas.inverseSelectedCards();
     else if (action === 'Remove') leto.canvas.removeSelectedArrow();
     else if (action === 'Reverse') leto.canvas.reverseSelectedArrow();
-    else if (action === 'Make Double' || action === 'Make Single') leto.canvas.toggleDoubleSelectedArrow();
 
     else leto.edit.replaceWord(action);
 
@@ -225,8 +224,10 @@ export default class ContextMenu {
 
   #createCardMenu() {
     contextMenu.innerHTML = '';
-    this.#addAction('Connect');
-    this.#addSeparator();
+    if (leto.canvas.hasMultipleSelected()) {
+      this.#addAction('Connect');
+      this.#addSeparator();
+    }
     this.#addAction('Copy');
     this.#addAction('Cut');
     this.#addAction('Delete');
@@ -245,12 +246,7 @@ export default class ContextMenu {
   #createArrowMenu() {
     contextMenu.innerHTML = '';
     this.#addAction('Remove');
-    if (leto.canvas.isSelectedArrowDouble()) {
-      this.#addAction('Make Single')
-    } else {
-      this.#addAction('Reverse');
-      this.#addAction('Make Double');
-    }
+    this.#addAction('Reverse');
   }
 
   #addAction(name, isActive = true) {

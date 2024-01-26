@@ -1,13 +1,13 @@
 :root {
     --editor-background-color: #232a31;
-    --editor-code-background-color: #111519;
+    --editor-code-background-color: #14181d;
     --editor-text-color: #a9c3c7;
     --editor-accent-color: #dfe4e4;
     --editor-muted-color: #516a79;
     --selection-color: #2f2f96;
 
-    --canvas-card-color: #111519;
-    --canvas-inversed-card-color: #1d242a;
+    --canvas-card-color: #14181d;
+    --canvas-inversed-card-color: #20272d;
 
     --sidebar-background-color:#232a31;
     --sidebar-folder-color: #cacaca;

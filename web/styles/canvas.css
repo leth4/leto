@@ -36,7 +36,7 @@
 
 .card.inversed {
     background-color: var(--canvas-inversed-card-color);
-    border: 2px solid var(--editor-muted-color);
+    outline: 1px solid var(--editor-muted-color);
 }
 
 .card.selected {
@@ -134,7 +134,6 @@
     marker-end: url(#arrowHeadUnselected);
 }
 
-
 #arrowHeadSelected {
     fill: var(--editor-accent-color);
 }
@@ -143,7 +142,7 @@
     fill: var(--editor-muted-color);
 }
 
-#canvas .arrow.selected + .visual-arrow {
+#canvas .arrow:hover + .visual-arrow {
     marker-end: url(#arrowHeadSelected);
     stroke: var(--editor-accent-color);
 }

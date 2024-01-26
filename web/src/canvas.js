@@ -12,11 +12,9 @@ export default class Canvas {
   #draggedItem;
   #previousCursorPosition = {x: 0, y: 0};
   #startDragPosition;
-  #isDraggingArrow;
 
   #isBoxSelecting;
   #previouslySelectedCards;
-  #hasChangedBoxSelection;
   
   #canvasScale = 1;
   #canvasPosition = {x: 0, y: 0};
@@ -32,8 +30,9 @@ export default class Canvas {
   #undoHistory = []
   #redoHistory = [];
   #isSavingUndoState = true;
-
   #isLoading = false;
+  #isSaving = false;
+  #savePending = false;
 
   constructor() {
     container.addEventListener('mousedown', event => this.#handleMouseDown(event))
@@ -49,15 +48,15 @@ export default class Canvas {
   undo() {
     const state = this.#undoHistory.pop();
     if (!state) return;
+    this.#saveRedoState();
     this.#applyUndoState(state);
-    this.#redoHistory.push(state);
   }
 
   redo() {
     const state = this.#redoHistory.pop();
     if (!state) return;
+    this.#saveUndoState(true);
     this.#applyUndoState(state);
-    this.#undoHistory.push(state);
   }
 
   #applyUndoState(state) {
@@ -71,28 +70,43 @@ export default class Canvas {
     state.cards.forEach(card => this.#createCard(card.position, card.text, card.width, card.imagePath, card.zIndex, card.isInversed, -1));
     state.arrows.forEach(arrow => this.#createArrow(arrow.fromIndex, arrow.toIndex));
 
-    const cardElements = canvas.getElementsByClassName('card');
-    for (let i = 0; i < cardElements.length; i++) {
-      if (state.selection.includes(parseInt((cardElements[i].getAttribute('data-index')), 10)))
-        this.#setSelected(cardElements[i]);
-    }
-
     this.#isSavingUndoState = true;
   }
 
-  #saveUndoState() {
+  #saveUndoState(fromRedo = false) {
     if (!this.#isSavingUndoState) return;
+    if (!fromRedo) this.#redoHistory = [];
     var stateCards = [];
     var stateArrows = [];
-    var stateSelectedIndeces = [];
     this.#cards.forEach(card => stateCards.push(this.#getCardCopy(card)));
     this.#arrows.forEach(arrow => stateArrows.push(this.#getArrowCopy(arrow)));
-    this.#selectedCards.forEach(card => stateSelectedIndeces.push(parseInt(card.getAttribute('data-index'), 10)));
-    this.#undoHistory.push({cards: stateCards, arrows: stateArrows, selection: stateSelectedIndeces});
+    this.#undoHistory.push({cards: stateCards, arrows: stateArrows});
+  }
+
+  #saveRedoState() {
+    var stateCards = [];
+    var stateArrows = [];
+    this.#cards.forEach(card => stateCards.push(this.#getCardCopy(card)));
+    this.#arrows.forEach(arrow => stateArrows.push(this.#getArrowCopy(arrow)));
+    this.#redoHistory.push({cards: stateCards, arrows: stateArrows});
   }
 
   #removeLastUndoState() {
     this.#undoHistory.pop();
+  }
+
+  #redrawArrows() {
+    var arrowElements = document.getElementsByClassName('arrow');
+    for (let i = arrowElements.length - 1; i >= 0; i--) {
+      arrowElements[i].parentElement.remove();
+    }
+
+    var arrowsCopy = [];
+    this.#arrows.forEach(arrow => arrowsCopy.push(this.#getArrowCopy(arrow)));
+    
+    this.#arrows = [];
+
+    arrowsCopy.forEach(arrow => this.#createArrow(arrow.fromIndex, arrow.toIndex));
   }
 
   hasCopiedCards() {
@@ -153,22 +167,14 @@ export default class Canvas {
         var cardIndex = parseInt(cardElements[i].getAttribute('data-index'));
         if (cardIndex > index) cardElements[i].setAttribute('data-index', cardIndex - 1); 
       }
-      for (let i = this.#arrows.length - 1; i >= 0; i--) {
-        if (this.#arrows[i].toIndex == index || this.#arrows[i].fromIndex == index) {
-          this.#arrows.splice(i, 1);
-          const arrowElements = canvas.getElementsByClassName('arrow');
-          for (let j = arrowElements.length - 1; j >= 0; j--) {
-            var arrowIndex = parseInt(arrowElements[j].getAttribute('data-index'), 10);
-            if (arrowIndex == i) arrowElements[j].parentElement.remove();
-            else if (arrowIndex > i) arrowElements[j].setAttribute('data-index', arrowIndex - 1);
-          }
-        }
-      }
       for (let i = 0; i < this.#arrows.length; i++) {
+        if (this.#arrows[i].toIndex == index) this.#arrows[i].toIndex = -1; 
+        if (this.#arrows[i].fromIndex == index) this.#arrows[i].fromIndex = -1; 
         if (this.#arrows[i].toIndex > index) this.#arrows[i].toIndex = parseInt(this.#arrows[i].toIndex, 10) - 1; 
         if (this.#arrows[i].fromIndex > index) this.#arrows[i].fromIndex = parseInt(this.#arrows[i].fromIndex, 10) - 1; 
       }
     });
+    this.#redrawArrows();
     this.#deselectAllCards();
     this.#save();
   }
@@ -191,7 +197,6 @@ export default class Canvas {
   }
 
   selectAllCards() {
-    this.#saveUndoState();
     this.#selectedCards = [];
     const cardElements = canvas.getElementsByClassName('card');
     for (let i = 0; i < cardElements.length; i++) {
@@ -213,64 +218,30 @@ export default class Canvas {
 
   connectSelectedCards() {
     this.#saveUndoState();
+    if (this.#selectedCards.length <= 1) return;
 
-    if (this.#selectedCards.length < 1) return;
-
-    if (this.#selectedCards.length == 1) {
-      this.#isDraggingArrow = true;
-      this.#createArrow(this.#selectedCards[0].getAttribute('data-index'), -1, this.#screenToCanvasSpace(this.#previousCursorPosition));
-    }
-    
-    for (let i = 0; i < this.#selectedCards.length; i++) {
-      for (let j = 0; j < this.#selectedCards.length; j++) {
-        this.#createArrow(this.#selectedCards[i].getAttribute('data-index'), this.#selectedCards[j].getAttribute('data-index'));
-      }   
+    for (let i = 0; i < this.#selectedCards.length - 1; i++) {
+      this.#createArrow(this.#selectedCards[i].getAttribute('data-index'), this.#selectedCards[i + 1].getAttribute('data-index'));
     }
   }
 
   removeSelectedArrow() {
+    this.#saveUndoState();
     this.#removeArrow(this.#selectedArrow);
-    var pairedArrow = this.#getPairedArrow(this.#selectedArrow);
-    if (pairedArrow != null) this.#removeArrow(this.#selectedArrow);
     this.#save();
   }
 
   #removeArrow(arrow) {
     var index = arrow.getAttribute('data-index');
     this.#arrows.splice(index, 1);
-    arrow.parentElement.remove();
-    var arrowElements = canvas.getElementsByClassName('arrow');
-    for (let i = 0; i < arrowElements.length; i++) {
-      var arrowIndex = arrowElements[i].getAttribute('data-index');
-      if (arrowIndex > index) arrowElements[i].setAttribute('data-index', arrowIndex - 1); 
-    }
-    this.#selectedArrow = null;
+    this.#redrawArrows();
   }
 
   reverseSelectedArrow() {
+    this.#saveUndoState();
     var index = this.#selectedArrow.getAttribute('data-index');
     this.#createArrow(this.#arrows[index].toIndex, this.#arrows[index].fromIndex);
-    this.#removeArrow(this.#selectedArrow);
-    this.#selectedArrow = null;
     this.#save();
-  }
-
-  toggleDoubleSelectedArrow() {
-    if (this.isSelectedArrowDouble()) {
-      this.#getPairedArrow(this.#selectedArrow)?.classList.remove('selected');
-      this.#removeArrow(this.#selectedArrow);
-      this.#selectedArrow = null;
-    } else {
-      var index = this.#selectedArrow.getAttribute('data-index');
-      this.#createArrow(this.#arrows[index].toIndex, this.#arrows[index].fromIndex);
-      this.#selectedArrow?.classList.remove('selected');
-      this.#selectedArrow = null;
-    }
-    this.#save();
-  }
-
-  isSelectedArrowDouble() {
-    return this.#getPairedArrow(this.#selectedArrow) != null;
   }
 
   cutSelectedCards() {
@@ -357,16 +328,13 @@ export default class Canvas {
       if (!event.shiftKey && (this.#selectedCards.length < 2 || !isSelected)) this.#deselectAllCards()
       if (!event.shiftKey || !isSelected) this.#setSelected(event.target);
       else this.#setDeselected(event.target);
-      this.#saveUndoState();
       this.#startDragPosition = this.#getPosition(this.#draggedItem);
     } else if (event.target == container && event.button == 0) {
-      if (this.#selectedCards.length > 0) this.#saveUndoState();
       this.#deselectAllCards();
       this.#draggedItem = canvas;
       container.style.cursor = 'grabbing';
       this.#startDragPosition = this.#getPosition(this.#draggedItem);
     } else if (event.target == container && event.button == 1) {
-      this.#saveUndoState();
       this.#isBoxSelecting = true;
       this.#previouslySelectedCards = event.shiftKey ? [...this.#selectedCards] : [];
       boxSelection.style.display = 'block';
@@ -394,12 +362,7 @@ export default class Canvas {
       this.#previousCursorPosition = cursorPosition;
       this.#handleBoxSelection();
     }
-    if (this.#isDraggingArrow) {
-      this.#arrows[this.#arrows.length - 1].toPosition = this.#screenToCanvasSpace(cursorPosition);
-      this.#updateArrows();
-    }
     if (this.#draggedItem == null) {
-      this.#handleArrowSelection(event);
       document.querySelector(':root').style.setProperty('--cards-pointer-events', event.ctrlKey || this.#isBoxSelecting ? 'none' : 'auto');
       this.#previousCursorPosition = cursorPosition;
       return;
@@ -447,17 +410,6 @@ export default class Canvas {
     if (this.#isBoxSelecting) {
       boxSelection.style.display = 'none';
       this.#isBoxSelecting = false;
-      if (!this.#hasChangedBoxSelection) this.#removeLastUndoState();
-    }
-    if (this.#isDraggingArrow) {
-      if (event.target.classList.contains('card')) {
-        var targetIndex = parseInt(event.target.getAttribute('data-index'), 10);
-        if (targetIndex != this.#arrows[this.#arrows.length - 1].fromIndex) this.#arrows[this.#arrows.length - 1].toIndex = targetIndex;
-      } else {
-        this.createEmptyCard(event);
-        this.#arrows[this.#arrows.length - 1].toIndex = this.#cards.length - 1;
-      }
-      this.#isDraggingArrow = false;  
     }
     if (this.#draggedItem == null) return;
 
@@ -469,7 +421,6 @@ export default class Canvas {
     if (this.#draggedItem.classList.contains('card')) {
       this.#updateCard(this.#draggedItem);
       if (!event.shiftKey && event.button == 0 && !hasMoved) {
-        this.#saveUndoState();
         this.#deselectAllCards()
         this.#setSelected(this.#draggedItem);
       }
@@ -485,9 +436,13 @@ export default class Canvas {
     this.#updateArrows();
   }
 
-  #createArrow(fromIndex, toIndex, toPosition) {
-    if (this.#doesArrowExist(fromIndex, toIndex)) return;
+  #createArrow(fromIndex, toIndex) {
     if (fromIndex == toIndex) return;
+    if (toIndex == -1 || fromIndex == -1) return;
+    if (toIndex >= this.#cards.length || fromIndex >= this.#cards.length) return;
+    if (this.#doesArrowExist(fromIndex, toIndex)) return;
+
+    if (this.#doesArrowExist(toIndex, fromIndex)) this.#removeOppositeArrow(fromIndex, toIndex);
     
     var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     var visualLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -498,47 +453,14 @@ export default class Canvas {
     svg.appendChild(visualLine);
     canvas.appendChild(svg);
 
+    selectionLine.addEventListener('contextmenu', () => this.#selectedArrow = selectionLine);
+
     this.#arrows.push(new Arrow(fromIndex, toIndex));
-    this.#arrows[this.#arrows.length - 1].toPosition = toPosition;
     selectionLine.setAttribute('data-index', this.#arrows.length - 1);
 
     this.#updateArrows();
 
     this.#save();
-  }
-
-  #handleArrowSelection(event) {
-    if (event.target.classList.contains('arrow')) {
-      this.#selectedArrow?.classList.remove('selected');
-      this.#getPairedArrow(this.#selectedArrow)?.classList.remove('selected');
-      this.#selectedArrow = event.target;
-      this.#selectedArrow.classList.add('selected');
-      this.#getPairedArrow(this.#selectedArrow)?.classList.add('selected');
-    }
-    else {
-      this.#selectedArrow?.classList.remove('selected');
-      this.#getPairedArrow(this.#selectedArrow)?.classList.remove('selected');
-    }
-  }
-
-  #getPairedArrow(arrow) {
-    if (arrow == null || arrow == undefined) return;
-    var index = arrow.getAttribute('data-index');
-    for (let i = 0; i < this.#arrows.length; i++) {
-      if (this.#arrows[i].fromIndex == this.#arrows[index].toIndex && this.#arrows[i].toIndex == this.#arrows[index].fromIndex) {
-        return this.#getArrowByIndex(i);
-      }
-    }
-    return null;
-  }
-
-  #getArrowByIndex(index) {
-    const arrowElements = canvas.getElementsByClassName('arrow');
-    for (let j = 0; j < arrowElements.length; j++) {
-      var arrowIndex = parseInt(arrowElements[j].getAttribute('data-index'), 10);
-      if (arrowIndex == index) return arrowElements[j];
-    }
-    return null;
   }
 
   #doesArrowExist(fromIndex, toIndex) {
@@ -550,23 +472,39 @@ export default class Canvas {
     return false;
   }
 
+  #removeOppositeArrow(fromIndex, toIndex) {
+    var index;
+    for (let i = 0; i < this.#arrows.length; i++) {
+      if (this.#arrows[i].fromIndex == toIndex && this.#arrows[i].toIndex == fromIndex) {
+        index = i;
+      }
+    }
+    const arrowElements = document.getElementsByClassName('arrow');
+    for (let i = 0; i < arrowElements.length; i++) {
+      if (arrowElements[i].getAttribute('data-index') == index) {
+        this.#removeArrow(arrowElements[i]);
+        return;
+      }
+    }
+  }
+
   #updateArrows() {
     const arrows = document.getElementsByClassName('arrow');
     for (let i = 0; i < arrows.length; i++) {
       const arrow = this.#arrows[arrows[i].getAttribute('data-index')];
 
-      arrows[i].style.pointerEvents = arrow.toIndex == -1 ? 'none' : 'auto';
       var visualLine = arrows[i].parentElement.querySelector('.visual-arrow');
 
-      var fromPosition = {x: this.#cards[arrow.fromIndex].position.x, y: this.#cards[arrow.fromIndex].position.y};
-      var toPosition = arrow.toIndex == -1 ? arrow.toPosition : this.#cards[arrow.toIndex].position;
-      var fromSize = {x: this.#cards[arrow.fromIndex].width + 25, y: this.#cards[arrow.fromIndex].height};
-      var toSize = arrow.toIndex == -1 ? null : {x: this.#cards[arrow.toIndex].width + 25, y: this.#cards[arrow.toIndex].height};
+      var fromPosition = this.#cards[arrow.fromIndex].position;
+      var toPosition = this.#cards[arrow.toIndex].position;
+      var fromSize = { x: this.#cards[arrow.fromIndex].width + 25, y: this.#cards[arrow.fromIndex].height };
+      var toSize = { x: this.#cards[arrow.toIndex].width + 25, y: this.#cards[arrow.toIndex].height };
       
-      if (arrow.toIndex != -1 && this.#intersectCards(fromPosition, fromSize, toPosition, toSize)) {
-        arrows[i].style.display = 'none';
+      if (this.#intersectCards(fromPosition, fromSize, toPosition, toSize)) {
+        visualLine.style.display = 'none';
+        return;
       } else {
-        arrows[i].style.display = 'block';
+        visualLine.style.display = 'block';
       }
 
       [toPosition, fromPosition] = this.#getArrowPosition(fromPosition, fromSize, toPosition, toSize);
@@ -587,18 +525,14 @@ export default class Canvas {
     this.#deselectAllCards();
     var selectionRect = boxSelection.getBoundingClientRect();
     var cards = document.getElementsByClassName('card');
-    var hasChanged = false;
     for (let i = 0; i < cards.length; i++) {
       const cardRect = cards[i].getBoundingClientRect();
       if (selectionRect.left < cardRect.right && selectionRect.right > cardRect.left && selectionRect.top < cardRect.bottom && selectionRect.bottom > cardRect.top) {
         this.#previouslySelectedCards.includes(cards[i]) ? this.#setDeselected(cards[i]) : this.#setSelected(cards[i]);
-        hasChanged = true;
       } else if (this.#previouslySelectedCards.includes(cards[i])) {
-        hasChanged = true;
         this.#setSelected(cards[i]);
       }
     }
-    this.#hasChangedBoxSelection = hasChanged;
   }
 
   #createCard(position, text, width, imagePath = '', zIndex = 100 + this.#cards.length, isInversed = false, atIndex = -1) {
@@ -725,8 +659,25 @@ export default class Canvas {
 
   async #save() {
     if (this.#isLoading) return;
+    if (this.#isSaving) {
+      this.#savePending = true;
+    }
+    this.#isSaving = true;
     const configObject = { cards: this.#cards, arrows: this.#arrows, scale: this.#canvasScale, position: this.#canvasPosition };
     await writeTextFile(leto.directory.activeFile, JSON.stringify(configObject, null, 2));
+
+    var isValidJSON = false;
+    while (!isValidJSON) {
+      var savedText = await readTextFile(leto.directory.activeFile);
+      isValidJSON = this.#isValidJSON(savedText);
+      if (!isValidJSON) await writeTextFile(leto.directory.activeFile, JSON.stringify(configObject, null, 2));
+    }
+
+    this.#isSaving = false;
+    if (this.#savePending) {
+      this.#savePending = false;
+      this.#save();
+    }
   }
 
   async load(file) {
@@ -773,15 +724,9 @@ export default class Canvas {
   }
 
   #getArrowPosition(from, fromSize, to, toSize) {
-    if (toSize != null) {
-      var centers = [{x: from.x + fromSize.x / 2, y: from.y + fromSize.y / 2}, {x: to.x + toSize.x / 2, y: to.y + toSize.y / 2}];
-      var atBounds = [this.#moveFirstCoordinatesToBounds([centers[1], centers[0]], toSize), this.#moveFirstCoordinatesToBounds([centers[0], centers[1]], fromSize)];
-      return this.#truncateLine(atBounds);
-    }
-    else {
-      var centers = [{x: from.x + fromSize.x / 2, y: from.y + fromSize.y / 2}, {x: to.x, y: to.y}];
-      return [to, this.#moveFirstCoordinatesToBounds([centers[0], centers[1]], fromSize)];
-    }
+    var centers = [{x: from.x + fromSize.x / 2, y: from.y + fromSize.y / 2}, {x: to.x + toSize.x / 2, y: to.y + toSize.y / 2}];
+    var atBounds = [this.#moveFirstCoordinatesToBounds([centers[1], centers[0]], toSize), this.#moveFirstCoordinatesToBounds([centers[0], centers[1]], fromSize)];
+    return this.#truncateLine(atBounds);
   }
 
   #moveFirstCoordinatesToBounds(points, size) {
@@ -854,6 +799,15 @@ export default class Canvas {
   #intersectCards(from, fromSize, to, toSize) {
     return !(to.x > from.x + fromSize.x || to.x + toSize.x < from.x || to.y > from.y + fromSize.y || to.y + toSize.y < from.y);
   }
+
+  #isValidJSON(text) {
+    try {
+      (JSON.parse(text));
+    } catch(e) {
+      return false;
+    }
+    return true;
+  }
 }
 
 class Card {
@@ -876,6 +830,5 @@ class Arrow {
   constructor(fromIndex, toIndex) {
     this.fromIndex = fromIndex;
     this.toIndex = toIndex;
-    this.toPosition;
   }
 }
