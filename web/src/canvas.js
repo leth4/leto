@@ -225,6 +225,24 @@ export default class Canvas {
     }
   }
 
+  disconnectSelectedCards() {
+    this.#saveUndoState();
+
+    for (let i = 0; i < this.#selectedCards.length; i++) {
+      for (let j = 0; j < this.#selectedCards.length; j++) {
+        if (i == j) continue;
+        for (let k = this.#arrows.length - 1; k >= 0; k--) {
+          var from = this.#selectedCards[i].getAttribute('data-index');
+          var to = this.#selectedCards[j].getAttribute('data-index');
+          if ((this.#arrows[k].fromIndex == from && this.#arrows[k].toIndex == to) || (this.#arrows[k].fromIndex == to && this.#arrows[k].toIndex == from))
+            this.#arrows.splice(k, 1);
+        }
+      }
+    }
+
+    this.#redrawArrows();
+  }
+
   removeSelectedArrow() {
     this.#saveUndoState();
     this.#removeArrow(this.#selectedArrow);

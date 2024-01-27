@@ -247,10 +247,19 @@ export default class Directory {
   async copyActiveImage() {
     if (!this.isFileAnImage(this.activeFile)) return;
 
-    var data = await fetch(convertFileSrc(this.activeFile));
-    var blob = await data.blob();
-    
-    navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
+    var image = new Image();
+    image.crossOrigin = "anonymous"
+    var c = document.createElement('canvas');
+    var ctx = c.getContext('2d');
+
+    image.onload = function() {
+      c.width = this.naturalWidth
+      c.height = this.naturalHeight
+      ctx.drawImage(this,0,0)
+      c.toBlob(blob => navigator.clipboard.write([new ClipboardItem({'image/png': blob})]));
+    }
+
+    image.src = convertFileSrc(this.activeFile);
   }
 
   async renameFile(filePath, newName) {

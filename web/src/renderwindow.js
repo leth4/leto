@@ -94,7 +94,7 @@ function setImageTransform() {
 async function setNonScrollableHeight() {
   var size = await appWindow.innerSize();
   if (content.offsetHeight + 15 < 800) {
-    size.height = content.offsetHeight + 15;
+    size.height = Math.max(content.offsetHeight + 15, 200);
   }
   appWindow.setSize(size);  
 }
@@ -144,6 +144,7 @@ function setNextTheme() {
 }
 
 await listen('renderWindowUpdate', (event) => {
+  var firstOpen = false;
   if (!displayedFile) {
     setTheme(event.payload.theme);
     setFontSize(event.payload.fontSize);
@@ -151,6 +152,7 @@ await listen('renderWindowUpdate', (event) => {
     document.querySelector(':root').style.setProperty('--font-family', `'${event.payload.font}', 'inter', sans-serif`);
     document.querySelector(':root').style.setProperty('--font-weight', `${event.payload.fontWeight}`);
     displayedFile = event.payload.file;
+    firstOpen = true;
   }
   else if (displayedFile != event.payload.file) return;  
 
@@ -176,8 +178,7 @@ await listen('renderWindowUpdate', (event) => {
     innerLinks[i].addEventListener('click', event => emit('renderOpenLink', { file: event.target.getAttribute('data-link') }));
   }
 
-  setNonScrollableHeight();
-
+  if (firstOpen) setNonScrollableHeight();
 });
 
 emit('renderWindowLoaded', {label: appWindow.label});

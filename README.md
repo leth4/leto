@@ -57,4 +57,5 @@ Shortcut | Action
 `V` | Align selected cards vertically
 `H` | Align selected cards horizontally
 `C` | Connect selected cards
+`D` | Disconnect selected cards
 `Plus / Minus` | Zoom in/out
