@@ -30,6 +30,7 @@ export default class Window {
     this.currentTheme = 0;
     this.currentFont = 'inter';
     this.fontSize = 20;
+    this.sidebarFontSize = 15;
     this.fontWeight = 300;
     this.isHidden = false;
     this.isFullscreen = false;
@@ -60,6 +61,10 @@ export default class Window {
         }
       }
     };
+  }
+
+  getSidebarWidth() {
+    return this.sidebarToggled ? this.sidebarFontSize * 8 + 80 : 50;
   }
 
   closeAllWindows() {
@@ -109,13 +114,13 @@ export default class Window {
 
   toggleSidebar() {
     this.sidebarToggled = !this.sidebarToggled;
-    document.getElementById('sidebar').style.maxWidth = this.sidebarToggled ? '200px' : '50px';
+    document.getElementById('sidebar').style.maxWidth = this.sidebarToggled ? 'calc(var(--sidebar-font-size) * 8 + 80px)' : '50px';
     document.getElementById('sidebar').style.overflowY = this.sidebarToggled ? 'auto' : 'hidden';
     document.getElementById('sidebar-content').style.opacity = this.sidebarToggled ? '1' : '0';
     document.getElementById('sidebar-content').style.pointerEvents = this.sidebarToggled ? 'all' : 'none';
     document.getElementById('preferences').style.opacity = this.sidebarToggled ? '1' : '0';
     document.getElementById('preferences').style.pointerEvents = this.sidebarToggled ? 'all' : 'none';
-    root.style.setProperty('--additional-padding-left', this.sidebarToggled ? '50px' : '200px');
+    root.style.setProperty('--additional-padding-left', this.sidebarToggled ? '50px' : 'calc(var(--sidebar-font-size) * 8 + 80px)');
     document.getElementById('fold-button').querySelector('polyline').setAttribute('points', this.sidebarToggled ? '8.5,0 2,5 8.5,10' : '2,0 8.5,5 2,10');
   }
 
@@ -135,6 +140,19 @@ export default class Window {
   setFontSize(size, save = true) {
     this.fontSize = size ?? 20;
     root.style.setProperty('--font-size', `${this.fontSize}px`);
+    if (save) leto.config.save();
+  }
+  
+  changeSidebarFontSize(change = 0) {
+    var newSize = this.sidebarFontSize + change;
+    if (newSize > 30) newSize = 30;
+    else if (newSize < 10) newSize = 10;
+    this.setSidebarFontSize(newSize);
+  }
+
+  setSidebarFontSize(size, save = true) {
+    this.sidebarFontSize = size ?? 15;
+    root.style.setProperty('--sidebar-font-size', `${this.sidebarFontSize}px`);
     if (save) leto.config.save();
   }
 

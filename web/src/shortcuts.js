@@ -96,6 +96,8 @@ export default class Shortcuts {
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyP') leto.windowManager.togglePrefs();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'Equal') leto.windowManager.changeFontSize(+1);
       else if (e.ctrlKey && !e.shiftKey && e.code === 'Minus') leto.windowManager.changeFontSize(-1);
+      else if (e.ctrlKey && e.shiftKey && e.code === 'Equal') leto.windowManager.changeSidebarFontSize(+1);
+      else if (e.ctrlKey && e.shiftKey && e.code === 'Minus') leto.windowManager.changeSidebarFontSize(-1);
       else if (e.ctrlKey && !e.shiftKey && e.code === 'BracketRight') leto.windowManager.changeFontWeight(+100);
       else if (e.ctrlKey && !e.shiftKey && e.code === 'BracketLeft') leto.windowManager.changeFontWeight(-100);
 

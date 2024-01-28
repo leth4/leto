@@ -13,6 +13,7 @@ export default class Config {
       currentTheme: leto.windowManager.currentTheme,
       currentFont: leto.windowManager.currentFont,
       fontSize: leto.windowManager.fontSize,
+      sidebarFontSize: leto.windowManager.sidebarFontSize,
       fontWeight: leto.windowManager.fontWeight,
       pins: leto.explorer.pins,
       dictionary: leto.spellcheck.userDictionary
@@ -36,6 +37,7 @@ export default class Config {
     leto.windowManager.setTheme(configObject.currentTheme, false)
     leto.windowManager.setFont(configObject.currentFont, false)
     leto.windowManager.setFontSize(configObject.fontSize, false);
+    leto.windowManager.setSidebarFontSize(configObject.sidebarFontSize, false);
     leto.windowManager.setFontWeight(configObject.fontWeight, false);
     
     leto.spellcheck.setUserDictionary(configObject.dictionary);

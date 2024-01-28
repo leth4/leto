@@ -35,6 +35,7 @@ Shortcut | Action
 `Ctrl + D` | Open preview of the active file
 `Ctrl + T` | Cycle through themes
 `Ctrl + Plus / Minus` | Change font size
+`Ctrl + Shift + Plus / Minus` | Change sidebar size
 `Ctrl + ] / [` | Change font weight
 `Ctrl + N` | Create a new file
 `Ctrl + Shift + N` | Create a new folder

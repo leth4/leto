@@ -3,7 +3,7 @@
     flex: 1;
     background: var(--sidebar-background-color);
     color: var(--sidebar-folder-color);
-    max-width: 200px;
+    max-width: calc(var(--sidebar-font-size) * 8 + 80px);
     display: flex;
     flex-flow: column;
     overflow-x: hidden;

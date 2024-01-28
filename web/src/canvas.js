@@ -540,7 +540,6 @@ export default class Canvas {
   }
 
   #handleBoxSelection() {
-    this.#deselectAllCards();
     var selectionRect = boxSelection.getBoundingClientRect();
     var cards = document.getElementsByClassName('card');
     for (let i = 0; i < cards.length; i++) {
@@ -549,6 +548,8 @@ export default class Canvas {
         this.#previouslySelectedCards.includes(cards[i]) ? this.#setDeselected(cards[i]) : this.#setSelected(cards[i]);
       } else if (this.#previouslySelectedCards.includes(cards[i])) {
         this.#setSelected(cards[i]);
+      } else {
+        this.#setDeselected(cards[i]);
       }
     }
   }
@@ -793,7 +794,7 @@ export default class Canvas {
   }
 
   #getCursorPosition(event) {
-    return {x: event.clientX - (leto.windowManager.sidebarToggled ? 204 : 54), y: event.clientY};
+    return {x: event.clientX - (leto.windowManager.getSidebarWidth() + 4), y: event.clientY};
   }
 
   #screenToCanvasSpace(position) {
