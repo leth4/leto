@@ -104,6 +104,7 @@ export default class Window {
   togglePrefs() {
     this.#prefsToggled = !this.#prefsToggled;
     document.getElementById('preferences').style.display = this.#prefsToggled ? 'block' : 'none';
+    document.getElementById('window-buttons').classList.toggle('displayed');
   }
 
   toggleSidebar() {

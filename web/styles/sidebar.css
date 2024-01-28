@@ -98,16 +98,24 @@ ul {
     opacity: 0.2;
 }
 
-.window-button:hover{
-    opacity: 1 !important;   
-}
-
 .window-button {
     background-color: transparent;
     border: none;
     cursor: pointer;   
     opacity: 0;
     transition: opacity 0.2s ease-out;
+}
+
+.window-button:hover{
+    opacity: 1 !important;   
+}
+
+#window-buttons.displayed .window-button {
+    opacity: 0.2;
+}
+
+#window-buttons.displayed {
+    bottom: 24px;
 }
 
 .window-button svg {
@@ -118,12 +126,11 @@ ul {
 
 #preferences {
     border-top: calc(1px - var(--shadow)) solid var(--divider-color);
-    border-bottom: calc(1px - var(--shadow)) solid var(--divider-color);
     box-shadow: 0 0 calc(var(--shadow) * 20) var(--divider-color);
     width: 200px;
     display: none;
-    padding: 24px 20px 25px 20px;
-    margin: 0 0 55px 0;
+    padding: 24px 0 20px 30px;
+    margin: 0;
     z-index: 10;
 }
 
