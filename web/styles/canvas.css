@@ -34,6 +34,10 @@
     transition: top .05s ease-out, left .05s ease-out;
 }
 
+.notransition {
+    transition: none !important;
+}
+
 .card.inversed {
     background-color: var(--canvas-inversed-card-color);
     outline: 1px solid var(--editor-muted-color);

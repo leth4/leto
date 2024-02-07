@@ -366,6 +366,7 @@ export default class Canvas {
       this.#draggedItem = event.target;
       this.#startDragPosition = this.#getPosition(this.#draggedItem.parentElement);
       container.style.cursor = 'e-resize';
+      this.#draggedItem.parentElement.classList.add('notransition');
     }
   }
 
@@ -390,8 +391,7 @@ export default class Canvas {
         var newWidth = this.#screenToCanvasSpace(this.#getCursorPosition(event)).x - this.#getPosition(this.#draggedItem.parentElement).x - 20;
         newWidth = this.#clamp(newWidth, 100, 800);
         this.#draggedItem.parentElement.style.width = newWidth + 'px';
-      }
-      else {
+      } else {
         var previousLeft = this.#getPosition(this.#draggedItem.parentElement).x;
         this.#draggedItem.parentElement.style.left = this.#screenToCanvasSpace(this.#getCursorPosition(event)).x + 'px';
         var newLeft = this.#getPosition(this.#draggedItem.parentElement).x;
@@ -445,6 +445,7 @@ export default class Canvas {
       if (!hasMoved) this.#removeLastUndoState();
     }
     else if (this.#draggedItem.classList.contains('handle')) {
+      this.#draggedItem.parentElement.classList.remove('notransition');
       if (!hasMoved) this.#removeLastUndoState();
     }
     else this.#save();

@@ -73,8 +73,7 @@ export default class Directory {
       editor.value = '';
       leto.scroll.handleNewFile();
       leto.handleEditorInput();
-    }
-    else if (this.isFileACanvas(this.activeFile)) {
+    } else if (this.isFileACanvas(this.activeFile)) {
       if (this.activeFile != this.#previousCanvas) leto.canvas.reset();
       this.#previousCanvas = this.activeFile;
       imageDisplay.setAttribute('src', '');
@@ -83,8 +82,7 @@ export default class Directory {
       editor.value = '';
       leto.handleEditorInput();
       leto.canvas.load(this.activeFile);
-    }
-    else {
+    } else {
       imageDisplay.setAttribute('src', '');
       imageDisplay.style.display = 'none';
       leto.canvas.reset();

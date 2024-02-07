@@ -90,6 +90,7 @@ export default class Window {
       appWindow.show();
       this.isHidden = false;
     }
+    appWindow.unminimize();
   }
   
   closeWindow() {
