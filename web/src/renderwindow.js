@@ -20,11 +20,13 @@ var isPanningImage;
 const themes = [
   'gleam',
   'aske',
+  'shell',
   'zima',
   'spirit',
   'perlin',
   'dart',
-  'glass'
+  'glass',
+  'brick'
 ];
 
 document.getElementById('minimize').addEventListener('click', () => appWindow.minimize());
@@ -135,7 +137,7 @@ function setFontSize(size) {
 function setTheme(theme) {
   currentTheme = theme ?? 0;
   if (theme >= themes.length) currentTheme = 0;
-  invoke(currentTheme == 6 ? 'add_blur' : 'remove_blur', { label:appWindow.label });
+  invoke(currentTheme == 2 || currentTheme == 7 ? 'add_blur' : 'remove_blur', { label:appWindow.label });
   document.getElementById('theme-link').setAttribute('href', `themes/${themes[currentTheme]}.css`);
 }
 

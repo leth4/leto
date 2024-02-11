@@ -13,11 +13,13 @@ const fontInput = document.getElementById('font-input');
 const themes = [
   'gleam',
   'aske',
+  'shell',
   'zima',
   'spirit',
   'perlin',
   'dart',
-  'glass'
+  'glass',
+  'brick'
 ];
 
 export default class Window {
@@ -197,7 +199,7 @@ export default class Window {
   setTheme(theme, save = true) {
     this.currentTheme = theme ?? 0;
     if (theme >= themes.length) this.currentTheme = 0;
-    invoke(this.currentTheme == 6 ? 'add_blur' : 'remove_blur', {  label: "main" });
+    invoke(this.currentTheme == 2 || this.currentTheme == 7 ? 'add_blur' : 'remove_blur', {  label: "main" });
     themeSelector.value = this.currentTheme;
     document.getElementById('theme-link').setAttribute('href', `themes/${themes[this.currentTheme]}.css`);
     if (save) leto.config.save();
