@@ -75,6 +75,7 @@ export default class Directory {
       imageDisplay.setAttribute('src', convertFileSrc(this.activeFile));
       imageDisplay.style.display = 'block';
       editor.value = '';
+      this.#isLoading = false;
       leto.scroll.handleNewFile();
       leto.handleEditorInput();
     } else if (this.isFileACanvas(this.activeFile)) {
@@ -84,6 +85,7 @@ export default class Directory {
       imageDisplay.style.display = 'none';
       canvas.style.display = 'block';
       editor.value = '';
+      this.#isLoading = false;
       leto.handleEditorInput();
       leto.canvas.load(this.activeFile);
     } else {
@@ -226,22 +228,26 @@ export default class Directory {
     this.tryOpenActiveFile();
   }
 
-  async createImageFromPaste(contents, name = 'new') {
+  async createImageFromPaste(contents) {
     if (!this.activeDirectory) return;
     var directory = this.activeDirectory;
+
+    var name = 'image';
 
     var newFile = directory + `\\${name}.png`;
     for (var i = 0; i < Infinity; i++) {
       if (!(await exists(newFile))) break;
       newFile = directory + `\\${name} ${i + 1}.png`;
     }
-
-    if (!editor.disabled) {
-      document.execCommand('insertText', false, `[[${this.removeFileExtension(this.getNameFromPath(newFile))}]]`);
-    }
-
+    
     var arrayBuffer = await contents.arrayBuffer();
     await writeBinaryFile(newFile, arrayBuffer);
+    
+    if (this.isFileACanvas(this.activeFile)) {
+      leto.canvas.pasteImage(newFile);
+    } else if (!editor.disabled) {
+      document.execCommand('insertText', false, `[[${this.removeFileExtension(this.getNameFromPath(newFile))}]]`);
+    }
 
     leto.explorer.pendingRename = newFile;
     this.tryDisplayActiveDirectory();

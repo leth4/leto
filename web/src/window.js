@@ -51,18 +51,6 @@ export default class Window {
       preview.style.pointerEvents = e.ctrlKey ? 'auto' : 'none'
     });
     this.populateThemes();
-
-    document.onpaste = function (event) {
-      if (!leto.directory.isFileANote(leto.directory.activeFile)) return;
-      var items = (event.clipboardData || event.originalEvent.clipboardData).items;
-      for (var index in items) {
-        var item = items[index];
-        if (item.kind === 'file' && item.type.startsWith('image/')) {
-          var blob = item.getAsFile();
-          leto.directory.createImageFromPaste(blob, 'image');
-        }
-      }
-    };
   }
 
   getSidebarWidth() {
@@ -72,6 +60,16 @@ export default class Window {
   closeAllWindows() {
     leto.render.closeAllWindows();
     this.closeWindow();
+  }
+
+  async handleImagePaste() {
+    const clipboardContents = await navigator.clipboard.read();
+    for (var index in clipboardContents) {
+      var item = clipboardContents[index];
+      if (!item.types.includes("image/png")) continue;
+      const blob = await item.getType("image/png");
+      leto.directory.createImageFromPaste(blob);
+    }
   }
 
   toggleFullscreen() {

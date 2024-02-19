@@ -123,6 +123,11 @@ export default class Canvas {
     newCard.querySelector('textarea').focus();
   }
 
+  pasteImage(filePath) {
+    this.#saveUndoState();
+    this.#createCard(this.#screenToCanvasSpace(this.#previousCursorPosition), '', 200, filePath);
+  }
+
   sendSelectedToFront() {
     this.#saveUndoState();
     this.#selectedCards.forEach(card => this.#setCardZIndex(card, 100 + this.#cards.length));

@@ -60,3 +60,4 @@ Shortcut | Action
 `C` | Connect selected cards
 `D` | Disconnect selected cards
 `Plus / Minus` | Zoom in/out
+`Ctrl + Shift + V` | Paste an image

@@ -36,6 +36,15 @@ export default class Shortcuts {
         leto.scroll.handleNewLine();
         leto.edit.handleNewLine();
       }
+
+      else if (e.ctrlKey && e.code === 'KeyV') {
+        if (inCanvas && !e.shiftKey) {
+          leto.canvas.pasteCopiedCards();
+        } else {
+          leto.windowManager.handleImagePaste();
+          return;
+        }
+      }
       
       else if (e.ctrlKey && e.code === 'Tab') leto.directory.setPreviousActiveFile();
       else if (!e.ctrlKey && !e.shiftKey && e.code === 'Tab') leto.edit.handleTab();
@@ -48,7 +57,6 @@ export default class Shortcuts {
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'Backspace') leto.canvas.deleteSelectedCards();
       else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyX') leto.canvas.cutSelectedCards();
       else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyC') leto.canvas.copySelectedCards();
-      else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyV') leto.canvas.pasteCopiedCards();
       else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyA') leto.canvas.selectAllCards();
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyI') leto.canvas.inverseSelectedCards();
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'Space') leto.canvas.createEmptyCard();
