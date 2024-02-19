@@ -46,7 +46,7 @@ window.onkeydown = (e) => {
   else if (e.ctrlKey && !e.shiftKey && e.code === 'Minus') changeFontSize(-1);
   else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyP') toggleAlwaysOnTop();
   else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyO') openFile();
-  else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyH') setNonScrollableHeight();
+  else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyH') setNonScrollableSize();
   else return;
 
   e.preventDefault();
@@ -82,7 +82,6 @@ imageContainer.addEventListener('mousemove', event => {
 });
 
 function setImageTransform() {
-
   if (currentImagePosition.x < -((currentImageZoom - 1) * imageDisplay.clientWidth) / 2) currentImagePosition.x = -((currentImageZoom - 1) * imageDisplay.clientWidth) / 2;
   if (currentImagePosition.x > ((currentImageZoom - 1) * imageDisplay.clientWidth) / 2) currentImagePosition.x = ((currentImageZoom - 1) * imageDisplay.clientWidth) / 2;
   if (currentImagePosition.y < -((currentImageZoom - 1) * imageDisplay.clientHeight) / 2) currentImagePosition.y = -((currentImageZoom - 1) * imageDisplay.clientHeight) / 2;
@@ -93,12 +92,34 @@ function setImageTransform() {
   else imageDisplay.style.cursor = isPanningImage ? 'grabbing' : 'grab';
 }
 
-async function setNonScrollableHeight() {
+async function setNonScrollableSize() {
   var size = await appWindow.innerSize();
-  if (content.offsetHeight + 15 < 800) {
-    size.height = Math.max(content.offsetHeight + 15, 200);
+  if (isDisplayingImage) {
+    size = {type: "Logical", width: 800, height: 600};
+    var imageSize = await getImageSize(imageDisplay.getAttribute('src'));
+    if (imageSize.width < size.width) size.width = imageSize.width;
+    if (imageSize.height < size.height) size.height = imageSize.height;
+    var aspectRatio = imageSize.width / imageSize.height;
+    if (aspectRatio > 1) size.height = size.width / aspectRatio;
+    else size.width = size.height * aspectRatio;
+    size.height = size.height + 35;
+    currentImageZoom = 1;
+    setImageTransform();
+  } else {
+    if (content.offsetHeight + 15 < 800) {
+      size.height = Math.max(content.offsetHeight + 15, 200);
+    }
   }
   appWindow.setSize(size);  
+}
+
+function getImageSize(src) {
+  return new Promise((resolve, reject) => {
+    var image = new Image();
+    image.src = src;
+    image.onload = () => resolve({width: image.width, height: image.height});
+    image.onerror = reject;
+  });
 }
 
 function closeWindow() {
@@ -164,7 +185,10 @@ await listen('renderWindowUpdate', (event) => {
     imageContainer.style.display = 'flex';
   }
 
-  if (isDisplayingImage) return;
+  if (isDisplayingImage) {
+    setNonScrollableSize();
+    return;
+  };
 
   imageContainer.style.display = 'none';
   
@@ -180,7 +204,7 @@ await listen('renderWindowUpdate', (event) => {
     innerLinks[i].addEventListener('click', event => emit('renderOpenLink', { file: event.target.getAttribute('data-link') }));
   }
 
-  if (firstOpen) setNonScrollableHeight();
+  if (firstOpen) setNonScrollableSize();
 });
 
 emit('renderWindowLoaded', {label: appWindow.label});

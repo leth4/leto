@@ -28,7 +28,6 @@ export default class Render {
     }
 
     async openWindow(file) {
-
         var imagePath = '', _;
         var preview = '';
         var windowSize = {width: 800, height: 600};
@@ -37,9 +36,7 @@ export default class Render {
 
         if (leto.directory.isFileAnImage(file)) {
             imagePath = convertFileSrc(file);
-            windowSize = await this.#getImageWindowSize(imagePath);
-        }
-        else {
+        } else {
             var text;
             if (file == leto.directory.activeFile) {
                 text = editor.value;
@@ -65,32 +62,7 @@ export default class Render {
             invoke('apply_shadow', {  label: event.payload.label });
         });
     }
-
-    async #getImageWindowSize(imageFile) {
-       var windowSize = {width: 800, height: 600};
-
-       var imageSize = await this.getImageSize(imageFile);
-
-       var aspectRatio = imageSize.width / imageSize.height;
-
-       if (imageSize.width < windowSize.width) windowSize.width = imageSize.width;
-       if (imageSize.height < windowSize.height) windowSize.height = imageSize.height;
-
-       if (aspectRatio > 1) windowSize.height = windowSize.width / aspectRatio;
-       else windowSize.width = windowSize.height * aspectRatio;
-
-       return windowSize;
-    }
-
-    getImageSize(src) {
-        return new Promise((resolve, reject) => {
-            var image = new Image();
-            image.src = src;
-            image.onload = () => resolve({width: image.width, height: image.height});
-            image.onerror = reject;
-        });
-    }
-
+    
     hasWebviews() {
         return getAll().length > 1;
     }

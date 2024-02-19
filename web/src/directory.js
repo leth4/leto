@@ -232,6 +232,10 @@ export default class Directory {
     if (!this.activeDirectory) return;
     var directory = this.activeDirectory;
 
+    if (this.activeFile) {
+      var directory = this.activeFile.substring(0, this.activeFile.lastIndexOf('\\') + 1);
+    }
+
     var name = 'image';
 
     var newFile = directory + `\\${name}.png`;
