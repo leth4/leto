@@ -15,6 +15,7 @@ export default class Directory {
 
   #previousActiveFile;
   #previousCanvas;
+  #isLoading = false;
 
   constructor() {
     this.activeFile;
@@ -32,6 +33,9 @@ export default class Directory {
   }
 
   setActiveFile(path, save = true) {
+    if (this.#isLoading) return;
+    this.#isLoading = true;
+    
     if (this.activeFile != path)
       this.#previousActiveFile = this.activeFile;
     this.activeFile = path;
@@ -90,11 +94,12 @@ export default class Directory {
       var newEditorValue = await readTextFile(this.activeFile);
       var isNewValue = editor.value != newEditorValue;
       var scrollBuffer = editor.scrollTop;
-      editor.disabled = false;
       editor.style.display = 'block'
       editor.style.cursor = 'auto';
       editor.focus();
       editor.value = newEditorValue;
+      editor.disabled = false;
+      this.#isLoading = false;
       if (isNewValue) {
         editor.setSelectionRange(0, 0);
         leto.undo.resetBuffers();
@@ -158,6 +163,7 @@ export default class Directory {
     editor.value = this.activeDirectory ? '' : NO_DIRECTORY_MESSAGE;
     editor.disabled = true;
     editor.style.display = 'none';
+    this.#isLoading = false;
     leto.handleEditorInput();
     this.tryDisplayActiveDirectory();
     leto.config.save();
