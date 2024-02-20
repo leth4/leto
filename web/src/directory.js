@@ -48,6 +48,7 @@ export default class Directory {
     if (!newDirectory) return;
 
     this.activeDirectory = newDirectory;
+    this.#previousActiveFile = null;
     this.#removeActiveFile();
   }
 
@@ -164,7 +165,11 @@ export default class Directory {
     this.activeFile = null;
     editor.value = this.activeDirectory ? '' : NO_DIRECTORY_MESSAGE;
     editor.disabled = true;
+    leto.canvas.reset();
+    canvas.style.display = 'none';
     editor.style.display = 'none';
+    imageDisplay.setAttribute('src', '');
+    imageDisplay.style.display = 'none';
     this.#isLoading = false;
     leto.handleEditorInput();
     this.tryDisplayActiveDirectory();

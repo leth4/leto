@@ -145,7 +145,6 @@ ul {
     font-size: var(--sidebar-font-size);
     border: 1px solid var(--editor-text-color);
     resize: none; 
-    max-height: 20px;
 }
 
 #counter {
@@ -156,7 +155,6 @@ ul {
 #name-input {
     color: var(--editor-text-color);
     border-radius: 3px;
-    height: 17px;
     margin-left: 3px;
     max-width: 134px;
     display: none;
@@ -165,7 +163,7 @@ ul {
 #font-input {
     color: var(--sidebar-folder-color);
     border-radius: 4px;
-    max-width: 131px;
+    max-width: calc(var(--sidebar-font-size) * 8 + 11px);
     padding-left: 5px;
 }
 
@@ -177,7 +175,7 @@ select {
     padding-bottom: 0px;
     color: var(--sidebar-folder-color);
     font-size: var(--sidebar-font-size);
-    width: 140px;
+    width: calc(var(--sidebar-font-size) * 8 + 20px);
 }
 
 select option {
