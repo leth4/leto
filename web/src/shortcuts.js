@@ -68,6 +68,7 @@ export default class Shortcuts {
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'Minus') leto.canvas.zoom(+1);
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyC') leto.canvas.connectSelectedCards();
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyD') leto.canvas.disconnectSelectedCards();
+      else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyR') leto.canvas.resetPosition();
 
       else if (e.key == '*' && inEditor) leto.edit.insertDoubleSymbol('*');
       else if (e.key == '\"' && inEditor) leto.edit.insertDoubleSymbol('\"');

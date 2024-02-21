@@ -409,8 +409,6 @@ export default class Canvas {
     else if (this.#draggedItem == canvas) {
       var newPositionX = this.#getPosition(canvas).x + (cursorPosition.x - this.#previousCursorPosition.x);
       var newPositionY = this.#getPosition(canvas).y + (cursorPosition.y - this.#previousCursorPosition.y);
-      newPositionX = this.#clamp(newPositionX, -1000, 1000);
-      newPositionY = this.#clamp(newPositionY, -1000, 1000);
       canvas.style.left = newPositionX + 'px';
       canvas.style.top = newPositionY + 'px';
       this.#canvasPosition = this.#getPosition(canvas);
@@ -646,6 +644,15 @@ export default class Canvas {
       this.#canvasPosition = this.#getPosition(canvas);
     }
     
+    canvas.style.transform = `scale(${this.#canvasScale})`;
+    this.#save();
+  }
+
+  resetPosition() {
+    this.#canvasPosition = {x: 0, y: 0};
+    this.#canvasScale = 1;
+    canvas.style.left = this.#canvasPosition.x + 'px';
+    canvas.style.top = this.#canvasPosition.y + 'px';
     canvas.style.transform = `scale(${this.#canvasScale})`;
     this.#save();
   }
