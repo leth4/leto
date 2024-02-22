@@ -14,6 +14,7 @@ import Search from './search.js';
 import Spellcheck from './spellcheck.js';
 import Render from './render.js';
 import Canvas from './canvas.js';
+import QuickOpen from './quickopen.js';
 
 const { appWindow } = window.__TAURI__.window;
 
@@ -36,6 +37,7 @@ class Leto {
     this.spellcheck = new Spellcheck();
     this.render = new Render();
     this.canvas = new Canvas();
+    this.quickOpen = new QuickOpen();
 
     this.focused = true;
 

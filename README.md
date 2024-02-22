@@ -28,6 +28,7 @@ Shortcut | Action
 `Ctrl + Shift + S` | Save active file as new
 `Ctrl + Shift + F` | Toggle fullscreen
 `Ctrl + M` | Minimize leto
+`Ctrl + E` | Show quick open
 `Ctrl + P` | Show/hide preferences
 `Ctrl + F` | Show/hide the search box
 `Ctrl + B` | Fold/unfold the sidebar

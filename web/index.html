@@ -22,8 +22,8 @@
                     <li class="pref" data-tauri-drag-region>
                         <div id="counter"></div>
                     </li>
-                    <li class="pref" data-tauri-drag-region><input spellcheck="false" type="text" id="name-input" autocomplete="false"></input></li>
-                    <li class="pref" data-tauri-drag-region><input spellcheck="false" type="text" id="font-input" autocomplete="false"></input></li>
+                    <li class="pref" data-tauri-drag-region><input spellcheck="false" type="text" id="name-input" autocomplete="off"></input></li>
+                    <li class="pref" data-tauri-drag-region><input spellcheck="false" type="text" id="font-input" autocomplete="off"></input></li>
                     <li class="pref" data-tauri-drag-region><select name="theme" id="theme-selector"></select></li>
                 </ul>
                 <div id="window-buttons" data-tauri-drag-region>
@@ -52,9 +52,14 @@
         <div id="context-menu"></div>
         <div id="image-preview"><img id="image-preview-image"></div>
         <div id="search-box">
-            <input spellcheck="false" type="text" id="search-input" autocomplete="false"></input>
+            <input spellcheck="false" type="text" id="search-input" autocomplete="off"></input>
             <div id="search-results"></div>
         </div>
+        <div id="quick-open-box">
+            <div id="quick-open-results"></div>
+            <input spellcheck="false" type="text" id="quick-open-input" autocomplete="off"></input>
+        </div>
+
 
         <svg width="0" height="0">
             <defs>

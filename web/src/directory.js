@@ -68,6 +68,8 @@ export default class Directory {
       return;
     }
 
+    leto.quickOpen.handleFileOpened(this.activeFile);
+
     if (this.activeDirectory) leto.explorer.highlightSelectedFile(this.activeFile);
 
     if (this.isFileAnImage(this.activeFile)) {

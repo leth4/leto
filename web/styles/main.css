@@ -139,7 +139,7 @@ main {
 #search-results {
     color: #f1f1f1;
     display: inline-block;
-    width:3ch;
+    width: 3ch;
     padding-left: 3px;
 }
 
@@ -152,6 +152,66 @@ main {
     max-height: 22px;
     max-width: 150px;
     font-size: var(--sidebar-font-size);
+}
+
+#quick-open-box {
+    display: none;
+    z-index: 90;
+    position: absolute;
+    bottom: 10px;
+    left: calc(var(--sidebar-font-size) * 8 + 185px);
+    right: 100px;
+    padding: 7px;
+    background-color: #2a2a2a;
+    box-shadow: 1px 1px 5px #0000008a;
+    border: 1px solid #888888;
+    transition: top .15s ease-out;
+}
+
+#quick-open-input {
+    color: #f1f1f1;
+    border-radius: 2px;
+    border: none;
+    resize: none; 
+    background-color: #3f3f3f;
+    max-height: 22px;
+    width: calc(100% - 6px);
+    font-size: var(--sidebar-font-size);
+    margin-left: 3px;
+    box-sizing: border-box;
+}
+
+#quick-open-results {
+    padding-bottom: 5px;
+    padding-right: 3px;
+}
+
+.quick-open-file-button {
+    background: transparent;
+    border: none;
+    text-overflow: ellipsis;
+    color: #b8b8b8;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 95%;
+    text-align: left;
+    border-radius: 3px;
+    font-size: var(--sidebar-font-size);
+    cursor: pointer;
+    width: 100%;
+}
+
+mark.full-path {
+    color: #696969;
+}
+
+.quick-open-file-button:hover {
+    background-color: #3f3f3f;
+}
+
+
+.quick-open-file-button.selected {
+    background-color: #3f3f3f;
 }
 
 #context-menu {

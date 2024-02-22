@@ -123,6 +123,7 @@ export default class Shortcuts {
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyD') leto.render.openCurrent();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyR') leto.spellcheck.toggle();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyF') leto.search.toggle();
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyE') leto.quickOpen.open();
 
       else if (e.ctrlKey && e.code === 'KeyG') {}
       else return;

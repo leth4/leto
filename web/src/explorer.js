@@ -258,6 +258,8 @@ export default class Explorer {
 
     this.clearFileTree();
 
+    leto.quickOpen.resetFiles();
+
     directoryElements.forEach(child => child.children && this.#showFolder(child, fileTree));
     directoryElements.forEach(child => !child.children && this.#showFile(child, fileTree));
 
@@ -282,6 +284,8 @@ export default class Explorer {
     if (extension != 'md' && extension != 'txt' && extension != 'jpg' && extension != 'png' && extension != 'gif' && extension != 'lea') return;
 
     if (this.#pinsBeforeCheck.includes(file.path)) this.pins.push(file.path);
+
+    leto.quickOpen.addFile(file.path);
 
     var fileButton = document.createElement('button');
     fileButton.className = 'file-button';
