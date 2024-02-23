@@ -19,7 +19,7 @@ export default class QuickOpen {
       if (e.key === 'ArrowUp') this.#selectNext();
       if (e.key === 'Escape') this.close();
       if (e.key === 'ArrowDown') this.#selectPrevious();
-      if (e.key === 'Enter') this.#openSelected();
+      if (e.key === 'Enter') this.#openSelected(e.ctrlKey);
     }, false);
     document.addEventListener('click', e => this.close());
   }
@@ -44,13 +44,14 @@ export default class QuickOpen {
     this.files.unshift(file);
   }
 
-  #openSelected() {
+  #openSelected(openPreview = false) {
     var file = quickOpenResults.children[this.selectedItemIndex];
     if (file == undefined) {
       this.close();
       return;
     }
-    leto.directory.setActiveFile(file.getAttribute('data-path')); 
+    if (openPreview) leto.render.openWindow(file.getAttribute('data-path'));
+    else leto.directory.setActiveFile(file.getAttribute('data-path')); 
     this.close();
   }
 
@@ -79,21 +80,38 @@ export default class QuickOpen {
 
   #showResults() {
     quickOpenResults.innerHTML = "";
-    var filesShown = 0;
+    var filesShown = [];
+    var searchText = quickOpenInput.value.toLowerCase();
     for (let index = 0; index < this.files.length; index++) {
-      const file = this.files[index];
-      if (file == leto.directory.activeFile) continue;
-      if (this.#removeRootPath(file).toLowerCase().includes(quickOpenInput.value.toLowerCase())) {
-        var fileButton = document.createElement('button');
-        fileButton.innerHTML = this.#getFileDisplayName(file);
-        fileButton.className = 'quick-open-file-button';
-        fileButton.setAttribute('data-path', file);
-        quickOpenResults.prepend(fileButton);
-        fileButton.addEventListener('click', () => { leto.directory.setActiveFile(file); this.close(); });
-        if (filesShown++ > fileLimit) break;
+      if (this.files[index] == leto.directory.activeFile) continue;
+      if (this.#removeRootPath(this.files[index]).replace(/^.*[\\\/]/, '').toLowerCase().includes(searchText)) {
+        this.#createFileResult(this.files[index]);
+        filesShown.push(this.files[index]);
+        if (filesShown.length >= fileLimit) break;
       }
     }
-    this.selectedItemIndex = quickOpenResults.childElementCount;
+    if (filesShown.length < fileLimit) {
+      for (let index = 0; index < this.files.length; index++) {
+        if (this.files[index] == leto.directory.activeFile) continue;
+        if (filesShown.includes(this.files[index])) continue;
+        if (this.#removeRootPath(this.files[index]).substring(0, this.#removeRootPath(this.files[index]).lastIndexOf('\\')).toLowerCase().includes(searchText)) {
+          this.#createFileResult(this.files[index]);
+          filesShown.push(this.files[index]);
+          if (filesShown.length >= fileLimit) break;
+        }
+      }
+    }
+    this.selectedItemIndex = quickOpenResults.childElementCount - 1;
+    this.#toggleSelectedAtIndex(this.selectedItemIndex);
+  }
+
+  #createFileResult(file) {
+    var fileButton = document.createElement('button');
+    fileButton.innerHTML = this.#getFileDisplayName(file);
+    fileButton.className = 'quick-open-file-button';
+    fileButton.setAttribute('data-path', file);
+    quickOpenResults.prepend(fileButton);
+    fileButton.addEventListener('click', () => { leto.directory.setActiveFile(file); this.close(); });
   }
 
   #removeRootPath(path) {

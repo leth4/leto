@@ -159,13 +159,12 @@ main {
     z-index: 90;
     position: absolute;
     bottom: 10px;
-    left: calc(var(--sidebar-font-size) * 8 + 185px);
+    left: calc(var(--sidebar-font-size) * 8 + 185px + 50px - var(--additional-padding-left));
     right: 100px;
     padding: 7px;
     background-color: #2a2a2a;
     box-shadow: 1px 1px 5px #0000008a;
     border: 1px solid #888888;
-    transition: top .15s ease-out;
 }
 
 #quick-open-input {
