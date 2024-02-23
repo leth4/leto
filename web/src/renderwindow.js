@@ -26,7 +26,8 @@ const themes = [
   'perlin',
   'dart',
   'glass',
-  'brick'
+  'brick',
+  'beetle'
 ];
 
 document.getElementById('minimize').addEventListener('click', () => appWindow.minimize());

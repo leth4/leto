@@ -19,7 +19,8 @@ const themes = [
   'perlin',
   'dart',
   'glass',
-  'brick'
+  'brick',
+  'beetle'
 ];
 
 export default class Window {
