@@ -89,7 +89,7 @@ export default class Explorer {
     return '';
   }
 
-  getUniqueLink(file) {
+  getUniqueLink(file, isNewFile = false) {
     const files = document.getElementsByClassName('file-button');
 
     var parts = file.split('\\');
@@ -102,7 +102,7 @@ export default class Explorer {
           filesFound++;
         }
       }
-      if (filesFound == 1) break;
+      if ((!isNewFile && filesFound == 1) || (isNewFile && filesFound == 0)) break;
       link = parts.pop() + '\\' + link;
     }
 

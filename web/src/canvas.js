@@ -40,6 +40,9 @@ export default class Canvas {
     container.addEventListener('mouseup', event => this.#handleMouseUp(event));
     container.addEventListener('wheel', event => this.#handleZoom(event));
 
+    document.addEventListener('keydown', event => {if (event.code == "Space") this.#startPanning()});
+    document.addEventListener('keyup', event => {if (event.code == "Space") this.#endPanning()});
+
     container.addEventListener('dragenter', event => event.preventDefault());
     container.addEventListener('dragover', event => event.preventDefault());
     container.addEventListener('drop', event => this.#handleDrop(event));
@@ -353,10 +356,7 @@ export default class Canvas {
       else this.#setDeselected(event.target);
       this.#startDragPosition = this.#getPosition(this.#draggedItem);
     } else if (event.target == container && event.button == 0) {
-      this.#deselectAllCards();
-      this.#draggedItem = canvas;
-      container.style.cursor = 'grabbing';
-      this.#startDragPosition = this.#getPosition(this.#draggedItem);
+      this.#startPanning();
     } else if (event.target == container && event.button == 1) {
       this.#isBoxSelecting = true;
       this.#previouslySelectedCards = event.shiftKey ? [...this.#selectedCards] : [];
@@ -412,7 +412,6 @@ export default class Canvas {
       canvas.style.left = newPositionX + 'px';
       canvas.style.top = newPositionY + 'px';
       this.#canvasPosition = this.#getPosition(canvas);
-
     } else {
       this.#selectedCards.forEach(card => {
         card.style.left = this.#getPosition(card).x + (cursorPosition.x - this.#previousCursorPosition.x) / this.#canvasScale + 'px';
@@ -446,8 +445,7 @@ export default class Canvas {
         this.#setSelected(this.#draggedItem);
       }
       if (!hasMoved) this.#removeLastUndoState();
-    }
-    else if (this.#draggedItem.classList.contains('handle')) {
+    } else if (this.#draggedItem.classList.contains('handle')) {
       this.#draggedItem.parentElement.classList.remove('notransition');
       if (!hasMoved) this.#removeLastUndoState();
     }
@@ -456,6 +454,20 @@ export default class Canvas {
     this.#draggedItem = null;
 
     this.#updateArrows();
+  }
+
+  #startPanning() {
+    this.#deselectAllCards();
+    this.#draggedItem = canvas;
+    container.style.cursor = 'grabbing';
+    this.#startDragPosition = this.#getPosition(this.#draggedItem);
+  }
+
+  #endPanning() {
+    if (this.#draggedItem == canvas) {
+      this.#draggedItem = null;
+      container.style.cursor = 'auto';
+    }
   }
 
   #createArrow(fromIndex, toIndex) {
@@ -639,9 +651,12 @@ export default class Canvas {
     var dy = (this.#previousCursorPosition.y - this.#canvasPosition.y) * (factor - 1);
     
     if (oldScaleInBounds || (this.#canvasScale < 3 && this.#canvasScale > .1)) {
+      canvas.classList.add('notransition');
       canvas.style.left = this.#getPosition(canvas).x - dx + 'px';
       canvas.style.top = this.#getPosition(canvas).y - dy + 'px';
       this.#canvasPosition = this.#getPosition(canvas);
+      canvas.offsetHeight;
+      canvas.classList.remove('notransition');
     }
     
     canvas.style.transform = `scale(${this.#canvasScale})`;

@@ -53,7 +53,7 @@ Shortcut | Action
 
 Shortcut | Action
 :-|:-
-`Space` | Create a new card
+`Enter` | Create a new card
 `] / [` | Send to front/back
 `I` | Invert the card's color
 `V` | Align selected cards vertically

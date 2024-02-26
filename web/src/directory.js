@@ -201,14 +201,14 @@ export default class Directory {
     await writeTextFile(exportPath, editor.value);
   }
 
-  async createNewFolder(directory) {
+  async createNewFolder(directory, name = "New Folder") {
     if (!this.activeDirectory) return;
     directory = directory ?? this.activeDirectory;
 
-    var folderName = directory + '\\New Folder';
+    var folderName = directory + `\\${name}`;
     for (var i = 0; i < Infinity; i++) {
       if (!(await exists(folderName))) break;
-      folderName = directory + `\\New Folder ${i + 1}`;
+      folderName = directory + `\\${name} ${i + 1}`;
     }
 
     await createDir(folderName);
@@ -243,21 +243,25 @@ export default class Directory {
       var directory = this.activeFile.substring(0, this.activeFile.lastIndexOf('\\') + 1);
     }
 
-    var name = 'image';
+    var name = 'Image';
 
-    var newFile = directory + `\\${name}.png`;
+    if (!(await exists(directory + '\Media'))) await this.createNewFolder(directory, 'Media');
+
+    directory = directory + `\Media\\`;
+
+    var newFile = directory + `${name}.png`;
     for (var i = 0; i < Infinity; i++) {
       if (!(await exists(newFile))) break;
-      newFile = directory + `\\${name} ${i + 1}.png`;
+      newFile = directory + `${name} ${i + 1}.png`;
     }
     
     var arrayBuffer = await contents.arrayBuffer();
     await writeBinaryFile(newFile, arrayBuffer);
-    
-    if (this.isFileACanvas(this.activeFile)) {
+
+    if (this.isFileACanvas(this.activeFile) && document.activeElement.nodeName != 'TEXTAREA') {
       leto.canvas.pasteImage(newFile);
-    } else if (!editor.disabled) {
-      document.execCommand('insertText', false, `[[${this.removeFileExtension(this.getNameFromPath(newFile))}]]`);
+    } else if (document.activeElement.nodeName == 'TEXTAREA') {
+      document.execCommand('insertText', false, `[[${leto.explorer.getUniqueLink(newFile, true)}]]`);
     }
 
     leto.explorer.pendingRename = newFile;
