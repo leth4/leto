@@ -320,7 +320,7 @@ export default class Canvas {
     this.#selectedCards.sort((a, b) => this.#cards[a.getAttribute('data-index')].position.x - this.#cards[b.getAttribute('data-index')].position.x);
     for (let i = 1; i < this.#selectedCards.length; i++) {
       var previousCard = this.#cards[this.#selectedCards[i - 1].getAttribute('data-index')];
-      this.#moveCardToPosition(this.#selectedCards[i], {x: previousCard.position.x + previousCard.width + 45, y: previousCard.position.y});
+      this.#moveCardToPosition(this.#selectedCards[i], {x: previousCard.position.x + previousCard.width + 35, y: previousCard.position.y});
     }
   }
 
@@ -660,6 +660,8 @@ export default class Canvas {
     }
     
     canvas.style.transform = `scale(${this.#canvasScale})`;
+    var handleWidth = this.#clamp(3 / this.#canvasScale, 3, 100);
+    canvas.querySelectorAll('.handle').forEach(handle => handle.style.width = `${handleWidth}px`);
     this.#save();
   }
 
