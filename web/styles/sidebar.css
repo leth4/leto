@@ -49,11 +49,11 @@
 }
 
 .image-file::before {
-    content: "● ";
+    content: "○ ";
 }
 
 .canvas-file::before {
-    content: "▲ ";
+    content: "△ ";
 }
 
 .folder-button {
