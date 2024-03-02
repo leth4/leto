@@ -37,7 +37,6 @@ main {
     overflow: hidden;
     box-shadow: 0 0 calc(var(--shadow) * 20) var(--divider-color);
     background: var(--editor-background-color);
-    border: var(--border) solid var(--divider-color);
     border-left: calc(1px - var(--shadow)) solid var(--divider-color);
 }
 

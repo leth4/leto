@@ -19,7 +19,6 @@ const themes = [
   'perlin',
   'dart',
   'glass',
-  'brick',
   'beetle'
 ];
 
@@ -198,6 +197,7 @@ export default class Window {
   setTheme(theme, save = true) {
     this.currentTheme = theme ?? 0;
     if (theme >= themes.length) this.currentTheme = 0;
+    if (theme < 0) this.currentTheme = themes.length - 1;
     invoke(this.currentTheme == 2 || this.currentTheme == 7 ? 'add_blur' : 'remove_blur', {  label: "main" });
     themeSelector.value = this.currentTheme;
     document.getElementById('theme-link').setAttribute('href', `themes/${themes[this.currentTheme]}.css`);
@@ -206,6 +206,10 @@ export default class Window {
 
   setNextTheme() {
     this.setTheme(parseInt(this.currentTheme) + 1)
+  }
+  
+  setPreviousTheme() {
+    this.setTheme(parseInt(this.currentTheme) - 1)
   }
 
   populateThemes() {

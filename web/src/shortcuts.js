@@ -99,6 +99,7 @@ export default class Shortcuts {
       else if (e.ctrlKey && e.shiftKey && e.code === 'KeyF') leto.windowManager.toggleFullscreen();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyB') leto.windowManager.toggleSidebar();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyT') leto.windowManager.setNextTheme();
+      else if (e.ctrlKey && e.shiftKey && e.code === 'KeyT') leto.windowManager.setPreviousTheme();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyQ') leto.windowManager.closeWindow();
       else if (e.ctrlKey && e.shiftKey && e.code === 'KeyQ') leto.windowManager.closeAllWindows();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyM') leto.windowManager.minimizeWindow();

@@ -120,8 +120,8 @@ export default class QuickOpen {
 
   #getFileDisplayName(path) {
     var symbol = "";
-    if (path.endsWith('.png') || path.endsWith('.jpg') || path.endsWith('.gif')) symbol = "● ";
-    if (path.endsWith('.lea')) symbol = "▲ ";
+    if (path.endsWith('.png') || path.endsWith('.jpg') || path.endsWith('.gif')) symbol = "○ ";
+    if (path.endsWith('.lea')) symbol = "△ ";
     path = this.#removeRootPath(path).replace(/\.[^/.]+$/, '');
     var name = symbol + path.replace(/^.*[\\\/]/, '');
     var path = path.substring(0, path.lastIndexOf('\\'))

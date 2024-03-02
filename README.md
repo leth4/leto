@@ -34,7 +34,8 @@ Shortcut | Action
 `Ctrl + B` | Fold/unfold the sidebar
 `Ctrl + R` | Toggle spellcheck
 `Ctrl + D` | Open preview of the active file
-`Ctrl + T` | Cycle through themes
+`Ctrl + T` | Next theme
+`Ctrl + Shift + T` | Previous theme
 `Ctrl + Plus / Minus` | Change font size
 `Ctrl + Shift + Plus / Minus` | Change sidebar size
 `Ctrl + ] / [` | Change font weight

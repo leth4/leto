@@ -166,7 +166,7 @@ export default class Canvas {
     this.#saveUndoState();
 
     this.#selectedCards.forEach(card => {
-      var index = card.getAttribute('data-index');
+      var index = parseInt(card.getAttribute('data-index'), 10);
       this.#cards.splice(index, 1);
       this.#previews.splice(index, 1);
       card.remove();
@@ -419,7 +419,7 @@ export default class Canvas {
         this.#updateCard(card);
       });
     }
-    
+
     if (this.#draggedItem.classList.contains('card')) this.#updateCard(this.#draggedItem);
     this.#previousCursorPosition = cursorPosition;
 
@@ -680,7 +680,7 @@ export default class Canvas {
   }
 
   #updateCard(card, isNew = false) {
-    var index = card.getAttribute('data-index');
+    var index = parseInt(card.getAttribute('data-index'));
     this.#cards[index].position = this.#getPosition(card);
     this.#cards[index].width = parseInt(card.style.width, 10);
     
@@ -710,16 +710,20 @@ export default class Canvas {
     if (this.#isLoading) return;
     if (this.#isSaving) {
       this.#savePending = true;
+      return;
     }
     this.#isSaving = true;
     const configObject = { cards: this.#cards, arrows: this.#arrows, scale: this.#canvasScale, position: this.#canvasPosition };
-    await writeTextFile(leto.directory.activeFile, JSON.stringify(configObject, null, 2));
+
+    var jsonText = JSON.stringify(configObject, null, 2);
+
+    await writeTextFile(leto.directory.activeFile, jsonText);
 
     var isValidJSON = false;
     while (!isValidJSON) {
       var savedText = await readTextFile(leto.directory.activeFile);
-      isValidJSON = this.#isValidJSON(savedText);
-      if (!isValidJSON) await writeTextFile(leto.directory.activeFile, JSON.stringify(configObject, null, 2));
+      isValidJSON = savedText === jsonText;
+      if (!isValidJSON) await writeTextFile(leto.directory.activeFile, jsonText);
     }
 
     this.#isSaving = false;
@@ -730,11 +734,14 @@ export default class Canvas {
   }
 
   async load(file) {
+    if (this.#isSaving) return;
+
     this.#isSavingUndoState = false;
     this.#isLoading = true;
     this.#cards = [];
     this.#arrows = [];
     this.#previews = [];
+    this.#draggedItem = null;
     canvas.innerHTML = '';
 
     var fileJson = await readTextFile(leto.directory.activeFile);
@@ -847,15 +854,6 @@ export default class Canvas {
 
   #intersectCards(from, fromSize, to, toSize) {
     return !(to.x > from.x + fromSize.x || to.x + toSize.x < from.x || to.y > from.y + fromSize.y || to.y + toSize.y < from.y);
-  }
-
-  #isValidJSON(text) {
-    try {
-      (JSON.parse(text));
-    } catch(e) {
-      return false;
-    }
-    return true;
   }
 }
 

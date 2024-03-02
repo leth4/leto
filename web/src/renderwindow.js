@@ -26,7 +26,6 @@ const themes = [
   'perlin',
   'dart',
   'glass',
-  'brick',
   'beetle'
 ];
 

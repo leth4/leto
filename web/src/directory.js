@@ -35,11 +35,11 @@ export default class Directory {
   setActiveFile(path, save = true) {
     if (this.#isLoading) return;
     this.#isLoading = true;
-    
+
     if (this.activeFile != path)
       this.#previousActiveFile = this.activeFile;
     this.activeFile = path;
-    this.tryOpenActiveFile();
+    this.#tryOpenActiveFile();
     if (save) leto.config.save();
   }
 
@@ -52,7 +52,7 @@ export default class Directory {
     this.#removeActiveFile();
   }
 
-  async tryOpenActiveFile() {
+  async #tryOpenActiveFile() {  
     editor.disabled = true;
     editor.style.display = 'none';
     try {
@@ -88,9 +88,9 @@ export default class Directory {
       imageDisplay.style.display = 'none';
       canvas.style.display = 'block';
       editor.value = '';
-      this.#isLoading = false;
       leto.handleEditorInput();
-      leto.canvas.load(this.activeFile);
+      await leto.canvas.load(this.activeFile);
+      this.#isLoading = false;
     } else {
       imageDisplay.setAttribute('src', '');
       imageDisplay.style.display = 'none';
@@ -142,7 +142,10 @@ export default class Directory {
     }
 
     leto.explorer.showFileTree(directories, this.activeDirectory);
-    if (this.activeFile) leto.explorer.highlightSelectedFile(this.activeFile);
+    if (this.activeFile) {
+      leto.explorer.highlightSelectedFile(this.activeFile);
+      this.setActiveFile(this.activeFile);
+    }
   }
 
   async #getDirectories() {
@@ -232,7 +235,7 @@ export default class Directory {
     this.activeFile = newFile;
     leto.explorer.pendingRename = newFile;
     this.tryDisplayActiveDirectory();
-    this.tryOpenActiveFile();
+    this.#tryOpenActiveFile();
   }
 
   async createImageFromPaste(contents) {
@@ -266,7 +269,7 @@ export default class Directory {
 
     leto.explorer.pendingRename = newFile;
     this.tryDisplayActiveDirectory();
-    this.tryOpenActiveFile();
+    this.#tryOpenActiveFile();
   }
 
   async copyActiveImage() {
@@ -302,7 +305,7 @@ export default class Directory {
     var previousLinkToFile = leto.explorer.getUniqueLink(filePath);
 
     await this.tryDisplayActiveDirectory();
-    await this.tryOpenActiveFile();
+    await this.#tryOpenActiveFile();
 
     leto.edit.renameLinks(previousLinkToFile, newFile);
   }
@@ -324,7 +327,7 @@ export default class Directory {
     leto.explorer.updateFolderPath(oldPath, newPath);
 
     this.tryDisplayActiveDirectory();
-    this.tryOpenActiveFile();
+    this.#tryOpenActiveFile();
   }
 
   async moveTo(oldPath, newPath) {
@@ -351,7 +354,7 @@ export default class Directory {
     if (!isFile) leto.explorer.updateFolderPath(oldPath);
 
     this.tryDisplayActiveDirectory();
-    this.tryOpenActiveFile();
+    this.#tryOpenActiveFile();
   }
 
   moveToTrash(path) {

@@ -16,8 +16,6 @@ import Render from './render.js';
 import Canvas from './canvas.js';
 import QuickOpen from './quickopen.js';
 
-const { appWindow } = window.__TAURI__.window;
-
 const editor = document.getElementById('text-editor');
 
 class Leto {
@@ -56,9 +54,3 @@ class Leto {
 
 globalThis.leto = new Leto();
 leto.config.load();
-
-await appWindow.onFocusChanged(({ payload: hasFocused }) => {
-  leto.contextMenu.hide();
-  leto.focused = hasFocused;
-  if (hasFocused) leto.directory.tryOpenActiveFile();
-});
