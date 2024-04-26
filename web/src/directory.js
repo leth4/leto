@@ -7,7 +7,7 @@ const { invoke, convertFileSrc } = window.__TAURI__.tauri;
 const editor = document.getElementById('text-editor');
 const imageDisplay = document.getElementById('image-display');
 const canvas = document.getElementById('canvas-container');
-const DIRECTORY_ENTRIES_LIMIT = 2000;
+const DIRECTORY_ENTRIES_LIMIT = 5000;
 const TOO_BIG_MESSAGE = `Selected directory is too big. You can only have ${DIRECTORY_ENTRIES_LIMIT} files and subfolders in the directory.`;
 const NO_DIRECTORY_MESSAGE = "Press `Ctrl+O` to open a directory.";
 
@@ -157,6 +157,7 @@ export default class Directory {
       for (var i = 0; i < entries.length; i++) {
         if (++entriesFound > DIRECTORY_ENTRIES_LIMIT) return;
         if (entries[i].children == null) continue;
+        if (entries[i].name.startsWith('.')) continue;
         await readDir(entries[i].path, { recursive: false }).then((ent) => entries[i].children = ent);
         await getSubEntries(entries[i].children);
       }
