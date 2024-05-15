@@ -130,7 +130,7 @@ export default class ContextMenu {
     else if (action === 'Reload') leto.directory.tryDisplayActiveDirectory();
     else if (action === 'Preview') leto.render.openWindow(this.#initialClickTarget.getAttribute('data-path'));
     else if (action === 'Add to Dictionary') leto.spellcheck.addCurrentToDictionary();
-    else if (action === 'Show') {
+    else if (action === 'Reveal') {
       var path = this.#initialClickTarget.getAttribute('data-path') ?? leto.directory.activeDirectory;
       leto.directory.showInExplorer(path);
     }
@@ -171,10 +171,10 @@ export default class ContextMenu {
     contextMenu.innerHTML = '';
 
     if (leto.explorer.isFile(this.#initialClickTarget)) {
+      this.#addAction('Preview', !this.#initialClickTarget.getAttribute('data-path').endsWith('.lea'));
       this.#addAction('Rename');
       this.#addAction(this.#isDeleting ? 'Delete?' : 'Delete');
       this.#addAction(leto.explorer.isPinned(this.#initialClickTarget) ? 'Unpin' : 'Pin');
-      this.#addAction('Preview', !this.#initialClickTarget.getAttribute('data-path').endsWith('.lea'));
       this.#addSeparator();
     } else if (leto.explorer.isFolder(this.#initialClickTarget)) {
       this.#addAction('Rename');
@@ -191,7 +191,7 @@ export default class ContextMenu {
     this.#addAction('New Lea');
     this.#addAction('New Folder');
     this.#addSeparator();
-    this.#addAction('Show');
+    this.#addAction('Reveal');
     this.#addAction('Reload');
   }
 

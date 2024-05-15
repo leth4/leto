@@ -40,7 +40,7 @@ export default class Canvas {
     container.addEventListener('mouseup', event => this.#handleMouseUp(event));
     container.addEventListener('wheel', event => this.#handleZoom(event));
 
-    document.addEventListener('keydown', event => {if (event.code == "Space") this.#startPanning()});
+    document.addEventListener('keydown', event => {if (event.code == "Space" && document.activeElement.nodeName != 'TEXTAREA') this.#startPanning()});
     document.addEventListener('keyup', event => {if (event.code == "Space") this.#endPanning()});
 
     container.addEventListener('dragenter', event => event.preventDefault());
@@ -226,7 +226,15 @@ export default class Canvas {
 
   connectSelectedCards() {
     this.#saveUndoState();
-    if (this.#selectedCards.length <= 1) return;
+
+    if (this.#selectedCards.length == 0) return;
+
+    if (this.#selectedCards.length == 1) {
+      var initialCardIndex = this.#selectedCards[0].getAttribute('data-index');
+      this.createEmptyCard();
+      this.#createArrow(initialCardIndex, this.#cards.length - 1);
+      return;
+    }
 
     for (let i = 0; i < this.#selectedCards.length - 1; i++) {
       this.#createArrow(this.#selectedCards[i].getAttribute('data-index'), this.#selectedCards[i + 1].getAttribute('data-index'));
