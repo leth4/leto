@@ -84,6 +84,8 @@ export default class Shortcuts {
       else if (e.ctrlKey && !e.shiftKey && e.code === 'ArrowDown' && inEditor) leto.edit.jumpDown();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'Enter' && inEditor) leto.edit.createCheckbox();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyL' && inEditor) leto.edit.selectLine();
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyD' && inEditor) leto.edit.insertDateTime(false);
+      else if (e.ctrlKey && e.shiftKey && e.code === 'KeyD' && inEditor) leto.edit.insertDateTime(true);
 
       else if (!e.ctrlKey && !e.shiftKey && e.code === 'Escape') {
         if (leto.search.toggled) leto.search.toggle();
@@ -121,12 +123,11 @@ export default class Shortcuts {
       else if (e.ctrlKey && !e.shiftKey && e.code === 'Digit8') leto.explorer.openPin(7);
       else if (e.ctrlKey && !e.shiftKey && e.code === 'Digit9') leto.explorer.openPin(8);
       
-      else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyD') leto.render.openCurrent();
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyG') leto.render.openCurrent();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyR') leto.spellcheck.toggle();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyF') leto.search.toggle();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyE') leto.quickOpen.open();
 
-      else if (e.ctrlKey && e.code === 'KeyG') {}
       else return;
 
       e.preventDefault();

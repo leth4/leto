@@ -90,7 +90,7 @@ main {
     white-space: break-spaces;
     overflow-y : auto;
     overflow-x : hidden;
-    padding: 6vh calc(16vw - 20px) 200px calc(var(--additional-padding-left) + 6vw - 60px);
+    padding: 6vh calc(30vw - 200px) 200px calc(var(--additional-padding-left) + 10vw - 100px);
     font-size: var(--font-size);
     transition: padding .4s ease-in-out;
 }

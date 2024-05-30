@@ -103,6 +103,21 @@ export default class Edit {
     this.#activeEditor().selectionStart = this.#activeEditor().selectionEnd;
   }
 
+  insertDateTime(includeTime = false) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    var date = new Date();
+    var dateString = months[date.getMonth()] + " " + (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) + ", " + date.getFullYear();
+
+    if (includeTime) {
+      var hours =  date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+      var minutes =  date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+      dateString += " at " + hours + ":" + minutes;
+    }
+
+    document.execCommand('insertText', false, `*${dateString}*`);
+  }
+
   handleBracket() {
     const nextSymbol = this.#activeEditor().value[this.#activeEditor().selectionStart];
     const previousSymbol = this.#activeEditor().value[this.#activeEditor().selectionStart - 1];

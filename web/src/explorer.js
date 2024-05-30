@@ -262,6 +262,8 @@ export default class Explorer {
 
     directoryElements.forEach(child => child.children && this.#showFolder(child, fileTree));
     directoryElements.forEach(child => !child.children && this.#showFile(child, fileTree));
+    
+    leto.quickOpen.handleDirectoryLoaded();
 
     var rootDropArea = document.createElement('li');
     rootDropArea.style.height = '30px';
