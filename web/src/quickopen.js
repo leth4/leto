@@ -10,7 +10,6 @@ export default class QuickOpen {
 
   toggled = false;
   files = [];
-  lastOpenedFiles = [];
   selectedItemIndex;
 
   constructor() {
@@ -40,27 +39,9 @@ export default class QuickOpen {
     quickOpenResults.innerHTML = "";
   }
 
-  handleDirectoryLoaded() {
-    this.lastOpenedFiles.forEach(file => {
-      this.handleFileOpened(file, false);
-    });
-  }
-
-  handleFileOpened(file, saveLastFile = true) {
+  handleFileOpened(file) {
     this.files.splice(this.files.indexOf(file), 1);
     this.files.unshift(file);
-
-    if (saveLastFile) {
-      var lastFileIndex = this.lastOpenedFiles.indexOf(file);
-      if (lastFileIndex != -1) this.lastOpenedFiles.splice(lastFileIndex, 1);
-      this.lastOpenedFiles.unshift(file);
-      if (this.lastOpenedFiles.length > 8) this.lastOpenedFiles.shift();
-      leto.config.save();
-    }
-  }
-
-  setLastOpenedFiles(files = []) {
-    this.lastOpenedFiles = files;
   }
 
   #openSelected(openPreview = false) {

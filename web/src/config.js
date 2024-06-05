@@ -16,8 +16,7 @@ export default class Config {
       sidebarFontSize: leto.windowManager.sidebarFontSize,
       fontWeight: leto.windowManager.fontWeight,
       pins: leto.explorer.pins,
-      dictionary: leto.spellcheck.userDictionary,
-      lastFiles: leto.quickOpen.lastOpenedFiles
+      dictionary: leto.spellcheck.userDictionary
     };
 
     const configPath = await appConfigDir();
@@ -43,7 +42,6 @@ export default class Config {
     
     leto.spellcheck.setUserDictionary(configObject.dictionary);
     leto.directory.setActiveDirectory(configObject.selectedDirectory);
-    leto.quickOpen.setLastOpenedFiles(configObject.lastFiles);
     leto.directory.setActiveFile(configObject.selectedFile, false);
     leto.explorer.setPins(configObject.pins);
   }

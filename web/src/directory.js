@@ -36,8 +36,10 @@ export default class Directory {
     if (this.#isLoading) return;
     this.#isLoading = true;
 
-    if (this.activeFile != path)
+    if (this.activeFile != path) {
       this.#previousActiveFile = this.activeFile;
+      if (this.isFileACanvas(this.activeFile)) leto.canvas.reset();
+    }
     this.activeFile = path;
     this.#tryOpenActiveFile();
     if (save) leto.config.save();

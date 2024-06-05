@@ -31,6 +31,7 @@ export default class Canvas {
   #redoHistory = [];
   #isSavingUndoState = true;
   #isLoading = false;
+  #isFullyLoaded = false;
   #isSaving = false;
   #savePending = false;
 
@@ -715,6 +716,7 @@ export default class Canvas {
   }
 
   async #save() {
+    if (!this.#isFullyLoaded) return;
     if (this.#isLoading) return;
     if (this.#isSaving) {
       this.#savePending = true;
@@ -775,6 +777,7 @@ export default class Canvas {
 
     this.#isSavingUndoState = true;
     this.#isLoading = false;
+    this.#isFullyLoaded = true;
   }
 
   reset() {
@@ -785,6 +788,7 @@ export default class Canvas {
     this.#previews = [];
     this.#arrows = [];
     canvas.innerHTML = '';
+    this.#isFullyLoaded = false;
   }
 
   #getArrowPosition(from, fromSize, to, toSize) {
