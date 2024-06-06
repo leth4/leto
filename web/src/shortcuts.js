@@ -64,6 +64,10 @@ export default class Shortcuts {
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'BracketLeft') leto.canvas.sendSelectedToBack();
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyV') leto.canvas.alignSelectedVertically();
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyH') leto.canvas.alignSelectedHorizontally();
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'ArrowUp') leto.canvas.nudgeSelected(0, -1);
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'ArrowDown') leto.canvas.nudgeSelected(0, 1);
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'ArrowRight') leto.canvas.nudgeSelected(1, 0);
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'ArrowLeft') leto.canvas.nudgeSelected(-1, 0);
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'Equal') leto.canvas.zoom(-1);
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'Minus') leto.canvas.zoom(+1);
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyC') leto.canvas.connectSelectedCards();

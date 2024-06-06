@@ -318,7 +318,7 @@ export default class Canvas {
     this.#selectedCards.sort((a, b) => this.#cards[a.getAttribute('data-index')].position.y - this.#cards[b.getAttribute('data-index')].position.y);
     for (let i = 1; i < this.#selectedCards.length; i++) {
       var previousCard = this.#cards[this.#selectedCards[i - 1].getAttribute('data-index')];
-      this.#moveCardToPosition(this.#selectedCards[i], {x: previousCard.position.x, y: previousCard.position.y + previousCard.height + 25});
+      this.#moveCardToPosition(this.#selectedCards[i], {x: previousCard.position.x, y: previousCard.position.y + previousCard.height + 10});
     }
   }
   
@@ -330,6 +330,15 @@ export default class Canvas {
     for (let i = 1; i < this.#selectedCards.length; i++) {
       var previousCard = this.#cards[this.#selectedCards[i - 1].getAttribute('data-index')];
       this.#moveCardToPosition(this.#selectedCards[i], {x: previousCard.position.x + previousCard.width + 35, y: previousCard.position.y});
+    }
+  }
+
+  nudgeSelected(xDelta, yDelta) {
+    this.#saveUndoState();
+
+    for (let i = 0; i < this.#selectedCards.length; i++) {
+      var card = this.#cards[this.#selectedCards[i].getAttribute('data-index')];
+      this.#moveCardToPosition(this.#selectedCards[i], {x: card.position.x + xDelta * 3, y: card.position.y + yDelta * 3});
     }
   }
 
