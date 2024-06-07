@@ -755,22 +755,21 @@ export default class Canvas {
     var factor = 0.9;
     if (amount < 0) factor = 1 / factor;
     
-    var oldScaleInBounds = this.#canvasScale < 3 && this.#canvasScale > .1;
-    
+    const oldScale = this.#canvasScale;
     this.#canvasScale *= factor;
     this.#canvasScale = this.#clamp(this.#canvasScale, .1, 3);
+
+    factor = this.#canvasScale / oldScale;
     
     var dx = (this.#previousCursorPosition.x - this.#canvasPosition.x) * (factor - 1);
     var dy = (this.#previousCursorPosition.y - this.#canvasPosition.y) * (factor - 1);
     
-    if (oldScaleInBounds || (this.#canvasScale < 3 && this.#canvasScale > .1)) {
-      canvas.classList.add('notransition');
-      canvas.style.left = this.#getPosition(canvas).x - dx + 'px';
-      canvas.style.top = this.#getPosition(canvas).y - dy + 'px';
-      this.#canvasPosition = this.#getPosition(canvas);
-      canvas.offsetHeight;
-      canvas.classList.remove('notransition');
-    }
+    canvas.classList.add('notransition');
+    canvas.style.left = this.#getPosition(canvas).x - dx + 'px';
+    canvas.style.top = this.#getPosition(canvas).y - dy + 'px';
+    this.#canvasPosition = this.#getPosition(canvas);
+    canvas.offsetHeight;
+    canvas.classList.remove('notransition');
     
     canvas.style.transform = `scale(${this.#canvasScale})`;
     var handleSize = this.#clamp(3 / this.#canvasScale, 3, 100);
