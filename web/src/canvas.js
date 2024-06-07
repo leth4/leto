@@ -409,6 +409,7 @@ export default class Canvas {
       this.#saveUndoState();
       this.#isErasing = true;
     } else if (event.target.classList.contains('draw-svg') && event.button == 1) {
+      this.#saveUndoState();
       container.style.cursor = 'grabbing';
       this.#draggedItem = event.target;
     }
@@ -483,8 +484,11 @@ export default class Canvas {
       const cardIndex = parseInt(this.#draggedItem.parentElement.getAttribute('data-index'));
       for (let i = 0; i < this.#cards[cardIndex].drawPaths.length; i++) {
         var path = this.#cards[cardIndex].drawPaths[i];
-        for (let j = 0; j < path.length; j++)
-          path[j] = [path[j][0] + (cursorPosition.x - this.#previousCursorPosition.x), path[j][1] + (cursorPosition.y - this.#previousCursorPosition.y)];
+        for (let j = 0; j < path.length; j++) {
+          var position = this.#screenToCanvasSpace(cursorPosition);
+          var previousPosition = this.#screenToCanvasSpace(this.#previousCursorPosition);
+          path[j] = [path[j][0] + (position.x - previousPosition.x), path[j][1] + (position.y - previousPosition.y)];
+        }
       }
       this.#updateCard(this.#draggedItem.parentElement);
     } else {
@@ -528,6 +532,7 @@ export default class Canvas {
     if (this.#draggedItem == null) return;
 
     if (this.#draggedItem.nodeName == 'svg') {
+      this.#updateCard(this.#draggedItem.parentElement);
       container.style.cursor = 'auto';
       this.#draggedItem = null;
       return;
@@ -549,6 +554,7 @@ export default class Canvas {
       this.#draggedItem.parentElement.classList.remove('notransition');
       if (!hasMoved) this.#removeLastUndoState();
     } else this.#save();
+
     container.style.cursor = 'auto';
     this.#draggedItem = null;
 
@@ -1002,7 +1008,10 @@ export default class Canvas {
   }
 
   #getCardCopy(card) {
-    return new Card(card.position, card.text, card.width, card.height, card.imagePath, card.zIndex, card.isInversed, card.isDrawCard, [...card.drawPaths]);
+    const drawPaths = [];
+    for (let i = 0; i < card.drawPaths.length; i++)
+      drawPaths.push([...card.drawPaths[i]]);
+    return new Card(card.position, card.text, card.width, card.height, card.imagePath, card.zIndex, card.isInversed, card.isDrawCard, drawPaths);
   }
 
   #getArrowCopy(arrow) {

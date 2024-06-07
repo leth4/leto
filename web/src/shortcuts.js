@@ -28,7 +28,7 @@ export default class Shortcuts {
         else leto.undo.undo(); 
       } 
 
-      else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyX') {
+      else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyX' && inEditor) {
         if (selected) return;
         leto.edit.cutLine();
       }
