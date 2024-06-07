@@ -35,10 +35,14 @@ export default class Canvas {
   #isSaving = false;
   #savePending = false;
 
+  #currentDrawPath = null;
+  #currentPathPoints = [];
+  #isErasing = false;
+
   constructor() {
-    container.addEventListener('mousedown', event => this.#handleMouseDown(event))
-    container.addEventListener('mousemove', event => this.#handleMouseMove(event));
-    container.addEventListener('mouseup', event => this.#handleMouseUp(event));
+    container.addEventListener('pointerdown', event => this.#handleMouseDown(event))
+    container.addEventListener('pointermove', event => this.#handleMouseMove(event));
+    container.addEventListener('pointerup', event => this.#handleMouseUp(event));
     container.addEventListener('wheel', event => this.#handleZoom(event));
 
     document.addEventListener('keydown', event => {if (event.code == "Space" && document.activeElement.nodeName != 'TEXTAREA') this.#startPanning()});
@@ -71,7 +75,7 @@ export default class Canvas {
     this.#selectedCards = [];
     canvas.innerHTML = '';
 
-    state.cards.forEach(card => this.#createCard(card.position, card.text, card.width, card.imagePath, card.zIndex, card.isInversed, -1));
+    state.cards.forEach(card => this.#createCard(card.position, card.text, card.width, card.imagePath, card.zIndex, card.isInversed, -1, card.isDrawCard, card.height, card.drawPaths));
     state.arrows.forEach(arrow => this.#createArrow(arrow.fromIndex, arrow.toIndex));
 
     this.#isSavingUndoState = true;
@@ -125,6 +129,11 @@ export default class Canvas {
     this.#saveUndoState();
     var newCard = this.#createCard(this.#screenToCanvasSpace({x: this.#previousCursorPosition.x, y: this.#previousCursorPosition.y}), '', 200);
     newCard.querySelector('textarea').focus();
+  }
+
+  createDrawCard() {
+    this.#saveUndoState();
+    this.#createCard(this.#screenToCanvasSpace({x: this.#previousCursorPosition.x, y: this.#previousCursorPosition.y}), '', 300, '', 100 + this.#cards.length, false, -1, true, 300);
   }
 
   pasteImage(filePath) {
@@ -306,7 +315,7 @@ export default class Canvas {
       var positionOffset = {x: 0, y: 0};
       if (i > 0) positionOffset = {x: this.#copiedCards[i].position.x - this.#copiedCards[0].position.x, y: this.#copiedCards[i].position.y - this.#copiedCards[0].position.y}
       var cursorPosition = this.#screenToCanvasSpace(this.#previousCursorPosition);
-      var newCard = this.#createCard({x: cursorPosition.x + positionOffset.x, y: cursorPosition.y + positionOffset.y}, card.text, card.width, card.imagePath, this.#cards.length + 100, card.isInversed);
+      var newCard = this.#createCard({x: cursorPosition.x + positionOffset.x, y: cursorPosition.y + positionOffset.y}, card.text, card.width, card.imagePath, this.#cards.length + 100, card.isInversed, -1, card.isDrawCard, card.height, card.drawPaths);
       this.#setSelected(newCard);
     }
   }
@@ -388,13 +397,50 @@ export default class Canvas {
       this.#saveUndoState();
       this.#draggedItem = event.target;
       this.#startDragPosition = this.#getPosition(this.#draggedItem.parentElement);
-      container.style.cursor = 'e-resize';
+      container.style.cursor = event.target.classList.contains('handle-down') ? 'ns-resize' : 'ew-resize';
       this.#draggedItem.parentElement.classList.add('notransition');
+    } else if (event.target.classList.contains('draw-svg') && event.button == 0) {
+      this.#saveUndoState();
+      this.#currentPathPoints = [];
+      this.#currentDrawPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      event.target.appendChild(this.#currentDrawPath);
+    } else if (event.target.classList.contains('draw-svg') && event.button == 2) {
+      canvas.querySelectorAll('path').forEach(path => path.classList.add('interactable'));
+      this.#saveUndoState();
+      this.#isErasing = true;
+    } else if (event.target.classList.contains('draw-svg') && event.button == 1) {
+      container.style.cursor = 'grabbing';
+      this.#draggedItem = event.target;
     }
   }
 
   #handleMouseMove(event) {
     var cursorPosition = this.#getCursorPosition(event);
+
+    if (this.#isErasing && event.target.nodeName == 'path') {
+      const pathIndex = Array.prototype.indexOf.call(event.target.parentElement.children, event.target);
+      const cardIndex = parseInt(event.target.parentElement.parentElement.getAttribute('data-index'));
+      this.#cards[cardIndex].drawPaths.splice(pathIndex, 1);
+      event.target.remove();
+    }
+
+    if (this.#currentDrawPath != null) {
+      let d = this.#currentDrawPath.getAttribute('d');
+      const cardPosition = this.#getPosition(this.#currentDrawPath.parentElement.parentElement);
+      const x = this.#screenToCanvasSpace(cursorPosition).x - cardPosition.x - 12;
+      const y = this.#screenToCanvasSpace(cursorPosition).y - cardPosition.y - 25;
+      this.#currentDrawPath.setAttribute('d', d ? d + ` L${x},${y}` : `M${x},${y}`);
+
+      if (this.#currentPathPoints.length == 0) {
+        this.#currentPathPoints.push([Math.trunc(x), Math.trunc(y)]);
+      } else {
+        const coords = [Math.trunc(x), Math.trunc(y)];
+        const prevCoords = this.#currentPathPoints[this.#currentPathPoints.length - 1];
+        const distance = (coords[0] - prevCoords[0]) * (coords[0] - prevCoords[0]) + (coords[1] - prevCoords[1]) * (coords[1] - prevCoords[1]);
+        if (distance > 20) this.#currentPathPoints.push([Math.trunc(x), Math.trunc(y)]);
+      }
+    }
+    
     if (this.#isBoxSelecting) {
       var transformX = (cursorPosition.x < this.#startDragPosition.x) ? 'scaleX(-1)' : 'scaleX(1)';
       var transformY =  (cursorPosition.y < this.#startDragPosition.y) ? 'scaleY(-1)' : 'scaleY(1)';
@@ -410,7 +456,11 @@ export default class Canvas {
       return;
     }
     if (this.#draggedItem.classList.contains('handle')) {
-      if (this.#draggedItem.classList.contains('handle-right')) {
+      if (this.#draggedItem.classList.contains('handle-down')) {
+        var newHeight = this.#screenToCanvasSpace(this.#getCursorPosition(event)).y - this.#getPosition(this.#draggedItem.parentElement).y - 36;
+        newHeight = this.#clamp(newHeight, 100, 800);
+        this.#draggedItem.parentElement.style.height = newHeight + 'px';
+      } else if (this.#draggedItem.classList.contains('handle-right')) {
         var newWidth = this.#screenToCanvasSpace(this.#getCursorPosition(event)).x - this.#getPosition(this.#draggedItem.parentElement).x - 20;
         newWidth = this.#clamp(newWidth, 100, 800);
         this.#draggedItem.parentElement.style.width = newWidth + 'px';
@@ -423,13 +473,20 @@ export default class Canvas {
         else this.#draggedItem.parentElement.style.width = newWidth + 'px';
       }
       this.#updateCard(this.#draggedItem.parentElement);
-    }
-    else if (this.#draggedItem == canvas) {
+    } else if (this.#draggedItem == canvas) {
       var newPositionX = this.#getPosition(canvas).x + (cursorPosition.x - this.#previousCursorPosition.x);
       var newPositionY = this.#getPosition(canvas).y + (cursorPosition.y - this.#previousCursorPosition.y);
       canvas.style.left = newPositionX + 'px';
       canvas.style.top = newPositionY + 'px';
       this.#canvasPosition = this.#getPosition(canvas);
+    } else if (this.#draggedItem.nodeName == 'svg') {
+      const cardIndex = parseInt(this.#draggedItem.parentElement.getAttribute('data-index'));
+      for (let i = 0; i < this.#cards[cardIndex].drawPaths.length; i++) {
+        var path = this.#cards[cardIndex].drawPaths[i];
+        for (let j = 0; j < path.length; j++)
+          path[j] = [path[j][0] + (cursorPosition.x - this.#previousCursorPosition.x), path[j][1] + (cursorPosition.y - this.#previousCursorPosition.y)];
+      }
+      this.#updateCard(this.#draggedItem.parentElement);
     } else {
       this.#selectedCards.forEach(card => {
         card.style.left = this.#getPosition(card).x + (cursorPosition.x - this.#previousCursorPosition.x) / this.#canvasScale + 'px';
@@ -445,11 +502,36 @@ export default class Canvas {
   }
 
   #handleMouseUp(event) {
+    if (this.#currentDrawPath != null) {
+      const cursorPosition = this.#getCursorPosition(event);
+      const cardPosition = this.#getPosition(this.#currentDrawPath.parentElement.parentElement);
+      const x = this.#screenToCanvasSpace(cursorPosition).x - cardPosition.x - 12;
+      const y = this.#screenToCanvasSpace(cursorPosition).y - cardPosition.y - 25;
+      this.#currentPathPoints.push([Math.trunc(x), Math.trunc(y)]);
+
+      var index = parseInt(this.#currentDrawPath.parentElement.parentElement.getAttribute('data-index'));
+      this.#cards[index].drawPaths.push(this.#currentPathPoints);
+      this.#updateCard(this.#currentDrawPath.parentElement.parentElement);
+      this.#currentDrawPath = null;
+    }
+
+    if (this.#isErasing) {
+      this.#isErasing = false;
+      document.querySelectorAll('path').forEach(path => path.classList.remove('interactable'));
+    }
+
     if (this.#isBoxSelecting) {
       boxSelection.style.display = 'none';
       this.#isBoxSelecting = false;
     }
+
     if (this.#draggedItem == null) return;
+
+    if (this.#draggedItem.nodeName == 'svg') {
+      container.style.cursor = 'auto';
+      this.#draggedItem = null;
+      return;
+    }
 
     const cardPosition = this.#getPosition(this.#draggedItem);
     const xDelta = cardPosition.x - this.#startDragPosition.x;
@@ -466,8 +548,7 @@ export default class Canvas {
     } else if (this.#draggedItem.classList.contains('handle')) {
       this.#draggedItem.parentElement.classList.remove('notransition');
       if (!hasMoved) this.#removeLastUndoState();
-    }
-    else this.#save();
+    } else this.#save();
     container.style.cursor = 'auto';
     this.#draggedItem = null;
 
@@ -588,7 +669,7 @@ export default class Canvas {
     }
   }
 
-  #createCard(position, text, width, imagePath = '', zIndex = 100 + this.#cards.length, isInversed = false, atIndex = -1) {
+  #createCard(position, text, width, imagePath = '', zIndex = 100 + this.#cards.length, isInversed = false, atIndex = -1, isDrawCard = false, height = 0, drawPaths = []) {
     var newCard = document.createElement('div');
     newCard.classList.add('card');
 
@@ -599,8 +680,12 @@ export default class Canvas {
     if (atIndex == -1) this.#previews.push(preview);
     else this.#previews.splice(atIndex, 0, preview);
     newCard.appendChild(preview);
-
-    if (imagePath == '') {
+    
+    if (isDrawCard) {
+      var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.classList.add('draw-svg');
+      newCard.appendChild(svg);      
+    } else if (imagePath == '') {
       var textarea = document.createElement('textarea');
       textarea.setAttribute('spellcheck', 'false');
       textarea.value = text;
@@ -614,30 +699,34 @@ export default class Canvas {
     }
     
     var handleLeft = document.createElement('div');
-    handleLeft.classList.add('handle-left');
-    handleLeft.classList.add('handle');
+    handleLeft.classList.add('handle-left', 'handle');
     var handleRight = document.createElement('div');
-    handleRight.classList.add('handle-right');
-    handleRight.classList.add('handle');
-    
+    handleRight.classList.add('handle-right', 'handle');
     newCard.appendChild(handleLeft);
     newCard.appendChild(handleRight);
-    
-    if (position.x == null || position.y == null) position = {x: 0, y : 0};
 
+    if (position.x == null || position.y == null) position = {x: 0, y : 0};
+    
     canvas.appendChild(newCard);
     newCard.style.left = position.x + 'px';
     newCard.style.top = position.y + 'px';
     newCard.style.width = width + 'px';
     newCard.style.zIndex = zIndex;
     
+    if (isDrawCard) {
+      var handleDown = document.createElement('div');
+      handleDown.classList.add('handle-down', 'handle');
+      newCard.appendChild(handleDown);
+      newCard.style.height = height + 'px';
+    }
+
     if (atIndex == -1) {
       newCard.setAttribute("data-index", this.#cards.length);
-      this.#cards.push(new Card({x: newCard.style.left, y: newCard.style.top}, '', 100, 200, '', zIndex, isInversed));
+      this.#cards.push(new Card({x: newCard.style.left, y: newCard.style.top}, '', 100, 200, '', zIndex, isInversed, isDrawCard, drawPaths));
       this.#cards[this.#cards.length - 1].imagePath = imagePath;
     }
     else {
-      this.#cards.splice(atIndex, 0, new Card({x: newCard.style.left, y: newCard.style.top}, '', 100, 200, '', zIndex, isInversed));
+      this.#cards.splice(atIndex, 0, new Card({x: newCard.style.left, y: newCard.style.top}, '', 100, 200, '', zIndex, isInversed, isDrawCard, drawPaths));
       this.#cards[atIndex].imagePath = imagePath;
       const cardElements = canvas.getElementsByClassName('card');
       for (let i = 0; i < cardElements.length; i++) {
@@ -650,7 +739,7 @@ export default class Canvas {
         if (this.#arrows[i].fromIndex >= atIndex) this.#arrows[i].fromIndex = parseInt(this.#arrows[i].fromIndex, 10) + 1; 
       }
     }
-    
+
     this.#updateCard(newCard, true);
 
     return newCard;
@@ -678,8 +767,10 @@ export default class Canvas {
     }
     
     canvas.style.transform = `scale(${this.#canvasScale})`;
-    var handleWidth = this.#clamp(3 / this.#canvasScale, 3, 100);
-    canvas.querySelectorAll('.handle').forEach(handle => handle.style.width = `${handleWidth}px`);
+    var handleSize = this.#clamp(3 / this.#canvasScale, 3, 100);
+    canvas.querySelector('.handle-left').style.width = `${handleSize}px`;
+    canvas.querySelector('.handle-right').style.width = `${handleSize}px`;
+    canvas.querySelector('.handle-down').style.height = `${handleSize}px`;
     this.#save();
   }
 
@@ -701,6 +792,7 @@ export default class Canvas {
     var index = parseInt(card.getAttribute('data-index'));
     this.#cards[index].position = this.#getPosition(card);
     this.#cards[index].width = parseInt(card.style.width, 10);
+    this.#cards[index].height = parseInt(card.style.height, 10);
     
     if (this.#cards[index].isText()) {
       var text = card.children[1].value + (card.children[1].value.slice(-1) === '\n' ? ' ' : '');
@@ -715,13 +807,28 @@ export default class Canvas {
         this.#cards[index].text = card.children[1].value;
       }
     }
-    
-    var cardRect = card.getBoundingClientRect();
-    this.#cards[index].height = parseInt(cardRect.height, 10) / this.#canvasScale;
+
+    if (this.#cards[index].isDrawCard) {
+      this.#renderDrawPaths(card, this.#cards[index].drawPaths);
+    } else {
+      var cardRect = card.getBoundingClientRect();
+      this.#cards[index].height = parseInt(cardRect.height, 10) / this.#canvasScale;
+    }
     
     this.#updateArrows();
 
     this.#save();
+  }
+
+  #renderDrawPaths(card, paths) {
+    var svg = card.querySelector('svg');
+    svg.innerHTML = '';
+
+    for (let i = 0; i < paths.length; i++) {
+      const pathElement = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      pathElement.setAttribute('d', this.#getSmoothPath(paths[i]));
+      svg.appendChild(pathElement);
+    }
   }
 
   async #save() {
@@ -780,7 +887,7 @@ export default class Canvas {
     canvas.style.transform = `scale(${this.#canvasScale})`;
     
     if (fileJson !== '') {
-      file.cards.forEach(card => this.#createCard(card.position, card.text, card.width, card.imagePath, card.zIndex, card.isInversed, -1));
+      file.cards.forEach(card => this.#createCard(card.position, card.text, card.width, card.imagePath, card.zIndex, card.isInversed, -1, card.isDrawCard, card.height, card.drawPaths));
       file.arrows.forEach(arrow => this.#createArrow(arrow.fromIndex, arrow.toIndex));
     }
 
@@ -847,6 +954,41 @@ export default class Canvas {
     return points;
   }
 
+  #getSmoothPath(points) {
+    var path = ` M${points[0][0]},${points[0][1]}`;
+
+    for (let i = 1; i < points.length; i++) {
+      const controlPoint1 = this.#getControlPoint(points[i-1], points[i-2], points[i], false);
+      const controlPoint2 = this.#getControlPoint(points[i], points[i-1], points[i+1], true);
+      path += ` C ${controlPoint1[0]},${controlPoint1[1]} ${controlPoint2[0]},${controlPoint2[1]} ${points[i][0]},${points[i][1]}`;
+    }
+
+    return path;
+  }
+
+  #getControlPoint(current, previous, next, reverse) {
+    if (previous == null) previous = current;
+    if (next == null) next = current;
+    const smoothing = 0.2;
+    const line = this.#getLine(previous, next);
+
+    const angle = line.angle + (reverse ? Math.PI : 0);
+    const length = line.length * smoothing;
+
+    const x = current[0] + Math.cos(angle) * length;
+    const y = current[1] + Math.sin(angle) * length;
+    return [x, y];
+  }
+
+  #getLine(point1, point2) {
+    const lengthX = point2[0] - point1[0]
+    const lengthY = point2[1] - point1[1]
+    return {
+      length: Math.sqrt(Math.pow(lengthX, 2) + Math.pow(lengthY, 2)),
+      angle: Math.atan2(lengthY, lengthX)
+    }
+  }
+
   #getPosition(element) {
     return {x: parseFloat(element.style.left), y: parseFloat(element.style.top, 10)};
   }
@@ -860,7 +1002,7 @@ export default class Canvas {
   }
 
   #getCardCopy(card) {
-    return new Card(card.position, card.text, card.width, card.height, card.imagePath, card.zIndex, card.isInversed);
+    return new Card(card.position, card.text, card.width, card.height, card.imagePath, card.zIndex, card.isInversed, card.isDrawCard, [...card.drawPaths]);
   }
 
   #getArrowCopy(arrow) {
@@ -879,7 +1021,7 @@ export default class Canvas {
 }
 
 class Card {
-  constructor(position, text, width, height, imagePath = '', zIndex, isInversed = false) {
+  constructor(position, text, width, height, imagePath = '', zIndex, isInversed = false, isDrawCard = false, drawPaths = []) {
     this.position = position;
     this.text = text;
     this.width = width;
@@ -887,10 +1029,12 @@ class Card {
     this.imagePath = imagePath;
     this.zIndex = zIndex;
     this.isInversed = isInversed;
+    this.isDrawCard = isDrawCard;
+    this.drawPaths = drawPaths;
   }
 
   isText() {
-    return this.imagePath == '';
+    return this.imagePath == '' && this.isDrawCard == false;
   }
 }
 

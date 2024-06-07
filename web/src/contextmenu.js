@@ -137,6 +137,7 @@ export default class ContextMenu {
 
     else if (action === 'Connect') leto.canvas.connectSelectedCards();
     else if (action === 'New Card') leto.canvas.createEmptyCard();
+    else if (action === 'New Canvas') leto.canvas.createDrawCard();
     else if (action === 'Align ↓') leto.canvas.alignSelectedVertically();
     else if (action === 'Align →') leto.canvas.alignSelectedHorizontally();
     else if (action === 'To Front') leto.canvas.sendSelectedToFront();
@@ -214,6 +215,7 @@ export default class ContextMenu {
   #createCanvasMenu() {
     contextMenu.innerHTML = '';
     this.#addAction('New Card');
+    this.#addAction('New Canvas');
     this.#addAction('Paste', leto.canvas.hasCopiedCards());
   }
 

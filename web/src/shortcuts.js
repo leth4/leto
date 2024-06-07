@@ -60,6 +60,7 @@ export default class Shortcuts {
       else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyA') leto.canvas.selectAllCards();
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyI') leto.canvas.inverseSelectedCards();
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'Enter') leto.canvas.createEmptyCard();
+      else if (inCanvas && !e.ctrlKey && e.shiftKey && e.code === 'Enter') leto.canvas.createDrawCard();
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'BracketRight') leto.canvas.sendSelectedToFront();
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'BracketLeft') leto.canvas.sendSelectedToBack();
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyV') leto.canvas.alignSelectedVertically();

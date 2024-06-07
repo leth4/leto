@@ -94,10 +94,7 @@
 
 .handle {
     background-color: var(--editor-accent-color);
-    width: 3px;
-    height: 100%;
     position: absolute;
-    top: 0;
     opacity: 0;
     transition: opacity .3s ease-out;
 }
@@ -107,11 +104,24 @@
 }
 
 .handle-left {
+    width: 3px;
+    height: 100%;
+    top: 0;
     left: 0;
 }
 
 .handle-right {
+    width: 3px;
+    height: 100%;
+    top: 0;
     right: 0;
+}
+
+.handle-down {
+    height: 3px;
+    width: 100%;
+    left: 0;
+    bottom: 0;
 }
 
 #canvas svg {
@@ -129,6 +139,29 @@
     stroke: transparent;
     stroke-width: 25;
     stroke-linecap: round;
+}
+
+#canvas .card svg {
+    touch-action: none; 
+    background: transparent;
+    background-image: radial-gradient(var(--editor-muted-color) 1px, transparent 0);
+    background-size: 10px 10px;
+    pointer-events: all;
+    position: static;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+#canvas .card svg path {
+    pointer-events: none;
+    stroke: var(--editor-accent-color);
+    stroke-width: 2;
+    fill: none;
+}
+
+#canvas .card svg .interactable {
+    pointer-events: all !important; 
 }
 
 #canvas svg .visual-arrow {
