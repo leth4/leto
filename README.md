@@ -64,6 +64,7 @@ Shortcut | Action
 `H` | Align selected cards horizontally
 `C` | Connect selected cards
 `D` | Disconnect selected cards
+`F` | Focus on selected cards
 `Plus / Minus` | Zoom in/out
 `Ctrl + R` | Reset canvas position
 `Ctrl + Shift + V` | Paste an image

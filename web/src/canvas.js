@@ -774,9 +774,39 @@ export default class Canvas {
     
     canvas.style.transform = `scale(${this.#canvasScale})`;
     var handleSize = this.#clamp(3 / this.#canvasScale, 3, 100);
-    canvas.querySelector('.handle-left').style.width = `${handleSize}px`;
-    canvas.querySelector('.handle-right').style.width = `${handleSize}px`;
-    canvas.querySelector('.handle-down').style.height = `${handleSize}px`;
+    canvas.querySelectorAll('.handle-left').forEach(handle => handle.style.width = `${handleSize}px`);
+    canvas.querySelectorAll('.handle-right').forEach(handle => handle.style.width = `${handleSize}px`);
+    canvas.querySelectorAll('.handle-down').forEach(handle => handle.style.height = `${handleSize}px`);
+    this.#save();
+  }
+
+  zoomToSelected() {
+    if (this.#selectedCards.length == 0) return;
+
+    var minX = 99999, maxX = -99999, minY = 99999, maxY = -99999;
+    this.#selectedCards.forEach(selectedCard => {
+      var card = this.#cards[selectedCard.getAttribute('data-index')];
+      minX = Math.min(card.position.x, minX);
+      minY = Math.min(card.position.y, minY);
+      maxX = Math.max(card.position.x + card.width, maxX);
+      maxY = Math.max(card.position.y + card.height, maxY);
+    });
+
+    var width = maxX - minX;
+    var height = maxY - minY;
+    this.#canvasScale = Math.min(container.offsetWidth / width, container.offsetHeight / height) * .8;
+    this.#canvasScale = this.#clamp(this.#canvasScale, .3, 2);
+    canvas.style.transform = `scale(${this.#canvasScale})`;
+    
+    canvas.classList.add('notransition');
+    
+    this.#canvasPosition = {x: -(maxX + minX) / 2 * this.#canvasScale + container.offsetWidth / 2 - 10, y: -(maxY + minY) / 2 * this.#canvasScale + container.offsetHeight / 2 - 10};
+    canvas.style.left = this.#canvasPosition.x + 'px';
+    canvas.style.top = this.#canvasPosition.y + 'px';
+    
+    canvas.offsetHeight;
+    canvas.classList.remove('notransition');
+
     this.#save();
   }
 
