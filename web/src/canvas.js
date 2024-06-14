@@ -459,18 +459,18 @@ export default class Canvas {
     if (this.#draggedItem.classList.contains('handle')) {
       if (this.#draggedItem.classList.contains('handle-down')) {
         var newHeight = this.#screenToCanvasSpace(this.#getCursorPosition(event)).y - this.#getPosition(this.#draggedItem.parentElement).y - 36;
-        newHeight = this.#clamp(newHeight, 100, 800);
+        newHeight = this.#clamp(newHeight, 100, 3000);
         this.#draggedItem.parentElement.style.height = newHeight + 'px';
       } else if (this.#draggedItem.classList.contains('handle-right')) {
         var newWidth = this.#screenToCanvasSpace(this.#getCursorPosition(event)).x - this.#getPosition(this.#draggedItem.parentElement).x - 20;
-        newWidth = this.#clamp(newWidth, 100, 800);
+        newWidth = this.#clamp(newWidth, 100, 3000);
         this.#draggedItem.parentElement.style.width = newWidth + 'px';
       } else {
         var previousLeft = this.#getPosition(this.#draggedItem.parentElement).x;
         this.#draggedItem.parentElement.style.left = this.#screenToCanvasSpace(this.#getCursorPosition(event)).x + 'px';
         var newLeft = this.#getPosition(this.#draggedItem.parentElement).x;
         var newWidth = parseFloat(this.#draggedItem.parentElement.style.width, 10) - newLeft + previousLeft;
-        if (newWidth > 800 || newWidth < 100) this.#draggedItem.parentElement.style.left = previousLeft + 'px';
+        if (newWidth > 3000 || newWidth < 100) this.#draggedItem.parentElement.style.left = previousLeft + 'px';
         else this.#draggedItem.parentElement.style.width = newWidth + 'px';
       }
       this.#updateCard(this.#draggedItem.parentElement);

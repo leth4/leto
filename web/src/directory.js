@@ -51,7 +51,7 @@ export default class Directory {
 
     this.activeDirectory = newDirectory;
     this.#previousActiveFile = null;
-    this.#removeActiveFile();
+    this.removeActiveFile();
   }
 
   async #tryOpenActiveFile() {  
@@ -60,13 +60,13 @@ export default class Directory {
     try {
       await this.#openActiveFile();
     } catch {
-      this.#removeActiveFile();
+      this.removeActiveFile();
     }
   }
 
   async #openActiveFile() {
     if (!this.activeFile || !(await exists(this.activeFile))) {
-      this.#removeActiveFile();
+      this.removeActiveFile();
       return;
     }
 
@@ -169,7 +169,8 @@ export default class Directory {
     return entriesFound < DIRECTORY_ENTRIES_LIMIT ? directories : null;
   }
 
-  #removeActiveFile() {
+  removeActiveFile(saveAsPrevious = false) {
+    if (saveAsPrevious && this.activeFile != null) this.#previousActiveFile = this.activeFile;
     this.activeFile = null;
     editor.value = this.activeDirectory ? '' : NO_DIRECTORY_MESSAGE;
     editor.disabled = true;
@@ -188,7 +189,7 @@ export default class Directory {
     leto.explorer.clearFileTree();
     leto.explorer.setPins(null);
     this.activeDirectory = null;
-    this.#removeActiveFile();
+    this.removeActiveFile();
   }
 
   async saveActiveFile() {

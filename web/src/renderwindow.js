@@ -95,7 +95,7 @@ function setImageTransform() {
 async function setNonScrollableSize() {
   var size = await appWindow.innerSize();
   if (isDisplayingImage) {
-    size = {type: "Logical", width: 800, height: 600};
+    size = {type: "Logical", width: 700, height: 500};
     var imageSize = await getImageSize(imageDisplay.getAttribute('src'));
     if (imageSize.width < size.width) size.width = imageSize.width;
     if (imageSize.height < size.height) size.height = imageSize.height;
@@ -106,7 +106,7 @@ async function setNonScrollableSize() {
     currentImageZoom = 1;
     setImageTransform();
   } else {
-    if (content.offsetHeight + 15 < 800) {
+    if (content.offsetHeight + 15 < 1000) {
       size.height = Math.max(content.offsetHeight + 15, 200);
     }
   }

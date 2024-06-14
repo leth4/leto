@@ -33,9 +33,9 @@ Shortcut | Action
 `Ctrl + F` | Show/hide the search box
 `Ctrl + B` | Fold/unfold the sidebar
 `Ctrl + R` | Toggle spellcheck
-`Ctrl + D` | Insert current date
-`Ctrl + Shift + D` | Insert current date and time
-`Ctrl + G` | Open preview of the active file
+`Ctrl + D` |  Open preview of the active file
+`Ctrl + G` | Insert current date
+`Ctrl + Shift + G` | Insert current date and time
 `Ctrl + T` | Next theme
 `Ctrl + Shift + T` | Previous theme
 `Ctrl + Plus / Minus` | Change font size

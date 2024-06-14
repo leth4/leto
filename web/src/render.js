@@ -30,7 +30,7 @@ export default class Render {
     async openWindow(file) {
         var imagePath = '', _;
         var preview = '';
-        var windowSize = {width: 800, height: 600};
+        var windowSize = {width: 700, height: 500};
 
         if (leto.directory.isFileACanvas(file)) return;
 
@@ -134,13 +134,14 @@ export default class Render {
     }
 
     #createRender(text) {
+        text = text.trim();
         const html = text.replace(/^\[ \] (.*$)/gm, `<button class="todo"></button> $1`)
                          .replace(/^\[x\] (.*$)/gm, `<button class="todo checked"></button> <s>$1</s>`)
                          .replace(/^— (.*)(\n)?/gm, "<ul><li>$1</li></ul>")
                          .replace(/(^----*)[\r\n]/gm, `<hr>`)
                          .replace(/\[\[([^[\]]+)\]\]/g, this.#imageReplacerFunction)
                          .replace(/\n/g, "<br>");
-	    return html.trim();
+	    return html;
     }
 
     #imageReplacerFunction(match, p1) {
