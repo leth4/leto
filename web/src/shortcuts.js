@@ -75,6 +75,9 @@ export default class Shortcuts {
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyD') leto.canvas.disconnectSelectedCards();
       else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyR') leto.canvas.resetPosition();
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyF') leto.canvas.zoomToSelected();
+      
+      else if (leto.directory.isFileACanvas(leto.directory.activeFile) && e.ctrlKey && !e.shiftKey && e.code === 'Equal') leto.canvas.changeFontSize(+1);
+      else if (leto.directory.isFileACanvas(leto.directory.activeFile) && e.ctrlKey && !e.shiftKey && e.code === 'Minus') leto.canvas.changeFontSize(-1);
 
       else if (e.key == '*' && inEditor) leto.edit.insertDoubleSymbol('*');
       else if (e.key == '\"' && inEditor) leto.edit.insertDoubleSymbol('\"');
@@ -94,7 +97,8 @@ export default class Shortcuts {
       else if (e.ctrlKey && e.shiftKey && e.code === 'KeyG' && inEditor) leto.edit.insertDateTime(true);
 
       else if (!e.ctrlKey && !e.shiftKey && e.code === 'Escape') {
-        if (leto.search.toggled) leto.search.toggle();
+        if (leto.quickOpen.toggled) leto.quickOpen.close();
+        else if (leto.search.toggled) leto.search.toggle();
         else if (editor.selectionStart !== editor.selectionEnd) leto.edit.deselect();
         else if (leto.windowManager.isFullscreen) leto.windowManager.toggleFullscreen();
         else leto.directory.removeActiveFile(true);

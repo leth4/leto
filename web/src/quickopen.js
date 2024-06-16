@@ -17,11 +17,10 @@ export default class QuickOpen {
     document.addEventListener('keydown', e => {
       if (this.toggled && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) e.preventDefault();
       if (e.key === 'ArrowUp') this.#selectNext();
-      if (e.key === 'Escape') this.close();
       if (e.key === 'ArrowDown') this.#selectPrevious();
       if (e.key === 'Enter') this.#openSelected(e.ctrlKey);
     }, false);
-    document.addEventListener('click', e => this.close());
+    document.addEventListener('click', () => this.close());
   }
 
   open() {

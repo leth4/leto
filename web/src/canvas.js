@@ -18,6 +18,7 @@ export default class Canvas {
   
   #canvasScale = 1;
   #canvasPosition = {x: 0, y: 0};
+  #fontSize;
   
   #cards = [];
   #previews = [];
@@ -855,6 +856,14 @@ export default class Canvas {
     this.#save();
   }
 
+  changeFontSize(change) {
+    this.#fontSize = this.#fontSize + change;
+    if (this.#fontSize > 50) this.#fontSize = 50;
+    else if (this.#fontSize < 12) this.#fontSize = 12;
+    document.querySelector(':root').style.setProperty('--canvas-font-size', `${this.#fontSize}px`);
+    this.#save();
+  }
+
   #renderDrawPaths(card, paths) {
     var svg = card.querySelector('svg');
     svg.innerHTML = '';
@@ -874,7 +883,7 @@ export default class Canvas {
       return;
     }
     this.#isSaving = true;
-    const configObject = { cards: this.#cards, arrows: this.#arrows, scale: this.#canvasScale, position: this.#canvasPosition };
+    const configObject = { cards: this.#cards, arrows: this.#arrows, scale: this.#canvasScale, position: this.#canvasPosition, fontSize: this.#fontSize };
 
     var jsonText = JSON.stringify(configObject, null, 2);
 
@@ -910,12 +919,16 @@ export default class Canvas {
     if (fileJson === '') {
       this.#canvasPosition = {x: 0, y: 0};
       this.#canvasScale = 1;
+      this.#fontSize = leto.windowManager.fontSize;
     }
     else {
       var file = JSON.parse(fileJson);
       this.#canvasPosition = {x: file.position.x ?? 0, y: file.position.y ?? 0};
       this.#canvasScale = file.scale;
+      this.#fontSize = file.fontSize ?? leto.windowManager.fontSize;
     }
+    
+    this.changeFontSize(0);
 
     canvas.style.left = this.#canvasPosition.x + 'px';
     canvas.style.top = this.#canvasPosition.y + 'px';

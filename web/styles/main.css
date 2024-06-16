@@ -1,5 +1,6 @@
 :root {
     --font-size: 15px;
+    --canvas-font-size: 15px;
     --sidebar-font-size: 15px;
     --additional-padding-left: 50px;
     --font-family: 'inter', sans-serif;
