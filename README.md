@@ -58,6 +58,7 @@ Shortcut | Action
 :-|:-
 `Enter` | Create a new card
 `Shift + Enter` | Create a new canvas
+`Ctrl + Enter` | Create a connected card
 `] / [` | Send to front/back
 `I` | Invert the card's color
 `V` | Align selected cards vertically

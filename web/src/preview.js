@@ -105,7 +105,7 @@ export default class Preview {
       excludeRanges.forEach(range => { if (textLength > range[0] && textLength < range[1]) isExcludedRange = true; })
 
       textLength += words[i].length;
-      if (/\w+/.test(words[i]) && !/^\d+$/.test(words[i]) && !isExcludedRange)
+      if (words[i].length > 1 && /\w+/.test(words[i]) && !/^\d+$/.test(words[i]) && !isExcludedRange)
         words[i] = leto.spellcheck.checkWord(words[i]) ? words[i] : `<mark class='mistake'>${words[i]}</mark>`;
     }
 

@@ -126,15 +126,21 @@ export default class Canvas {
     return this.#selectedCards.length >= 2;
   }
   
-  createEmptyCard() {
+  createEmptyCard(connected = false) {
     this.#saveUndoState();
     var newCard = this.#createCard(this.#screenToCanvasSpace({x: this.#previousCursorPosition.x, y: this.#previousCursorPosition.y}), '', 200);
     newCard.querySelector('textarea').focus();
-  }
 
-  createDrawCard() {
+    if (!connected || this.#selectedCards.length != 1) return;
+    this.#createArrow(this.#selectedCards[0].getAttribute('data-index'), this.#cards.length - 1);
+  }
+  
+  createDrawCard(connected = false) {
     this.#saveUndoState();
     this.#createCard(this.#screenToCanvasSpace({x: this.#previousCursorPosition.x, y: this.#previousCursorPosition.y}), '', 300, '', 100 + this.#cards.length, false, -1, true, 300);
+  
+    if (!connected || this.#selectedCards.length != 1) return;
+    this.#createArrow(this.#selectedCards[0].getAttribute('data-index'), this.#cards.length - 1);
   }
 
   pasteImage(filePath) {
@@ -844,12 +850,11 @@ export default class Canvas {
       }
     }
 
-    if (this.#cards[index].isDrawCard) {
+    if (this.#cards[index].isDrawCard)
       this.#renderDrawPaths(card, this.#cards[index].drawPaths);
-    } else {
-      var cardRect = card.getBoundingClientRect();
-      this.#cards[index].height = parseInt(cardRect.height, 10) / this.#canvasScale;
-    }
+    
+    var cardRect = card.getBoundingClientRect();
+    this.#cards[index].height = parseInt(cardRect.height, 10) / this.#canvasScale;
     
     this.#updateArrows();
 
