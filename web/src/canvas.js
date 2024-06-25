@@ -380,6 +380,8 @@ export default class Canvas {
   }
 
   #handleMouseDown(event) {
+    if (event.target == container && (event.offsetY < 5 || event.offsetY > container.offsetHeight - 6 || event.offsetX > container.offsetWidth - 6)) return;
+
     this.#previousCursorPosition = this.#getCursorPosition(event);
     if (event.target.classList.contains('card')) {
       this.#saveUndoState();
@@ -850,14 +852,15 @@ export default class Canvas {
       }
     }
 
-    if (this.#cards[index].isDrawCard)
+    if (this.#cards[index].isDrawCard) {
       this.#renderDrawPaths(card, this.#cards[index].drawPaths);
-    
-    var cardRect = card.getBoundingClientRect();
-    this.#cards[index].height = parseInt(cardRect.height, 10) / this.#canvasScale;
+      this.#cards[index].height = parseInt(card.style.height);
+    } else {
+      var cardRect = card.getBoundingClientRect();
+      this.#cards[index].height = parseInt(cardRect.height, 10) / this.#canvasScale;
+    }
     
     this.#updateArrows();
-
     this.#save();
   }
 
@@ -963,7 +966,7 @@ export default class Canvas {
   #getArrowPosition(from, fromSize, to, toSize) {
     var centers = [{x: from.x + fromSize.x / 2, y: from.y + fromSize.y / 2}, {x: to.x + toSize.x / 2, y: to.y + toSize.y / 2}];
     var atBounds = [this.#moveFirstCoordinatesToBounds([centers[1], centers[0]], toSize), this.#moveFirstCoordinatesToBounds([centers[0], centers[1]], fromSize)];
-    return this.#truncateLine(atBounds);
+    return this.#truncateLine(atBounds, fromSize, toSize);
   }
 
   #moveFirstCoordinatesToBounds(points, size) {
@@ -988,21 +991,29 @@ export default class Canvas {
     return points[0];
   }
 
-  #truncateLine(points) {
+  #truncateLine(points, fromSize, toSize) {
     const truncateLength = 20;
 
-    var xDiff = points[1].x - points[0].x;
-    var yDiff = points[1].y - points[0].y;
+    const xDiff = points[1].x - points[0].x;
+    const yDiff = points[1].y - points[0].y;
+
+    var angle = Math.atan2(xDiff, yDiff);
 
     var length = Math.sqrt((xDiff ** 2) + (yDiff ** 2));
 
     if (length < truncateLength * 2 + 15) return points;
 
-    points[0].x += xDiff * (truncateLength / length);
-    points[0].y += yDiff * (truncateLength / length);
+    const cos = Math.abs(Math.cos(angle));
+    const sin = Math.abs(Math.sin(angle));
 
-    points[1].x -= xDiff * (truncateLength / length);
-    points[1].y -= yDiff * (truncateLength / length);
+    var cosToSinAngleFrom = Math.sin(Math.atan((fromSize.y) / (fromSize.x)));
+    var cosToSinAngleTo = Math.sin(Math.atan((toSize.y) / (toSize.x)));
+
+    points[0].x += this.#clamp((xDiff / length) * (truncateLength / (cos > cosToSinAngleTo ? cos : sin)), -truncateLength, truncateLength);
+    points[0].y += this.#clamp((yDiff / length) * (truncateLength / (cos > cosToSinAngleTo ? cos : sin)), -truncateLength, truncateLength);
+
+    points[1].x -= this.#clamp((xDiff / length) * (truncateLength / (cos > cosToSinAngleFrom ? cos : sin)), -truncateLength, truncateLength);
+    points[1].y -= this.#clamp((yDiff / length) * (truncateLength / (cos > cosToSinAngleFrom ? cos : sin)), -truncateLength, truncateLength);
 
     return points;
   }
