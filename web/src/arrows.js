@@ -83,11 +83,19 @@ export class Arrow {
 
   #getArrowPosition(from, fromSize, to, toSize) {
     var centers = [{x: from.x + fromSize.x / 2, y: from.y + fromSize.y / 2}, {x: to.x + toSize.x / 2, y: to.y + toSize.y / 2}];
-    var atBounds = [this.#moveFirstCoordinatesToBounds([centers[1], centers[0]], toSize), this.#moveFirstCoordinatesToBounds([centers[0], centers[1]], fromSize)];
-    return this.#truncateLine(atBounds, fromSize, toSize);
+
+    if (this.#intersectCards(from, {x: fromSize.x + 50, y: fromSize.y + 50}, to, {x: toSize.x + 50, y: toSize.y + 50}))
+      return [this.#moveFirstCoordinatesToBounds([centers[1], centers[0]], toSize, false), this.#moveFirstCoordinatesToBounds([centers[0], centers[1]], fromSize, false)];
+    
+    return [this.#moveFirstCoordinatesToBounds([centers[1], centers[0]], toSize, true), this.#moveFirstCoordinatesToBounds([centers[0], centers[1]], fromSize, true)];
   }
 
-  #moveFirstCoordinatesToBounds(points, size) {
+  #moveFirstCoordinatesToBounds(points, size, changeSize) {
+    if (changeSize) {
+      size.x += 40;
+      size.y += 40;
+    }
+
     var xDiff = points[1].x - points[0].x;
     var yDiff = points[1].y - points[0].y;
 
@@ -109,40 +117,7 @@ export class Arrow {
     return points[0];
   }
 
-  #truncateLine(points, fromSize, toSize) {
-    const truncateLength = 20;
-
-    const xDiff = points[1].x - points[0].x;
-    const yDiff = points[1].y - points[0].y;
-
-    var angle = Math.atan2(xDiff, yDiff);
-
-    var length = Math.sqrt((xDiff ** 2) + (yDiff ** 2));
-
-    if (length < truncateLength * 2 + 15) return points;
-
-    const cos = Math.abs(Math.cos(angle));
-    const sin = Math.abs(Math.sin(angle));
-
-    var cosToSinAngleFrom = Math.sin(Math.atan((fromSize.y) / (fromSize.x)));
-    var cosToSinAngleTo = Math.sin(Math.atan((toSize.y) / (toSize.x)));
-
-    points[0].x += this.#clamp((xDiff / length) * (truncateLength / (cos > cosToSinAngleTo ? cos : sin)), -truncateLength, truncateLength);
-    points[0].y += this.#clamp((yDiff / length) * (truncateLength / (cos > cosToSinAngleTo ? cos : sin)), -truncateLength, truncateLength);
-
-    points[1].x -= this.#clamp((xDiff / length) * (truncateLength / (cos > cosToSinAngleFrom ? cos : sin)), -truncateLength, truncateLength);
-    points[1].y -= this.#clamp((yDiff / length) * (truncateLength / (cos > cosToSinAngleFrom ? cos : sin)), -truncateLength, truncateLength);
-
-    return points;
-  }
-
   #intersectCards(from, fromSize, to, toSize) {
     return !(to.x > from.x + fromSize.x || to.x + toSize.x < from.x || to.y > from.y + fromSize.y || to.y + toSize.y < from.y);
-  }
-
-  #clamp(number, min, max) {
-    if (number > max) number = max;
-    else if (number < min) number = min;
-    return number;
   }
 }
