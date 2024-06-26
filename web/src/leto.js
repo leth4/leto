@@ -13,7 +13,7 @@ import Preview from './preview.js';
 import Search from './search.js';
 import Spellcheck from './spellcheck.js';
 import Render from './render.js';
-import Canvas from './canvas.js';
+import Lea from './lea.js';
 import QuickOpen from './quickopen.js';
 
 const editor = document.getElementById('text-editor');
@@ -34,7 +34,7 @@ class Leto {
     this.search = new Search();
     this.spellcheck = new Spellcheck();
     this.render = new Render();
-    this.canvas = new Canvas();
+    this.lea = new Lea();
     this.quickOpen = new QuickOpen();
 
     this.focused = true;

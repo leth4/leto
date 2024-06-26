@@ -38,7 +38,7 @@ export default class Directory {
 
     if (this.activeFile != path) {
       this.#previousActiveFile = this.activeFile;
-      if (this.isFileACanvas(this.activeFile)) leto.canvas.reset();
+      if (this.isFileACanvas(this.activeFile)) leto.lea.reset();
     }
     this.activeFile = path;
     this.#tryOpenActiveFile();
@@ -75,7 +75,7 @@ export default class Directory {
     if (this.activeDirectory) leto.explorer.highlightSelectedFile(this.activeFile);
 
     if (this.isFileAnImage(this.activeFile)) {
-      leto.canvas.reset();
+      leto.lea.reset();
       canvas.style.display = 'none';
       imageDisplay.setAttribute('src', convertFileSrc(this.activeFile));
       imageDisplay.style.display = 'block';
@@ -84,19 +84,19 @@ export default class Directory {
       leto.scroll.handleNewFile();
       leto.handleEditorInput();
     } else if (this.isFileACanvas(this.activeFile)) {
-      if (this.activeFile != this.#previousCanvas) leto.canvas.reset();
+      if (this.activeFile != this.#previousCanvas) leto.lea.reset();
       this.#previousCanvas = this.activeFile;
       imageDisplay.setAttribute('src', '');
       imageDisplay.style.display = 'none';
       canvas.style.display = 'block';
       editor.value = '';
       leto.handleEditorInput();
-      await leto.canvas.load(this.activeFile);
+      await leto.lea.load(this.activeFile);
       this.#isLoading = false;
     } else {
       imageDisplay.setAttribute('src', '');
       imageDisplay.style.display = 'none';
-      leto.canvas.reset();
+      leto.lea.reset();
       canvas.style.display = 'none';
       var newEditorValue = await readTextFile(this.activeFile);
       var isNewValue = editor.value != newEditorValue;
@@ -174,7 +174,7 @@ export default class Directory {
     this.activeFile = null;
     editor.value = this.activeDirectory ? '' : NO_DIRECTORY_MESSAGE;
     editor.disabled = true;
-    leto.canvas.reset();
+    leto.lea.reset();
     canvas.style.display = 'none';
     editor.style.display = 'none';
     imageDisplay.setAttribute('src', '');
@@ -266,7 +266,7 @@ export default class Directory {
     await writeBinaryFile(newFile, arrayBuffer);
 
     if (this.isFileACanvas(this.activeFile) && document.activeElement.nodeName != 'TEXTAREA') {
-      leto.canvas.pasteImage(newFile);
+      leto.lea.pasteImage(newFile);
     } else if (document.activeElement.nodeName == 'TEXTAREA') {
       document.execCommand('insertText', false, `[[${leto.explorer.getUniqueLink(newFile, true)}]]`);
     }

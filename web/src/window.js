@@ -129,7 +129,7 @@ export default class Window {
     if (!event.ctrlKey) return;
     if (event.shiftKey) return;
     if (leto.directory.isFileACanvas(leto.directory.activeFile)) {
-      leto.canvas.changeFontSize(-event.deltaY / Math.abs(event.deltaY));
+      leto.lea.changeFontSize(-event.deltaY / Math.abs(event.deltaY));
       return;
     }
     this.changeFontSize(-event.deltaY / Math.abs(event.deltaY));

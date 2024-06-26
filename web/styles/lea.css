@@ -52,6 +52,17 @@
     padding: 5px;
 }
 
+.region {
+    z-index: 99 !important;
+    background-color: color-mix(in srgb, var(--editor-code-background-color), transparent 80%);
+    outline: 3px solid var(--editor-muted-color);
+}
+
+.region.inversed {
+    background-color: color-mix(in srgb, var(--editor-accent-color), transparent 95%);;
+    outline: 3px solid var(--editor-accent-color);
+}
+
 .card img {
     width: 100%;
     height: auto;

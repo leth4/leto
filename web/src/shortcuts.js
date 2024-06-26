@@ -16,15 +16,15 @@ export default class Shortcuts {
 
       if (e.ctrlKey && !e.shiftKey && e.code === 'KeyY' && (inCanvas || inEditor)) {
         e.preventDefault();
-        if (leto.directory.isFileACanvas(leto.directory.activeFile)) leto.canvas.redo();
+        if (leto.directory.isFileACanvas(leto.directory.activeFile)) leto.lea.redo();
         else leto.undo.redo();
       } else if (e.ctrlKey && e.shiftKey && e.code === 'KeyZ' && (inCanvas || inEditor)) {
         e.preventDefault();
-        if (leto.directory.isFileACanvas(leto.directory.activeFile)) leto.canvas.redo();
+        if (leto.directory.isFileACanvas(leto.directory.activeFile)) leto.lea.redo();
         else leto.undo.redo();
       } else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyZ' && (inCanvas || inEditor)) {
         e.preventDefault();
-        if (leto.directory.isFileACanvas(leto.directory.activeFile)) leto.canvas.undo();
+        if (leto.directory.isFileACanvas(leto.directory.activeFile)) leto.lea.undo();
         else leto.undo.undo(); 
       } 
 
@@ -39,7 +39,7 @@ export default class Shortcuts {
 
       else if (e.ctrlKey && e.code === 'KeyV') {
         if (inCanvas && !e.shiftKey) {
-          leto.canvas.pasteCopiedCards();
+          leto.lea.pasteCopiedCards();
         } else {
           leto.windowManager.handleImagePaste();
           return;
@@ -53,31 +53,32 @@ export default class Shortcuts {
       else if (document.activeElement === nameInput && e.code === 'Enter') nameInput.blur();
       else if (document.activeElement === fontInput && e.code === 'Enter') fontInput.blur();
 
-      else if (inCanvas && !e.shiftKey && e.code === 'Enter') leto.canvas.createEmptyCard(e.ctrlKey);
-      else if (inCanvas && e.shiftKey && e.code === 'Enter') leto.canvas.createDrawCard(e.ctrlKey);
-      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'Delete') leto.canvas.deleteSelectedCards();
-      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'Backspace') leto.canvas.deleteSelectedCards();
-      else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyX') leto.canvas.cutSelectedCards();
-      else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyC') leto.canvas.copySelectedCards();
-      else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyA') leto.canvas.selectAllCards();
-      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyI') leto.canvas.inverseSelectedCards();
-      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'BracketRight') leto.canvas.sendSelectedToFront();
-      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'BracketLeft') leto.canvas.sendSelectedToBack();
-      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyV') leto.canvas.alignSelectedVertically();
-      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyH') leto.canvas.alignSelectedHorizontally();
-      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'ArrowUp') leto.canvas.nudgeSelected(0, -1);
-      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'ArrowDown') leto.canvas.nudgeSelected(0, 1);
-      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'ArrowRight') leto.canvas.nudgeSelected(1, 0);
-      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'ArrowLeft') leto.canvas.nudgeSelected(-1, 0);
-      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'Equal') leto.canvas.zoom(-1);
-      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'Minus') leto.canvas.zoom(+1);
-      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyC') leto.canvas.connectSelectedCards();
-      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyD') leto.canvas.disconnectSelectedCards();
-      else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyR') leto.canvas.resetPosition();
-      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyF') leto.canvas.zoomToSelected();
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'Enter') leto.lea.createEmptyCard();
+      else if (inCanvas && !e.ctrlKey && e.shiftKey && e.code === 'Enter') leto.lea.createDrawCard();
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyR') leto.lea.createRegionCard();
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'Delete') leto.lea.deleteSelectedCards();
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'Backspace') leto.lea.deleteSelectedCards();
+      else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyX') leto.lea.cutSelectedCards();
+      else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyC') leto.lea.copySelectedCards();
+      else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyA') leto.lea.selectAllCards();
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyI') leto.lea.inverseSelectedCards();
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'BracketRight') leto.lea.sendSelectedToFront();
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'BracketLeft') leto.lea.sendSelectedToBack();
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyV') leto.lea.alignSelectedVertically();
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyH') leto.lea.alignSelectedHorizontally();
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'ArrowUp') leto.lea.nudgeSelected(0, -1);
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'ArrowDown') leto.lea.nudgeSelected(0, 1);
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'ArrowRight') leto.lea.nudgeSelected(1, 0);
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'ArrowLeft') leto.lea.nudgeSelected(-1, 0);
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'Equal') leto.lea.zoom(-1);
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'Minus') leto.lea.zoom(+1);
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyC') leto.lea.connectSelectedCards();
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyD') leto.lea.disconnectSelectedCards();
+      else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyR') leto.lea.resetPosition();
+      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyF') leto.lea.zoomToSelected();
       
-      else if (leto.directory.isFileACanvas(leto.directory.activeFile) && e.ctrlKey && !e.shiftKey && e.code === 'Equal') leto.canvas.changeFontSize(+1);
-      else if (leto.directory.isFileACanvas(leto.directory.activeFile) && e.ctrlKey && !e.shiftKey && e.code === 'Minus') leto.canvas.changeFontSize(-1);
+      else if (leto.directory.isFileACanvas(leto.directory.activeFile) && e.ctrlKey && !e.shiftKey && e.code === 'Equal') leto.lea.changeFontSize(+1);
+      else if (leto.directory.isFileACanvas(leto.directory.activeFile) && e.ctrlKey && !e.shiftKey && e.code === 'Minus') leto.lea.changeFontSize(-1);
 
       else if (e.key == '*' && inEditor) leto.edit.insertDoubleSymbol('*');
       else if (e.key == '\"' && inEditor) leto.edit.insertDoubleSymbol('\"');
