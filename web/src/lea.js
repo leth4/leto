@@ -607,6 +607,17 @@ export default class Lea {
     this.zoom(event.deltaY);
   }
 
+  updateAllCards() {
+    if (!this.#isFullyLoaded) return;
+
+    var cards = document.getElementsByClassName('card');
+    for (let i = 0; i < cards.length; i++) {
+      var index = parseInt(cards[i].getAttribute('data-index'));
+      this.#cards[index].update(cards[i]);
+    }
+    this.updateArrows();
+  }
+
   #updateCard(card) {
     var index = parseInt(card.getAttribute('data-index'));
     this.#cards[index].update(card);

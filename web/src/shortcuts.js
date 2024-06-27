@@ -74,7 +74,7 @@ export default class Shortcuts {
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'Minus') leto.lea.zoom(+1);
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyC') leto.lea.connectSelectedCards();
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyD') leto.lea.disconnectSelectedCards();
-      else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyR') leto.lea.resetPosition();
+      else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyF') leto.lea.resetPosition();
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyF') leto.lea.zoomToSelected();
       
       else if (leto.directory.isFileACanvas(leto.directory.activeFile) && e.ctrlKey && !e.shiftKey && e.code === 'Equal') leto.lea.changeFontSize(+1);

@@ -67,5 +67,5 @@ Shortcut | Action
 `F` | Focus on selected cards
 `] / [` | Send to front/back
 `Plus / Minus` | Zoom in/out
-`Ctrl + R` | Reset canvas position
+`Ctrl + F` | Reset canvas position
 `Ctrl + Shift + V` | Paste an image

@@ -97,11 +97,16 @@ export default class Preview {
 
     if (!leto.spellcheck.toggled) return;
 
-    var words = editorText.split(/(\W+)(?<!')/).filter(Boolean);
+    spell.innerHTML = this.getSpellcheck(editorText, excludeRanges);
+    spell.scrollTop = editor.scrollTop;
+  }
+
+  getSpellcheck(text, excludeRanges) {
+    const words = text.split(/(\W+)(?<!')/).filter(Boolean);
     var textLength = 0;
 
     for (var i = 0; i < words.length; i++) {
-      var isExcludedRange = 0;
+      var isExcludedRange = false;
       excludeRanges.forEach(range => { if (textLength > range[0] && textLength < range[1]) isExcludedRange = true; })
 
       textLength += words[i].length;
@@ -109,8 +114,7 @@ export default class Preview {
         words[i] = leto.spellcheck.checkWord(words[i]) ? words[i] : `<mark class='mistake'>${words[i]}</mark>`;
     }
 
-    spell.innerHTML = words.join("");
-    spell.scrollTop = editor.scrollTop;
+    return words.join("");
   }
 
   #cleanupHtmlTags(text) {

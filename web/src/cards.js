@@ -1,5 +1,7 @@
 const { convertFileSrc } = window.__TAURI__.tauri;
 
+const container = document.getElementById('canvas-container');
+
 export class Card {
   constructor(position, width, height, zIndex, isInversed) {
     this.position = position;
@@ -70,11 +72,15 @@ export class TextCard extends Card {
     super.update(card, isNew);
 
     const preview = card.children[2];
-    const textarea = card.children[3];
+    const spellcheck = card.children[3];
+    const textarea = card.children[4];
     
     var text = textarea.value + (textarea.value.slice(-1) === '\n' ? ' ' : '');
-    var [previewText, _] = leto.preview.getPreview(text);
+    var [previewText, codeRanges] = leto.preview.getPreview(text);
     preview.innerHTML = previewText;
+
+    spellcheck.innerHTML = leto.spellcheck.toggled ? leto.preview.getSpellcheck(text, codeRanges) : '';
+
     leto.preview.updateLinksEventListeners();
     
     if (this.text != textarea.value) {
@@ -92,6 +98,10 @@ export class TextCard extends Card {
     var preview = document.createElement('code');
     preview.classList.add('card-preview');
     newCard.appendChild(preview);
+    
+    var spellcheck = document.createElement('code');
+    spellcheck.classList.add('card-spellcheck');
+    newCard.appendChild(spellcheck);
 
     var textarea = document.createElement('textarea');
     textarea.setAttribute('spellcheck', 'false');
@@ -223,7 +233,7 @@ export class DrawCard extends Card {
       }
       if (event.button == 1) {
         leto.lea.saveUndoState();
-        svg.style.cursor = 'grabbing';
+        container.style.cursor = 'grabbing';
         this.#activeState = State.Panning;
         this.#previousCursorPosition = leto.lea.getCursorPosition(event);
       }
@@ -234,7 +244,7 @@ export class DrawCard extends Card {
       }
     });
 
-    document.getElementById('canvas-container').addEventListener('pointermove', event => {
+    container.addEventListener('pointermove', event => {
       if (this.#activeState == State.None) return;
       var cursorPosition = leto.lea.getCursorPosition(event);
 
@@ -277,7 +287,7 @@ export class DrawCard extends Card {
       this.#previousCursorPosition = cursorPosition;
     });
 
-    document.getElementById('canvas-container').addEventListener('pointerup', event => {
+    container.addEventListener('pointerup', event => {
       if (this.#activeState == State.None) return;
 
       if (this.#activeState == State.Erasing) {
@@ -287,7 +297,7 @@ export class DrawCard extends Card {
       
       if (this.#activeState == State.Panning) {
         this.update(svg.parentElement);
-        svg.style.cursor = 'auto';
+        container.style.cursor = 'auto';
       }
 
       if (this.#activeState == State.Drawing) {

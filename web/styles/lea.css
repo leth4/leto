@@ -53,13 +53,13 @@
 }
 
 .region {
-    z-index: 99 !important;
-    background-color: color-mix(in srgb, var(--editor-code-background-color), transparent 80%);
+    background-color: color-mix(in srgb, var(--editor-accent-color), transparent 95%);;
     outline: 3px solid var(--editor-muted-color);
+    z-index: 99 !important;
 }
 
 .region.inversed {
-    background-color: color-mix(in srgb, var(--editor-accent-color), transparent 95%);;
+    background-color: color-mix(in srgb, var(--editor-code-background-color), transparent 80%);
     outline: 3px solid var(--editor-accent-color);
 }
 
@@ -70,7 +70,7 @@
     vertical-align: bottom;
 }
 
-.card textarea, .card-preview {
+.card textarea, .card-preview, .card-spellcheck {
     color: var(--editor-text-color);
     text-decoration: none;
     tab-size : 4;
@@ -84,9 +84,15 @@
     font-weight: var(--font-weight);
 }
 
-.card-preview {
+.card-preview, .card-spellcheck {
     z-index: 0;
     position: relative;
+}
+
+.card-spellcheck {
+    color: transparent;
+    position: absolute;
+    left: 12px; right: 12px; top: 25px; bottom: 12px;
 }
 
 .card textarea {

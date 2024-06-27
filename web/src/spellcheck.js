@@ -22,6 +22,7 @@ export default class Spellcheck {
     }
     this.toggled = !this.toggled;
     leto.preview.setPreviewText();
+    leto.lea.updateAllCards();
   }
 
   setUserDictionary(dictionary) {
