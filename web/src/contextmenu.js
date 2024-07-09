@@ -202,7 +202,7 @@ export default class ContextMenu {
     this.#addAction('Copy');
     this.#addAction('Paste');
     this.#addAction('Cut');
-    if (this.#initialClickTarget == editor && leto.spellcheck.toggled && !leto.spellcheck.checkCurrentWord()) {
+    if (this.#initialClickTarget.nodeName == 'TEXTAREA' && leto.spellcheck.toggled && !leto.spellcheck.checkCurrentWord()) {
       this.#addSeparator();
       this.#addAction("Add to Dictionary");
       var words = leto.spellcheck.correctCurrentWord();

@@ -54,18 +54,21 @@ export default class Spellcheck {
   }
 
   #getCurrentWord() {
+    if (document.activeElement.nodeName != 'TEXTAREA') return "";
+    var activeEditor = document.activeElement;
+
     var alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'";
     var wordStart, wordEnd;  
-    for (var i = editor.selectionStart; i < editor.value.length + 1; i++) {
+    for (var i = activeEditor.selectionStart; i < activeEditor.value.length + 1; i++) {
       wordEnd = i;
-      if (!alphabet.includes(editor.value[i])) break;
+      if (!alphabet.includes(activeEditor.value[i])) break;
     }
-    for (var i = editor.selectionStart; i >= 0; i--) {
-      if (!alphabet.includes(editor.value[i])) break;
+    for (var i = activeEditor.selectionStart; i >= 0; i--) {
+      if (!alphabet.includes(activeEditor.value[i])) break;
       wordStart = i;
     }
     
-    return editor.value.substr(wordStart, wordEnd - wordStart);
+    return activeEditor.value.substr(wordStart, wordEnd - wordStart);
   }
 
   #getVariations(word) {
