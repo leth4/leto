@@ -397,6 +397,7 @@ export default class Lea {
       if (!event.shiftKey && (this.#selectedCards.length < 2 || !isSelected)) this.#deselectAllCards()
       if (!event.shiftKey || !isSelected) this.#setSelected(event.target);
       else this.#setDeselected(event.target);
+      if (event.ctrlKey) this.#getCardsInBounds(event.target.getBoundingClientRect()).forEach(card => this.#setSelected(card));
       this.#startDragPosition = this.getPosition(this.#draggedItem);
     } else if (event.target == container && event.button == 0) {
       this.#startPanning();
@@ -521,18 +522,21 @@ export default class Lea {
 
   #handleBoxSelection() {
     var selectionRect = boxSelection.getBoundingClientRect();
+    var cards = this.#getCardsInBounds(selectionRect);
+    this.#deselectAllCards();
+    cards.forEach(card => this.#setSelected(card));
+  }
+
+  #getCardsInBounds(rect) {
     var cards = document.getElementsByClassName('card');
+    var selectedCards = [];
     for (let i = 0; i < cards.length; i++) {
       const cardRect = cards[i].getBoundingClientRect();
-      if (!(selectionRect.left > cardRect.left && selectionRect.right < cardRect.right && selectionRect.top > cardRect.top && selectionRect.bottom < cardRect.bottom) &&
-       (selectionRect.left < cardRect.right && selectionRect.right > cardRect.left && selectionRect.top < cardRect.bottom && selectionRect.bottom > cardRect.top)) {
-        this.#previouslySelectedCards.includes(cards[i]) ? this.#setDeselected(cards[i]) : this.#setSelected(cards[i]);
-      } else if (this.#previouslySelectedCards.includes(cards[i])) {
-        this.#setSelected(cards[i]);
-      } else {
-        this.#setDeselected(cards[i]);
-      }
+      if (!(rect.left > cardRect.left && rect.right < cardRect.right && rect.top > cardRect.top && rect.bottom < cardRect.bottom) &&
+         (rect.left < cardRect.right && rect.right > cardRect.left && rect.top < cardRect.bottom && rect.bottom > cardRect.top)) 
+        selectedCards.push(cards[i]);
     }
+    return selectedCards;
   }
 
   zoom(amount) {

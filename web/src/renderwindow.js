@@ -5,6 +5,7 @@ const { invoke } = window.__TAURI__.tauri;
 const content = document.getElementById('content');
 const imageDisplay = document.getElementById('image-display');
 const imageContainer = document.getElementById('image-container');
+const progressBar = document.getElementById('progress-bar');
 
 var displayedFile;
 var isDisplayingImage;
@@ -194,10 +195,15 @@ await listen('renderWindowUpdate', (event) => {
   
   content.innerHTML = event.payload.text;
 
+  var checkedButtons = 0;
   var buttons = document.getElementsByClassName('todo');
   for (let i = 0; i < buttons.length; i++) {
+    if (buttons[i].classList.contains('checked')) checkedButtons++;
     buttons[i].addEventListener('click', () => emit('renderTodoClicked', { index: i, file: displayedFile }));
   }
+  
+  progressBar.style.width = buttons.length !== 0 ? `${checkedButtons / buttons.length * 100}%` : '0';
+  progressBar.style.backgroundColor = checkedButtons === buttons.length ? 'var(--editor-accent-color)' : 'var(--editor-muted-color)';
 
   var innerLinks = document.getElementsByClassName('link');
   for (let i = 0; i < innerLinks.length; i++) {
