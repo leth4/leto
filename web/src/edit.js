@@ -267,22 +267,26 @@ export default class Edit {
   }
 
   createCheckbox() {
-    var lineStart = this.#getLineStart();
-    var positionAtLine = this.#activeEditor().selectionEnd - lineStart;
 
-    if (this.#activeEditor().value.slice(lineStart, lineStart + 3) === '[x]') {
-      this.#activeEditor().setSelectionRange(lineStart + 1, lineStart + 2);
-      document.execCommand('insertText', false, ' ');
-      this.#setSelectionAndFocus(lineStart + positionAtLine);
-    } else if (this.#activeEditor().value.slice(lineStart, lineStart + 3) === '[ ]') {
-      this.#activeEditor().setSelectionRange(lineStart + 1, lineStart + 2);
-      document.execCommand('insertText', false, 'x');
-      this.#setSelectionAndFocus(lineStart + positionAtLine);
-    } else {
-      this.#activeEditor().setSelectionRange(lineStart, lineStart);
-      document.execCommand('insertText', false, '[ ] ');
-      this.#setSelectionAndFocus(lineStart + positionAtLine + 4);
-    }
+    var lineStart = this.#getLineStart(this.#activeEditor().selectionStart);
+    var lineEnd = this.#getLineEnd(this.#activeEditor().selectionEnd) - 1;
+    var endPositionAtLine = this.#activeEditor().selectionEnd - lineStart;
+
+    var value = '\n' + this.#activeEditor().value.slice(lineStart, lineEnd);
+    var firstEmptyIndex = value.indexOf('\n[ ]');
+    var firstFilledIndex = value.indexOf('\n[x]');
+
+    if (firstEmptyIndex === -1 && firstFilledIndex === -1) {
+      endPositionAtLine += 4 * ((value.slice(0, lineStart + endPositionAtLine)).split('\n').length - 1);
+      value = value.replaceAll('\n', '\n[ ] ');
+    } else if (firstEmptyIndex !== -1) value = value.replaceAll('\n[ ]', '\n[x]'); 
+    else value = value.replaceAll('\n[x]', '\n[ ]');
+
+    value = value.slice(1);
+
+    this.#activeEditor().setSelectionRange(lineStart, lineEnd);
+    document.execCommand('insertText', false, value);
+    this.#setSelectionAndFocus(lineStart + endPositionAtLine)
   }
 
   jumpUp() {

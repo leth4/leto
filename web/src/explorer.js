@@ -195,6 +195,7 @@ export default class Explorer {
     nameInput.style.display = 'block';
     nameInput.value = button.innerHTML;
     nameInput.focus();
+    nameInput.setSelectionRange(0, nameInput.value.length);
   }
 
   #handleFileClick(path) {

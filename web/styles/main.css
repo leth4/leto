@@ -5,7 +5,7 @@
     --additional-padding-left: 50px;
     --font-family: 'inter', sans-serif;
     --font-weight: 300;
-    --scroll-background: red;
+    --scroll-background: var(--editor-muted-color);
     --italic-style: normal;
     --bold-weight: var(--font-weight);
     --cards-pointer-events: 'auto';
