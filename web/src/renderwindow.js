@@ -33,10 +33,13 @@ const themes = [
 document.getElementById('minimize').addEventListener('click', () => appWindow.minimize());
 document.getElementById('maximize').addEventListener('click', async () => await appWindow.isMaximized() ? appWindow.unmaximize() : appWindow.maximize());
 document.getElementById('close').addEventListener('click', () => closeWindow());
-document.getElementById('title').addEventListener('mousedown', e => e.button == 2 ? toggleAlwaysOnTop() : null);
 document.getElementById('open').addEventListener('mousedown', () => openFile());
 document.addEventListener('wheel', e => handleMouseWheel(e));
 document.addEventListener('contextmenu', e => e.preventDefault());
+document.getElementById('title').addEventListener('mousedown', e => {
+  e.button == 2 ? toggleAlwaysOnTop() : null;
+  e.button == 1 ? closeWindow() : null;
+});
 
 window.onkeydown = (e) => {
   if (e.ctrlKey && !e.shiftKey && e.code === 'KeyQ') closeWindow();
@@ -141,7 +144,7 @@ function handleMouseWheel(event) {
 function toggleAlwaysOnTop() {
   isAlwaysOnTop = !isAlwaysOnTop;
   appWindow.setAlwaysOnTop(isAlwaysOnTop);
-  document.querySelector(':root').style.setProperty('--before-title', isAlwaysOnTop ? '"↓ "' : '""');
+  // document.querySelector(':root').style.setProperty('--before-title', isAlwaysOnTop ? '"↓ "' : '""');
 }
 
 function changeFontSize(change = 0) {

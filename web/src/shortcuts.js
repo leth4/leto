@@ -53,6 +53,8 @@ export default class Shortcuts {
       else if (document.activeElement === nameInput && e.code === 'Enter') nameInput.blur();
       else if (document.activeElement === fontInput && e.code === 'Enter') fontInput.blur();
 
+      else if (inCanvas && !e.ctrlKey && e.code === 'KeyV') leto.lea.alignSelectedVertically(e.shiftKey);
+      else if (inCanvas && !e.ctrlKey && e.code === 'KeyH') leto.lea.alignSelectedHorizontally(e.shiftKey);
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'Enter') leto.lea.createEmptyCard();
       else if (inCanvas && !e.ctrlKey && e.shiftKey && e.code === 'Enter') leto.lea.createDrawCard();
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyR') leto.lea.createRegionCard();
@@ -64,8 +66,6 @@ export default class Shortcuts {
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyI') leto.lea.inverseSelectedCards();
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'BracketRight') leto.lea.sendSelectedToFront();
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'BracketLeft') leto.lea.sendSelectedToBack();
-      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyV') leto.lea.alignSelectedVertically();
-      else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyH') leto.lea.alignSelectedHorizontally();
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'ArrowUp') leto.lea.nudgeSelected(0, -1);
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'ArrowDown') leto.lea.nudgeSelected(0, 1);
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'ArrowRight') leto.lea.nudgeSelected(1, 0);
@@ -118,6 +118,7 @@ export default class Shortcuts {
       else if (e.ctrlKey && e.shiftKey && e.code === 'KeyQ') leto.windowManager.closeAllWindows();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyM') leto.windowManager.minimizeWindow();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyP') leto.windowManager.togglePrefs();
+      else if (e.ctrlKey && e.shiftKey && e.code === 'KeyP') leto.windowManager.toggleAlwaysOnTop();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'Equal') leto.windowManager.changeFontSize(+1);
       else if (e.ctrlKey && !e.shiftKey && e.code === 'Minus') leto.windowManager.changeFontSize(-1);
       else if (e.ctrlKey && e.shiftKey && e.code === 'Equal') leto.windowManager.changeSidebarFontSize(+1);

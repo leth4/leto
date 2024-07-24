@@ -16,7 +16,6 @@ export default class Lea {
   #startDragPosition;
 
   #isBoxSelecting;
-  #previouslySelectedCards;
   
   canvasScale = 1;
   #canvasPosition = {x: 0, y: 0};
@@ -323,25 +322,29 @@ export default class Lea {
     }
   }
 
-  alignSelectedVertically() {
+  alignSelectedVertically(shiftKey) {
     this.saveUndoState();
     
     if (this.#selectedCards.length < 2) return;
     this.#selectedCards.sort((a, b) => this.#cards[a.getAttribute('data-index')].position.y - this.#cards[b.getAttribute('data-index')].position.y);
     for (let i = 1; i < this.#selectedCards.length; i++) {
       var previousCard = this.#cards[this.#selectedCards[i - 1].getAttribute('data-index')];
-      this.#moveCardToPosition(this.#selectedCards[i], {x: previousCard.position.x, y: previousCard.position.y + previousCard.height + 10});
+      var currentCard = this.#cards[this.#selectedCards[i].getAttribute('data-index')];
+      var newPosition = {x: previousCard.position.x, y: shiftKey ? currentCard.position.y : previousCard.position.y + previousCard.height + 10}
+      this.#moveCardToPosition(this.#selectedCards[i], newPosition);
     }
   }
   
-  alignSelectedHorizontally() {
+  alignSelectedHorizontally(shiftKey) {
     this.saveUndoState();
 
     if (this.#selectedCards.length < 2) return;
     this.#selectedCards.sort((a, b) => this.#cards[a.getAttribute('data-index')].position.x - this.#cards[b.getAttribute('data-index')].position.x);
     for (let i = 1; i < this.#selectedCards.length; i++) {
       var previousCard = this.#cards[this.#selectedCards[i - 1].getAttribute('data-index')];
-      this.#moveCardToPosition(this.#selectedCards[i], {x: previousCard.position.x + previousCard.width + 35, y: previousCard.position.y});
+      var currentCard = this.#cards[this.#selectedCards[i].getAttribute('data-index')];
+      var newPosition = {x: shiftKey ? currentCard.position.x : previousCard.position.x + previousCard.width + 35 , y: previousCard.position.y}
+      this.#moveCardToPosition(this.#selectedCards[i], newPosition);
     }
   }
 
@@ -383,7 +386,6 @@ export default class Lea {
     this.#previousCursorPosition = this.getCursorPosition(event);
     if ((event.target == container || event.target.classList.contains('card')) && event.button == 1) {
       this.#isBoxSelecting = true;
-      this.#previouslySelectedCards = event.shiftKey ? [...this.#selectedCards] : [];
       boxSelection.style.display = 'block';
       this.#startDragPosition = this.#previousCursorPosition;
       boxSelection.style.left = this.#previousCursorPosition.x + 'px';
@@ -420,7 +422,7 @@ export default class Lea {
       boxSelection.style.width = Math.abs(cursorPosition.x - this.#startDragPosition.x) + 'px';
       boxSelection.style.height = Math.abs(cursorPosition.y - this.#startDragPosition.y) + 'px';
       this.#previousCursorPosition = cursorPosition;
-      this.#handleBoxSelection();
+      this.#handleBoxSelection(event);
     }
 
     if (this.#draggedItem == null) {
@@ -520,10 +522,10 @@ export default class Lea {
     }
   }
 
-  #handleBoxSelection() {
+  #handleBoxSelection(event) {
     var selectionRect = boxSelection.getBoundingClientRect();
     var cards = this.#getCardsInBounds(selectionRect);
-    this.#deselectAllCards();
+    if (!event.shiftKey) this.#deselectAllCards();
     cards.forEach(card => this.#setSelected(card));
   }
 
@@ -671,10 +673,8 @@ export default class Lea {
 
     this.#isSavingUndoState = false;
     this.#isLoading = true;
-    this.#cards = [];
-    this.#arrows = [];
-    this.#draggedItem = null;
-    canvas.innerHTML = '';
+
+    this.reset();
     
     var fileJson = await readTextFile(leto.directory.activeFile);
     
@@ -713,6 +713,7 @@ export default class Lea {
     this.#arrows = [];
     canvas.innerHTML = '';
     this.#isFullyLoaded = false;
+    this.#draggedItem = null;
   }
 
   getPosition(element) {

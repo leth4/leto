@@ -25,6 +25,7 @@ const themes = [
 export default class Window {
 
   #prefsToggled = false;
+  #alwaysOnTopToggled = false;
   #draggableElements;
   
   constructor() {
@@ -40,6 +41,7 @@ export default class Window {
     document.getElementById('minimize-button').addEventListener('click', () => this.minimizeWindow());
     document.getElementById('fold-button').addEventListener('click', () => this.toggleSidebar());
     document.getElementById('close-button').addEventListener('click', () => this.closeWindow());
+    document.getElementById('on-top-button').addEventListener('click', () => this.toggleAlwaysOnTop());
     
     themeSelector.addEventListener('change', () => this.setTheme(themeSelector.value), false);
     fontInput.addEventListener('input', () => this.setFont(fontInput.value), false);
@@ -83,6 +85,12 @@ export default class Window {
     } else {
       this.#draggableElements.forEach(element => element.setAttribute('data-tauri-drag-region', ''))
     }
+  }
+
+  toggleAlwaysOnTop() {
+    this.#alwaysOnTopToggled = !this.#alwaysOnTopToggled;
+    appWindow.setAlwaysOnTop(this.#alwaysOnTopToggled);
+    document.getElementById('on-top-button').style.opacity = this.#alwaysOnTopToggled ? "1" : null;
   }
 
   showIsHidden() {
