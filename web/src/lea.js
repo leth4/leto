@@ -132,8 +132,15 @@ export default class Lea {
   
   createRegionCard() {
     this.saveUndoState();
-    var card = new RegionCard(this.screenToCanvasSpace(this.#previousCursorPosition), 600, 640, 100 + this.#cards.length, false);
-    card.create(this.#cards);
+
+    if (this.#selectedCards.length > 0) {
+      var [minX, minY, maxX, maxY] = this.#getSelectedBounds();
+      var card = new RegionCard({x: minX - 20, y: minY - 20}, maxX - minX + 40, maxY - minY + 40, 100 + this.#cards.length, false);
+      card.create(this.#cards);
+    } else {
+      var card = new RegionCard(this.screenToCanvasSpace(this.#previousCursorPosition), 600, 640, 100 + this.#cards.length, false);
+      card.create(this.#cards);
+    }
   }
 
   pasteImage(filePath) {
@@ -542,6 +549,8 @@ export default class Lea {
   }
 
   zoom(amount) {
+    if (this.canvasScale == null) this.canvasScale = 1;
+
     var factor = 0.9;
     if (amount < 0) factor = 1 / factor;
     
@@ -572,14 +581,7 @@ export default class Lea {
   zoomToSelected() {
     if (this.#selectedCards.length == 0) return;
 
-    var minX = 99999, maxX = -99999, minY = 99999, maxY = -99999;
-    this.#selectedCards.forEach(selectedCard => {
-      var card = this.#cards[selectedCard.getAttribute('data-index')];
-      minX = Math.min(card.position.x, minX);
-      minY = Math.min(card.position.y, minY);
-      maxX = Math.max(card.position.x + card.width, maxX);
-      maxY = Math.max(card.position.y + card.height, maxY);
-    });
+    var [minX, minY, maxX, maxY] = this.#getSelectedBounds();
 
     var width = maxX - minX;
     var height = maxY - minY;
@@ -597,6 +599,18 @@ export default class Lea {
     canvas.classList.remove('notransition');
 
     this.save();
+  }
+
+  #getSelectedBounds() {
+    var minX = 99999, maxX = -99999, minY = 99999, maxY = -99999;
+    this.#selectedCards.forEach(selectedCard => {
+      var card = this.#cards[selectedCard.getAttribute('data-index')];
+      minX = Math.min(card.position.x, minX);
+      minY = Math.min(card.position.y, minY);
+      maxX = Math.max(card.position.x + card.width, maxX);
+      maxY = Math.max(card.position.y + card.height, maxY);
+    });
+    return [minX, minY, maxX, maxY];
   }
 
   resetPosition() {

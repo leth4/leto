@@ -144,7 +144,7 @@ function handleMouseWheel(event) {
 function toggleAlwaysOnTop() {
   isAlwaysOnTop = !isAlwaysOnTop;
   appWindow.setAlwaysOnTop(isAlwaysOnTop);
-  // document.querySelector(':root').style.setProperty('--before-title', isAlwaysOnTop ? '"↓ "' : '""');
+  document.querySelector(':root').style.setProperty('--before-title', isAlwaysOnTop ? '"↓ "' : '""');
 }
 
 function changeFontSize(change = 0) {
