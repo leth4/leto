@@ -4,6 +4,7 @@ const { appWindow } = window.__TAURI__.window;
 const { invoke } = window.__TAURI__.tauri;
 
 const themeSelector = document.getElementById('theme-selector');
+const windowButtons = document.getElementById('window-buttons');
 const editor = document.getElementById('text-editor')
 const preview = document.getElementById('text-preview')
 const root = document.querySelector(':root');
@@ -90,7 +91,8 @@ export default class Window {
   toggleAlwaysOnTop() {
     this.#alwaysOnTopToggled = !this.#alwaysOnTopToggled;
     appWindow.setAlwaysOnTop(this.#alwaysOnTopToggled);
-    document.getElementById('on-top-button').style.opacity = this.#alwaysOnTopToggled ? "1" : null;
+    document.getElementById('on-top-button').style.opacity = this.#alwaysOnTopToggled ? "0.7" : null;
+    this.#prefsToggled || this.#alwaysOnTopToggled ? windowButtons.classList.add('displayed') : windowButtons.classList.remove('displayed');
   }
 
   showIsHidden() {
@@ -118,7 +120,7 @@ export default class Window {
   togglePrefs() {
     this.#prefsToggled = !this.#prefsToggled;
     document.getElementById('preferences').style.display = this.#prefsToggled ? 'block' : 'none';
-    document.getElementById('window-buttons').classList.toggle('displayed');
+    this.#prefsToggled || this.#alwaysOnTopToggled ? windowButtons.classList.add('displayed') : windowButtons.classList.remove('displayed');
   }
 
   toggleSidebar() {

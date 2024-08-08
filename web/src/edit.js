@@ -278,6 +278,7 @@ export default class Edit {
 
     if (firstEmptyIndex === -1 && firstFilledIndex === -1) {
       endPositionAtLine += 4 * ((value.slice(0, lineStart + endPositionAtLine)).split('\n').length - 1);
+      if (lineStart === 0 && endPositionAtLine === 0) endPositionAtLine += 4;
       value = value.replaceAll('\n', '\n[ ] ');
     } else if (firstEmptyIndex !== -1) value = value.replaceAll('\n[ ]', '\n[x]'); 
     else value = value.replaceAll('\n[x]', '\n[ ]');

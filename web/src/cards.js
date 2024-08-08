@@ -82,6 +82,8 @@ export class TextCard extends Card {
     spellcheck.innerHTML = leto.spellcheck.toggled ? leto.preview.getSpellcheck(text, codeRanges) : '';
 
     leto.preview.updateLinksEventListeners();
+
+    if (!isNew) this.height = parseInt(card.getBoundingClientRect().height, 10) / leto.lea.canvasScale;
     
     if (this.text != textarea.value) {
       if (!isNew) leto.lea.saveUndoState();
