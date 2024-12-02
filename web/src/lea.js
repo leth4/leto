@@ -13,6 +13,7 @@ export default class Lea {
 
   #draggedItem;
   #previousCursorPosition = {x: 0, y: 0};
+  #previousCursorTarget;
   #startDragPosition;
 
   #isBoxSelecting;
@@ -247,6 +248,16 @@ export default class Lea {
     if (this.#selectedCards.length == 0) return;
 
     if (this.#selectedCards.length == 1) {
+      if (this.#previousCursorTarget.classList.contains("card")) {
+        new Arrow(this.#selectedCards[0].getAttribute('data-index'), this.#previousCursorTarget.getAttribute('data-index')).create(this.#arrows, this.#cards);
+        return;
+      }
+      
+      if (this.#previousCursorTarget.parentElement.classList.contains("card")) {
+        new Arrow(this.#selectedCards[0].getAttribute('data-index'), this.#previousCursorTarget.parentElement.getAttribute('data-index')).create(this.#arrows, this.#cards);
+        return;
+      }
+
       var initialCardIndex = this.#selectedCards[0].getAttribute('data-index');
       this.createEmptyCard();
       new Arrow(initialCardIndex, this.#cards.length - 1).create(this.#arrows, this.#cards);
@@ -435,6 +446,7 @@ export default class Lea {
     if (this.#draggedItem == null) {
       document.querySelector(':root').style.setProperty('--cards-pointer-events', event.ctrlKey || this.#isBoxSelecting ? 'none' : 'auto');
       this.#previousCursorPosition = cursorPosition;
+      this.#previousCursorTarget = event.target;
       return;
     }
 

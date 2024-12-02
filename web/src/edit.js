@@ -169,6 +169,10 @@ export default class Edit {
       insertText = '\n';
     else if (this.#activeEditor().value[lineStart] === '—' && this.#activeEditor().selectionEnd - lineStart > 1) 
       (/^—[\s]*$/.test(this.#activeEditor().value.slice(lineStart, lineEnd))) ? deleteLine = true : insertText = '\n— ';
+    else if (this.#activeEditor().value[lineStart] === '-' && this.#activeEditor().selectionEnd - lineStart > 1) 
+      (/^-[\s]*$/.test(this.#activeEditor().value.slice(lineStart, lineEnd))) ? deleteLine = true : insertText = '\n- ';
+    else if (this.#activeEditor().value[lineStart] === '→' && this.#activeEditor().selectionEnd - lineStart > 1) 
+      (/^→[\s]*$/.test(this.#activeEditor().value.slice(lineStart, lineEnd))) ? deleteLine = true : insertText = '\n→ ';
     else if (this.#activeEditor().value.slice(lineStart, lineStart + 3) === '[ ]' && this.#activeEditor().selectionEnd - lineStart > 3)
       (/^\[ \][\s]*$/.test(this.#activeEditor().value.slice(lineStart, lineEnd))) ? deleteLine = true : insertText = '\n[ ] ';
     else if (this.#activeEditor().value.slice(lineStart, lineStart + 3) === '[x]' && this.#activeEditor().selectionEnd - lineStart > 3)
