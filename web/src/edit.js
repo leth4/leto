@@ -107,7 +107,7 @@ export default class Edit {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
     var date = new Date();
-    var dateString = months[date.getMonth()] + " " + (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) + ", " + date.getFullYear();
+    var dateString = (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) + " " + months[date.getMonth()] + " " + date.getFullYear();
 
     if (includeTime) {
       var hours =  date.getHours() < 10 ? "0" + date.getHours() : date.getHours();

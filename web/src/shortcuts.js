@@ -141,6 +141,8 @@ export default class Shortcuts {
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyF') leto.search.toggle();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyE') leto.quickOpen.open();
 
+      else if (e.ctrlKey && e.code === 'KeyJ') {}
+
       else return;
 
       e.preventDefault();
