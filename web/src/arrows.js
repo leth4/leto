@@ -70,15 +70,15 @@ export class Arrow {
 
     [toPosition, fromPosition] = this.#getArrowPosition(fromPosition, fromSize, toPosition, toSize);
 
-    arrow.setAttribute('x1', fromPosition.x + 5000);
-    arrow.setAttribute('y1', fromPosition.y + 5000);
-    arrow.setAttribute('x2', toPosition.x + 5000);
-    arrow.setAttribute('y2', toPosition.y + 5000);
+    arrow.setAttribute('x1', fromPosition.x + 15000);
+    arrow.setAttribute('y1', fromPosition.y + 15000);
+    arrow.setAttribute('x2', toPosition.x + 15000);
+    arrow.setAttribute('y2', toPosition.y + 15000);
     
-    visualLine.setAttribute('x1', fromPosition.x + 5000);
-    visualLine.setAttribute('y1', fromPosition.y + 5000);
-    visualLine.setAttribute('x2', toPosition.x + 5000);
-    visualLine.setAttribute('y2', toPosition.y + 5000);
+    visualLine.setAttribute('x1', fromPosition.x + 15000);
+    visualLine.setAttribute('y1', fromPosition.y + 15000);
+    visualLine.setAttribute('x2', toPosition.x + 15000);
+    visualLine.setAttribute('y2', toPosition.y + 15000);
   }
 
   #getArrowPosition(from, fromSize, to, toSize) {

@@ -145,10 +145,10 @@
     pointer-events: none;
     z-index: 50;
     position: absolute;
-    left: -5000px;
-    top: -5000px;
-    width: 10000px;
-    height: 10000px;
+    left: -15000px;
+    top: -15000px;
+    width: 30000px;
+    height: 30000px;
 }
 
 #canvas svg .arrow {

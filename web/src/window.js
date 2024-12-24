@@ -189,7 +189,7 @@ export default class Window {
     fontInput.value = this.currentFont;
     root.style.setProperty('--font-family', `'${this.currentFont}', 'inter', sans-serif`);
     root.style.setProperty('--italic-style', this.isFontMonospaced(font) ? "italic" : "normal");
-    root.style.setProperty('--bold-weight', this.isFontMonospaced(font) ? "calc(var(--font-weight) + 100)" : "var(--font-weight)");
+    root.style.setProperty('--bold-weight', this.isFontMonospaced(font) ? "calc(var(--font-weight) + 200)" : "var(--font-weight)");
     if (save) leto.config.save();
   }
 
