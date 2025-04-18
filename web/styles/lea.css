@@ -10,7 +10,6 @@
     position: absolute;
     width: 0;
     height: 0;
-    transition: top .05s ease-out, left .05s ease-out;
 }
 
 #box-selection {

@@ -419,6 +419,7 @@ export default class Lea {
       else this.#setDeselected(event.target);
       if (event.ctrlKey) this.#getCardsInBounds(event.target.getBoundingClientRect()).forEach(card => this.#setSelected(card));
       this.#startDragPosition = this.getPosition(this.#draggedItem);
+      this.#selectedCards.forEach(card => card.classList.add('notransition'));
     } else if (event.target == container && event.button == 0) {
       this.#startPanning();
     } else if (event.target.classList.contains('handle')) {
@@ -508,6 +509,7 @@ export default class Lea {
         this.#setSelected(this.#draggedItem);
       }
       if (!hasMoved) this.#removeLastUndoState();
+      this.#selectedCards.forEach(card => card.classList.remove('notransition'));
     } else if (this.#draggedItem.classList.contains('handle')) {
       this.#draggedItem.parentElement.classList.remove('notransition');
       if (!hasMoved) this.#removeLastUndoState();
@@ -575,12 +577,9 @@ export default class Lea {
     var dx = (this.#previousCursorPosition.x - this.#canvasPosition.x) * (factor - 1);
     var dy = (this.#previousCursorPosition.y - this.#canvasPosition.y) * (factor - 1);
     
-    canvas.classList.add('notransition');
     canvas.style.left = this.getPosition(canvas).x - dx + 'px';
     canvas.style.top = this.getPosition(canvas).y - dy + 'px';
     this.#canvasPosition = this.getPosition(canvas);
-    canvas.offsetHeight;
-    canvas.classList.remove('notransition');
     
     canvas.style.transform = `scale(${this.canvasScale})`;
     var handleSize = this.#clamp(3 / this.canvasScale, 3, 100);
@@ -601,14 +600,9 @@ export default class Lea {
     this.canvasScale = this.#clamp(this.canvasScale, .3, 2);
     canvas.style.transform = `scale(${this.canvasScale})`;
     
-    canvas.classList.add('notransition');
-    
     this.#canvasPosition = {x: -(maxX + minX) / 2 * this.canvasScale + container.offsetWidth / 2 - 10, y: -(maxY + minY) / 2 * this.canvasScale + container.offsetHeight / 2 - 10};
     canvas.style.left = this.#canvasPosition.x + 'px';
     canvas.style.top = this.#canvasPosition.y + 'px';
-    
-    canvas.offsetHeight;
-    canvas.classList.remove('notransition');
 
     this.save();
   }
