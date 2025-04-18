@@ -261,15 +261,19 @@ export class DrawCard extends Card {
         const cardPosition = leto.lea.getPosition(svg.parentElement);
         const x = leto.lea.screenToCanvasSpace(cursorPosition).x - cardPosition.x - 12;
         const y = leto.lea.screenToCanvasSpace(cursorPosition).y - cardPosition.y - 25;
+
+        if (event.shiftKey && d && d.indexOf("L") > 0) d = d.substring(0, d.lastIndexOf("L") - 1);
         this.#currentDrawPath.setAttribute('d', d ? d + ` L${x},${y}` : `M${x},${y}`);
 
         if (this.#currentPathPoints.length == 0) {
-          this.#currentPathPoints.push([Math.trunc(x), Math.trunc(y)]);
+          this.#currentPathPoints.push([Math.floor(x * 100) / 100, Math.floor(y * 100) / 100]);
         } else {
-          const coords = [Math.trunc(x), Math.trunc(y)];
+          const coords = [x, y];
           const prevCoords = this.#currentPathPoints[this.#currentPathPoints.length - 1];
           const distance = (coords[0] - prevCoords[0]) * (coords[0] - prevCoords[0]) + (coords[1] - prevCoords[1]) * (coords[1] - prevCoords[1]);
-          if (distance > 30 / leto.lea.canvasScale) this.#currentPathPoints.push([Math.trunc(x), Math.trunc(y)]);
+
+          if (event.shiftKey && this.#currentPathPoints.length > 1) this.#currentPathPoints.pop();
+          if (event.shiftKey || distance > 10 / leto.lea.canvasScale) this.#currentPathPoints.push([Math.floor(x * 100) / 100, Math.floor(y * 100) / 100]);
         }
       }
 
@@ -307,7 +311,7 @@ export class DrawCard extends Card {
         const cardPosition = leto.lea.getPosition(this.#currentDrawPath.parentElement.parentElement);
         const x = leto.lea.screenToCanvasSpace(cursorPosition).x - cardPosition.x - 12;
         const y = leto.lea.screenToCanvasSpace(cursorPosition).y - cardPosition.y - 25;
-        this.#currentPathPoints.push([Math.trunc(x), Math.trunc(y)]);
+        this.#currentPathPoints.push([Math.floor(x * 100) / 100, Math.floor(y * 100) / 100]);
 
         this.drawPaths.push(this.#currentPathPoints);
         this.update(svg.parentElement);
@@ -332,11 +336,12 @@ export class DrawCard extends Card {
   #getSmoothPath(points) {
     var path = ` M${points[0][0]},${points[0][1]}`;
 
-    for (let i = 1; i < points.length; i++) {
+    for (let i = 1; i < points.length - 1; i++) {
       const controlPoint1 = this.#getControlPoint(points[i-1], points[i-2], points[i], false);
       const controlPoint2 = this.#getControlPoint(points[i], points[i-1], points[i+1], true);
       path += ` C ${controlPoint1[0]},${controlPoint1[1]} ${controlPoint2[0]},${controlPoint2[1]} ${points[i][0]},${points[i][1]}`;
     }
+    path += ` L ${points[points.length - 1][0]},${points[points.length - 1][1]}`;
 
     return path;
   }
@@ -346,6 +351,8 @@ export class DrawCard extends Card {
     if (next == null) next = current;
     const smoothing = 0.2;
     const line = this.#getLine(previous, next);
+
+    if (line.length > 20) return [current[0], current[1]];
 
     const angle = line.angle + (reverse ? Math.PI : 0);
     const length = line.length * smoothing;

@@ -87,7 +87,7 @@ export default class Preview {
 
   #setCounterValues() {
     var text = editor.selectionStart == editor.selectionEnd ? editor.value : editor.value.slice(editor.selectionStart, editor.selectionEnd);
-    var words = text.match(/(\w+)/g);
+    var words = text.match(/[\p{L}\p{M}\p{N}_]+/gu);
     var lines = text.split(/\r\n|\r|\n/).length;
     counter.innerHTML = `${editor.selectionStart == editor.selectionEnd ? "" : "→ "} S${text.length} W${words ? words.length : 0} L${lines}`;
   }
