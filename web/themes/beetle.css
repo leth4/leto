@@ -1,5 +1,5 @@
 :root {
-    --editor-background-color: #2e2e2e;
+    --editor-background-color: #2a2a2a;
     --editor-code-background-color: #222222;
     --editor-text-color: #cecece;
     --editor-accent-color: #8ec1b3;
@@ -9,7 +9,7 @@
     --canvas-card-color: #262626;
     --canvas-inversed-card-color: #2e2e2e;
 
-    --sidebar-background-color:#373737;
+    --sidebar-background-color:#323232;
     --sidebar-folder-color: #bdbdbd;
     --sidebar-file-color: #7a7a7a;
     --sidebar-selection-color: #4b4b4b;

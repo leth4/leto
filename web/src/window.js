@@ -14,13 +14,14 @@ const fontInput = document.getElementById('font-input');
 const themes = [
   'gleam',
   'aske',
-  'shell',
   'zima',
   'spirit',
   'perlin',
+  'night',
   'dart',
   'glass',
-  'beetle'
+  'beetle',
+  'brick'
 ];
 
 export default class Window {
@@ -66,6 +67,8 @@ export default class Window {
       this.windowPosition = {x: position.x, y: position.y};
       leto.config.save();
     });
+    
+    setTimeout(() => invoke('apply_shadow', {label: "main"}), 200);
   }
 
   getSidebarWidth() {
@@ -234,7 +237,7 @@ export default class Window {
     this.currentTheme = theme ?? 0;
     if (theme >= themes.length) this.currentTheme = 0;
     if (theme < 0) this.currentTheme = themes.length - 1;
-    invoke(this.currentTheme == 2 || this.currentTheme == 7 ? 'add_blur' : 'remove_blur', {  label: "main" });
+    invoke(this.currentTheme == 7 ? 'add_blur' : 'remove_blur', {  label: "main" });
     themeSelector.value = this.currentTheme;
     document.getElementById('theme-link').setAttribute('href', `themes/${themes[this.currentTheme]}.css`);
     if (save) leto.config.save();

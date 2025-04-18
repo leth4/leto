@@ -15,8 +15,7 @@ fn main() {
   tauri::Builder::default()
     .invoke_handler(tauri::generate_handler![move_to, rename, is_dir, apply_shadow, add_blur, remove_blur, show_in_explorer])
     .setup(|app| {
-      let window = app.get_window("main").unwrap();
-      set_shadow(&window, true).expect("Unsupported platform!");
+      app.get_window("main").unwrap();
       Ok(())
     })
     .run(tauri::generate_context!())
