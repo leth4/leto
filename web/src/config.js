@@ -5,11 +5,22 @@ const { appConfigDir } = window.__TAURI__.path;
 
 export default class Config {
 
+  #isSaving = false;
+  #savePending = false;
+
   async save() {
+
+    if (this.#isSaving) {
+      this.#savePending = true;
+      return;
+    }
+    this.#isSaving = true;
 
     const configObject = {
       selectedFile: leto.directory.activeFile,
       selectedDirectory: leto.directory.activeDirectory,
+      windowSize: leto.windowManager.windowSize,
+      windowPosition: leto.windowManager.windowPosition,
       currentTheme: leto.windowManager.currentTheme,
       currentFont: leto.windowManager.currentFont,
       fontSize: leto.windowManager.fontSize,
@@ -21,6 +32,11 @@ export default class Config {
 
     const configPath = await appConfigDir();
     await writeTextFile(`${configPath}config.json`, JSON.stringify(configObject, null, 2));
+
+    this.#isSaving = false;
+    if (this.#savePending) {
+      this.save();
+    }
   }
 
   async load() {
@@ -39,6 +55,8 @@ export default class Config {
     leto.windowManager.setFontSize(configObject.fontSize, false);
     leto.windowManager.setSidebarFontSize(configObject.sidebarFontSize, false);
     leto.windowManager.setFontWeight(configObject.fontWeight, false);
+    leto.windowManager.applyWindowSize(configObject.windowSize);
+    leto.windowManager.applyWindowPosition(configObject.windowPosition);
     
     leto.spellcheck.setUserDictionary(configObject.dictionary);
     leto.directory.setActiveDirectory(configObject.selectedDirectory);

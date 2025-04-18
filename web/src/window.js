@@ -1,6 +1,6 @@
 'use strict';
 
-const { appWindow } = window.__TAURI__.window;
+const { appWindow, LogicalSize, LogicalPosition } = window.__TAURI__.window;
 const { invoke } = window.__TAURI__.tauri;
 
 const themeSelector = document.getElementById('theme-selector');
@@ -38,6 +38,8 @@ export default class Window {
     this.fontWeight = 300;
     this.isHidden = false;
     this.isFullscreen = false;
+    this.windowSize = {x: 1450, y: 900};
+    this.windowPosition = {x: 500, y: 300};
 
     document.getElementById('minimize-button').addEventListener('click', () => this.minimizeWindow());
     document.getElementById('fold-button').addEventListener('click', () => this.toggleSidebar());
@@ -54,6 +56,16 @@ export default class Window {
       preview.style.pointerEvents = e.ctrlKey ? 'auto' : 'none'
     });
     this.populateThemes();
+
+    appWindow.onResized(({ payload: size }) => {
+      this.windowSize = {x: size.width, y: size.height};
+      leto.config.save();
+    });
+
+    appWindow.onMoved(({ payload: position }) => {
+      this.windowPosition = {x: position.x, y: position.y};
+      leto.config.save();
+    });
   }
 
   getSidebarWidth() {
@@ -191,6 +203,16 @@ export default class Window {
     root.style.setProperty('--italic-style', this.isFontMonospaced(font) ? "italic" : "normal");
     root.style.setProperty('--bold-weight', this.isFontMonospaced(font) ? "calc(var(--font-weight) + 200)" : "var(--font-weight)");
     if (save) leto.config.save();
+  }
+
+  applyWindowSize(size) {
+    this.windowSize = size ?? {x: 1450, y: 900};
+    appWindow.setSize(new LogicalSize(this.windowSize.x, this.windowSize.y));
+  }
+  
+  applyWindowPosition(position) {
+    this.windowPosition = position ?? {x: 500, y: 300};
+    appWindow.setPosition(new LogicalPosition(this.windowPosition.x, this.windowPosition.y));
   }
 
   isFontMonospaced(font) {
