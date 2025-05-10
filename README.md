@@ -33,6 +33,7 @@ Shortcut | Action
 `Ctrl + F` | Show/hide the search box
 `Ctrl + B` | Fold/unfold the sidebar
 `Ctrl + R` | Toggle spellcheck
+`Ctrl + H` | Reset window size and position
 `Ctrl + D` |  Open preview of the active file
 `Ctrl + G` | Insert current date
 `Ctrl + Shift + G` | Insert current date and time

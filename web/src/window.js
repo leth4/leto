@@ -59,13 +59,17 @@ export default class Window {
     this.populateThemes();
 
     appWindow.onResized(({ payload: size }) => {
-      this.windowSize = {x: size.width, y: size.height};
-      leto.config.save();
+      if (!this.isFullscreen) {
+        this.windowSize = {x: size.width, y: size.height};
+        leto.config.save();
+      }
     });
 
     appWindow.onMoved(({ payload: position }) => {
-      this.windowPosition = {x: position.x, y: position.y};
-      leto.config.save();
+      if (!this.isFullscreen) {
+        this.windowPosition = {x: position.x, y: position.y};
+        leto.config.save();
+      }
     });
     
     setTimeout(() => invoke('apply_shadow', {label: "main"}), 200);
@@ -206,6 +210,12 @@ export default class Window {
     root.style.setProperty('--italic-style', this.isFontMonospaced(font) ? "italic" : "normal");
     root.style.setProperty('--bold-weight', this.isFontMonospaced(font) ? "calc(var(--font-weight) + 200)" : "var(--font-weight)");
     if (save) leto.config.save();
+  }
+
+  resetWindowState() {
+    if (this.isFullscreen) this.toggleFullscreen();
+    this.applyWindowSize();
+    this.applyWindowPosition();
   }
 
   applyWindowSize(size) {
