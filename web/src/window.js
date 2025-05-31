@@ -1,6 +1,6 @@
 'use strict';
 
-const { appWindow, LogicalSize, LogicalPosition } = window.__TAURI__.window;
+const { appWindow, currentMonitor, LogicalSize, LogicalPosition } = window.__TAURI__.window;
 const { invoke } = window.__TAURI__.tauri;
 
 const themeSelector = document.getElementById('theme-selector');
@@ -140,6 +140,7 @@ export default class Window {
     this.#prefsToggled = !this.#prefsToggled;
     document.getElementById('preferences').style.display = this.#prefsToggled ? 'block' : 'none';
     this.#prefsToggled || this.#alwaysOnTopToggled ? windowButtons.classList.add('displayed') : windowButtons.classList.remove('displayed');
+    if (this.#prefsToggled && !this.sidebarToggled) this.toggleSidebar();
   }
 
   toggleSidebar() {
@@ -152,6 +153,7 @@ export default class Window {
     document.getElementById('preferences').style.pointerEvents = this.sidebarToggled ? 'all' : 'none';
     root.style.setProperty('--additional-padding-left', this.sidebarToggled ? '50px' : 'calc(var(--sidebar-font-size) * 8 + 80px)');
     document.getElementById('fold-button').querySelector('polyline').setAttribute('points', this.sidebarToggled ? '8.5,0 2,5 8.5,10' : '2,0 8.5,5 2,10');
+    if (!this.sidebarToggled && this.#prefsToggled) this.togglePrefs();
   }
 
   #handleMouseWheel(event) {
@@ -214,8 +216,11 @@ export default class Window {
 
   resetWindowState() {
     if (this.isFullscreen) this.toggleFullscreen();
-    this.applyWindowSize();
-    this.applyWindowPosition();
+
+    currentMonitor().then(monitor => {
+      this.applyWindowSize({x: Math.round(monitor.size.width * 0.56 / 10) * 10, y: Math.round(monitor.size.height * 0.625 / 10) * 10});
+      appWindow.center();
+    });
   }
 
   applyWindowSize(size) {
