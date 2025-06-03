@@ -9,7 +9,7 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
 use window_shadows::set_shadow;
-use window_vibrancy::{apply_blur, clear_blur};
+use window_vibrancy::{apply_acrylic, clear_acrylic};
 
 fn main() {
   tauri::Builder::default()
@@ -31,13 +31,13 @@ fn apply_shadow<R: tauri::Runtime>(app: tauri::AppHandle<R>, label: &str) {
 #[tauri::command]
 fn add_blur<R: tauri::Runtime>(app: tauri::AppHandle<R>, label: &str) {
 	let window = app.get_window(label).unwrap();
-  apply_blur(&window, Some((18, 18, 18, 125))).expect("Unsupported platform!");
+  apply_acrylic(&window, Some((18, 18, 18, 80))).expect("Unsupported platform!");
 }
 
 #[tauri::command]
 fn remove_blur<R: tauri::Runtime>(app: tauri::AppHandle<R>, label: &str) {
   let window = app.get_window(label).unwrap();
-  clear_blur(&window).expect("Unsupported platform!");
+  clear_acrylic(&window).expect("Unsupported platform!");
 }
 
 #[tauri::command]

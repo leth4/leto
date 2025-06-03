@@ -1,6 +1,6 @@
 'use strict';
 
-const { appWindow, currentMonitor, LogicalSize, LogicalPosition } = window.__TAURI__.window;
+const { appWindow, currentMonitor, PhysicalSize, PhysicalPosition } = window.__TAURI__.window;
 const { invoke } = window.__TAURI__.tauri;
 
 const themeSelector = document.getElementById('theme-selector');
@@ -225,12 +225,12 @@ export default class Window {
 
   applyWindowSize(size) {
     this.windowSize = size ?? {x: 1450, y: 900};
-    appWindow.setSize(new LogicalSize(this.windowSize.x, this.windowSize.y));
+    appWindow.setSize(new PhysicalSize(this.windowSize.x, this.windowSize.y));
   }
   
   applyWindowPosition(position) {
     this.windowPosition = position ?? {x: 500, y: 300};
-    appWindow.setPosition(new LogicalPosition(this.windowPosition.x, this.windowPosition.y));
+    appWindow.setPosition(new PhysicalPosition(this.windowPosition.x, this.windowPosition.y));
   }
 
   isFontMonospaced(font) {
