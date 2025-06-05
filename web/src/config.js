@@ -9,7 +9,6 @@ export default class Config {
   #savePending = false;
 
   async save() {
-
     if (this.#isSaving) {
       this.#savePending = true;
       return;
@@ -35,6 +34,7 @@ export default class Config {
 
     this.#isSaving = false;
     if (this.#savePending) {
+      this.#savePending = false;
       this.save();
     }
   }
