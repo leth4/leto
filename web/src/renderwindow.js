@@ -99,6 +99,7 @@ function setImageTransform() {
 
 async function setNonScrollableSize() {
   var size = await appWindow.innerSize();
+  var scaleFactor = await appWindow.scaleFactor();
   if (isDisplayingImage) {
     size = {type: "Logical", width: 700, height: 500};
     var imageSize = await getImageSize(imageDisplay.getAttribute('src'));
@@ -107,12 +108,12 @@ async function setNonScrollableSize() {
     var aspectRatio = imageSize.width / imageSize.height;
     if (aspectRatio > 1) size.height = size.width / aspectRatio;
     else size.width = size.height * aspectRatio;
-    size.height = size.height + 35;
+    size.height = parseInt(size.height + 35);
     currentImageZoom = 1;
     setImageTransform();
   } else {
-    if (content.offsetHeight + 15 < 1000) {
-      size.height = Math.max(content.offsetHeight + 15, 200);
+    if ((content.offsetHeight + 15) * scaleFactor < 1000) {
+      size.height = Math.max(parseInt((content.offsetHeight + 15) * scaleFactor), 300);
     }
   }
   appWindow.setSize(size);  
