@@ -103,9 +103,9 @@ export default class Directory {
       var scrollBuffer = editor.scrollTop;
       editor.style.display = 'block'
       editor.style.cursor = 'auto';
-      editor.focus();
       editor.value = newEditorValue;
       editor.disabled = false;
+      editor.focus();
       this.#isLoading = false;
       if (isNewValue) {
         editor.setSelectionRange(0, 0);
