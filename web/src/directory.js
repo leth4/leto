@@ -105,7 +105,7 @@ export default class Directory {
       editor.style.cursor = 'auto';
       editor.value = newEditorValue;
       editor.disabled = false;
-      editor.focus();
+      if (!leto.explorer.isRenaming()) editor.focus();
       this.#isLoading = false;
       if (isNewValue) {
         editor.setSelectionRange(0, 0);
@@ -239,7 +239,6 @@ export default class Directory {
     this.activeFile = newFile;
     leto.explorer.pendingRename = newFile;
     this.tryDisplayActiveDirectory();
-    this.#tryOpenActiveFile();
   }
 
   async createImageFromPaste(contents) {
@@ -273,7 +272,6 @@ export default class Directory {
 
     leto.explorer.pendingRename = newFile;
     this.tryDisplayActiveDirectory();
-    this.#tryOpenActiveFile();
   }
 
   async copyActiveImage() {

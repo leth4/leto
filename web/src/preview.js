@@ -55,7 +55,7 @@ export default class Preview {
         chunks[i] = chunks[i]
           .replace(/(?<=\s|^|-|—)(?<!# )(\*\*)([^`\*[\n]+)(\*\*)(?=\s|$|-|,|.|;|—)/g, `<mark class='muted'>$1</mark><mark class='bold'>$2</mark><mark class='muted'>$3</mark>`)
           .replace(/(?<=\s|^|-|—)(?<!# )(\*)([^`\*[\n]+)(\*)(?=\s|$|-|,|.|;|—)/g, `<mark class='muted'>$1</mark><mark class='italic'>$2</mark><mark class='muted'>$3</mark>`)
-          .replace(/(?<=\s|^|-|—)(?<!# )(\|[^`\|[\n]+\|)(?=\s|$|-|,|.|;|—)/g, `<mark class='muted'>$1</mark>`)
+          .replace(/(?<=\s|^|-|—)(?<!# )(\|)([^`\|[\n]+)(\|)(?=\s|$|-|,|.|;|—)/g, `<mark class='muted'>$1</mark><mark class='comment'>$2</mark><mark class='muted'>$3</mark>`)
           .replace(/(^# )(.*)/gm, `<mark class='muted'>$1</mark><h1>$2</h1>`)
           .replace(/(^## )(.*)/gm, `<mark class='muted'>$1</mark><h2>$2</h2>`)
           .replace(/(^### )(.*)/gm, `<mark class='muted'>$1</mark><h3>$2</h3>`)
@@ -87,6 +87,10 @@ export default class Preview {
   }
 
   #setCounterValues() {
+    if (leto.directory.isFileACanvas(leto.directory.activeFile)) {
+      counter.innerHTML = "";
+      return;
+    }
     var text = editor.selectionStart == editor.selectionEnd ? editor.value : editor.value.slice(editor.selectionStart, editor.selectionEnd);
     var words = text.match(/[\p{L}\p{M}\p{N}_]+/gu);
     var lines = text.split(/\r\n|\r|\n/).length;

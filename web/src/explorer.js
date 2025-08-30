@@ -62,6 +62,10 @@ export default class Explorer {
     }
   }
 
+  isRenaming() {
+    return document.activeElement == nameInput;
+  }
+
   previewFromLink(file) {
     file = file.replaceAll('/', '\\');
     const files = document.getElementsByClassName('file-button');
