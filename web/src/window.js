@@ -14,6 +14,7 @@ const fontInput = document.getElementById('font-input');
 const themes = [
   'gleam',
   'aske',
+  'linum',
   'zima',
   'spirit',
   'perlin',

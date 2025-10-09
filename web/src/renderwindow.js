@@ -21,6 +21,7 @@ var isPanningImage;
 const themes = [
   'gleam',
   'aske',
+  'linum',
   'zima',
   'spirit',
   'perlin',
