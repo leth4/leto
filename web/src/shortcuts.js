@@ -144,6 +144,9 @@ export default class Shortcuts {
 
       else if (e.ctrlKey && e.code === 'KeyJ') {}
 
+      else if (e.altKey && e.code === 'F4') leto.windowManager.closeAllWindows();
+      else if (e.altKey) {}
+
       else return;
 
       e.preventDefault();
