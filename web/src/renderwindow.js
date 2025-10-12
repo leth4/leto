@@ -47,6 +47,7 @@ window.onkeydown = (e) => {
   if (e.ctrlKey && !e.shiftKey && e.code === 'KeyQ') closeWindow();
   else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyM') appWindow.minimize();
   else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyT') setNextTheme();
+  else if (e.ctrlKey && e.shiftKey && e.code === 'KeyT') setPreviousTheme();
   else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyR') {}
   else if (e.ctrlKey && !e.shiftKey && e.code === 'Equal') changeFontSize(+1);
   else if (e.ctrlKey && !e.shiftKey && e.code === 'Minus') changeFontSize(-1);
@@ -165,12 +166,17 @@ function setFontSize(size) {
 function setTheme(theme) {
   currentTheme = theme ?? 0;
   if (theme >= themes.length) currentTheme = 0;
-  invoke(currentTheme == 7 ? 'add_blur' : 'remove_blur', { label:appWindow.label });
+  if (theme < 0) currentTheme = themes.length - 1;
+  invoke(currentTheme == 8 ? 'add_blur' : 'remove_blur', { label:appWindow.label });
   document.getElementById('theme-link').setAttribute('href', `themes/${themes[currentTheme]}.css`);
 }
 
 function setNextTheme() {
   setTheme(parseInt(currentTheme) + 1)
+}
+
+function setPreviousTheme() {
+  setTheme(parseInt(currentTheme) - 1)
 }
 
 await listen('renderWindowUpdate', (event) => {

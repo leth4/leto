@@ -91,14 +91,14 @@ export default class Render {
     var count = 0;
 
     for (var i = 0; i < lines.length; i++) {
-      if (/^\[ \]\s/.test(lines[i])) {
+      if (/^(\t*)\[ \]\s/.test(lines[i])) {
         if (count === index) {
           lines[i] = lines[i].replace('[ ]', '[x]');
           break;
         }
         count++;
       }
-      if (/^\[x\]\s/.test(lines[i])) {
+      if (/^(\t*)\[x\]\s/.test(lines[i])) {
         if (count === index) {
           lines[i] = lines[i].replace('[x]', '[ ]');
           break;
@@ -135,18 +135,20 @@ export default class Render {
 
   #createRender(text) {
     text = text.trim();
-    const html = text.replace(/^\[ \] (.*$)/gm, `<button class="todo"></button> $1`)
-             .replace(/^\[x\] (.*$)/gm, `<button class="todo checked"></button> <s>$1</s>`)
-             .replace(/^— (.*)(\n)?/gm, "<ul><li>$1</li></ul>")
+    const html = text.replace(/^(\t*)\[ \] (.*)$/gm, `$1<button class="todo"></button> $2`)
+             .replace(/^(\t*)\[x\] (.*$)/gm, `$1<button class="todo checked"></button> <s>$2</s>`)
+             .replace(/^- (.*)(\n)?/gm, "<ul><li>$1</li></ul>")
+             .replace(/(^|<\/ul>)\t- (.*)(\n)?/gm, `$1<ul><li class="second">$2</li></ul>`)
+             .replace(/(^|<\/ul>)\t\t- (.*)(\n)?/gm, `$1<ul><li class="third">$2</li></ul>`)
              .replace(/(^----*)[\r\n]/gm, `<hr>`)
              .replace(/\[\[([^[\]]+)\]\]/g, this.#imageReplacerFunction)
              .replace(/\n/g, "<br>");
-	return html;
+	  return html;
   }
 
   #imageReplacerFunction(match, p1) {
     var imagePath = leto.explorer.getImagePathFromLink(p1);
-    if (imagePath == '') return match;
+    if (imagePath == '') return p1;
     return `<img src='${convertFileSrc(imagePath)}' alt='${p1}'>`;
   }
 }

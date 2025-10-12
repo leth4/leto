@@ -142,12 +142,29 @@ export default class Edit {
   }
 
   handleTab() {
-    if (this.#activeEditor().value[this.#activeEditor().selectionEnd] !== '\"' && this.#activeEditor().value[this.#activeEditor().selectionEnd] !== ')' && this.#activeEditor().value[this.#activeEditor().selectionEnd] !== '*' 
-        && this.#activeEditor().value[this.#activeEditor().selectionEnd] !== ']' && this.#activeEditor().value[this.#activeEditor().selectionEnd] !== '`')
+    var [lineStart, lineEnd] = this.#getLineBorders();
+    var currentLine = this.#activeEditor().value.slice(lineStart, lineEnd);
+
+    var nextCharacter = this.#activeEditor().value[this.#activeEditor().selectionEnd];
+    var positionInLine = this.#activeEditor().selectionEnd - lineStart;
+
+    if (this.#activeEditor().selectionEnd != this.#activeEditor().selectionStart)
       document.execCommand('insertText', false, '\t');
-    else if (this.#activeEditor().selectionEnd != this.#activeEditor().selectionStart)
+    else if (/^\t*- /.test(currentLine) && positionInLine == 2) {
+      this.#setSelectionAndFocus(this.#activeEditor().selectionEnd - 2);
       document.execCommand('insertText', false, '\t');
-    else if (this.#activeEditor().value[this.#activeEditor().selectionEnd] === "]" && this.#activeEditor().value[this.#activeEditor().selectionEnd + 1] === "]")
+      this.#setSelectionAndFocus(this.#activeEditor().selectionEnd + 2);
+    } else if (/^\t*\[x\] /.test(currentLine) && positionInLine == 4) {
+      this.#setSelectionAndFocus(this.#activeEditor().selectionEnd - 4);
+      document.execCommand('insertText', false, '\t');
+      this.#setSelectionAndFocus(this.#activeEditor().selectionEnd + 4);
+    } else if (/^\t*\[ \] /.test(currentLine) && positionInLine == 4) {
+      this.#setSelectionAndFocus(this.#activeEditor().selectionEnd - 4);
+      document.execCommand('insertText', false, '\t');
+      this.#setSelectionAndFocus(this.#activeEditor().selectionEnd + 4);
+    } else if (nextCharacter !== '\"' && nextCharacter !== ')' && nextCharacter !== '*' && nextCharacter !== ']' && nextCharacter !== '`')
+      document.execCommand('insertText', false, '\t');
+    else if (nextCharacter === "]" && this.#activeEditor().value[this.#activeEditor().selectionEnd + 1] === "]")
       this.#setSelectionAndFocus(this.#activeEditor().selectionEnd + 2);
     else
       this.#setSelectionAndFocus(this.#activeEditor().selectionEnd + 1);
@@ -161,39 +178,59 @@ export default class Edit {
   
   handleNewLine() {
     var [lineStart, lineEnd] = this.#getLineBorders();
+    var activeEditor = this.#activeEditor();
     var insertText = '';
 
     var deleteLine = false;
 
-    if (this.#activeEditor().selectionStart != this.#activeEditor().selectionEnd) 
-      insertText = '\n';
-    else if (this.#activeEditor().value[lineStart] === '—' && this.#activeEditor().selectionEnd - lineStart > 1) 
-      (/^—[\s]*$/.test(this.#activeEditor().value.slice(lineStart, lineEnd))) ? deleteLine = true : insertText = '\n— ';
-    else if (this.#activeEditor().value[lineStart] === '-' && this.#activeEditor().selectionEnd - lineStart > 1) 
-      (/^-[\s]*$/.test(this.#activeEditor().value.slice(lineStart, lineEnd))) ? deleteLine = true : insertText = '\n- ';
-    else if (this.#activeEditor().value[lineStart] === '→' && this.#activeEditor().selectionEnd - lineStart > 1) 
-      (/^→[\s]*$/.test(this.#activeEditor().value.slice(lineStart, lineEnd))) ? deleteLine = true : insertText = '\n→ ';
-    else if (this.#activeEditor().value.slice(lineStart, lineStart + 3) === '[ ]' && this.#activeEditor().selectionEnd - lineStart > 3)
-      (/^\[ \][\s]*$/.test(this.#activeEditor().value.slice(lineStart, lineEnd))) ? deleteLine = true : insertText = '\n[ ] ';
-    else if (this.#activeEditor().value.slice(lineStart, lineStart + 3) === '[x]' && this.#activeEditor().selectionEnd - lineStart > 3)
-      (/^\[x\][\s]*$/.test(this.#activeEditor().value.slice(lineStart, lineEnd))) ? deleteLine = true : insertText = '\n[ ] ';
-    else if (/^\d+\. /.test(this.#activeEditor().value.slice(lineStart, lineEnd))) {
-      if (/^\d+\.\s*$/.test(this.#activeEditor().value.slice(lineStart, lineEnd))) deleteLine = true;
+    var currentLine = activeEditor.value.slice(lineStart, lineEnd);
+    var positionInLine = activeEditor.selectionEnd - lineStart;
+
+    if (activeEditor.selectionStart != activeEditor.selectionEnd) insertText = '\n';
+
+    else if (/^—[\s]*$/.test(currentLine)) deleteLine = true;
+    else if (/^— /.test(currentLine) && positionInLine > 1) insertText = '\n— ';
+    else if (/^→[\s]*$/.test(currentLine)) deleteLine = true;
+    else if (/^→ /.test(currentLine) && positionInLine > 1) insertText = '\n→ ';
+
+    else if (/^-[\s]*$/.test(currentLine)) deleteLine = true;
+    else if (/^- /.test(currentLine) && positionInLine > 1) insertText = '\n- ';
+    else if (/^\t-[\s]*$/.test(currentLine)) { deleteLine = true; insertText = '- ' }
+    else if (/^\t- /.test(currentLine) && positionInLine > 1) insertText = '\n\t- ';
+    else if (/^\t\t-[\s]*$/.test(currentLine)) { deleteLine = true; insertText = '\t- ' }
+    else if (/^\t\t- /.test(currentLine) && positionInLine > 1) insertText = '\n\t\t- ';
+
+    else if (/^\[ \][\s]*$/.test(currentLine)) deleteLine = true;
+    else if (/^\[ \] /.test(currentLine) && positionInLine > 3) insertText = '\n[ ] ';
+    else if (/^\t\[ \][\s]*$/.test(currentLine)) { deleteLine = true; insertText = '[ ] '}
+    else if (/^\t\[ \] /.test(currentLine) && positionInLine > 3) insertText = '\n\t[ ] ';
+    else if (/^\t\t\[ \][\s]*$/.test(currentLine)) { deleteLine = true; insertText = '\t[ ] '}
+    else if (/^\t\t\[ \] /.test(currentLine) && positionInLine > 3) insertText = '\n\t\t[ ] ';
+
+    else if (/^\[x\][\s]*$/.test(currentLine)) deleteLine = true;
+    else if (/^\[x\] /.test(currentLine) && positionInLine > 3) insertText = '\n[ ] ';
+    else if (/^\t\[x\][\s]*$/.test(currentLine)) { deleteLine = true; insertText = '[x] '}
+    else if (/^\t\[x\] /.test(currentLine) && positionInLine > 3) insertText = '\n\t[ ] ';
+    else if (/^\t\t\[x\][\s]*$/.test(currentLine)) { deleteLine = true; insertText = '\t[x] '}
+    else if (/^\t\t\[x\] /.test(currentLine) && positionInLine > 3) insertText = '\n\t\t[ ] ';
+
+    else if (/^\d+\. /.test(currentLine)) {
+      if (/^\d+\.\s*$/.test(currentLine)) deleteLine = true;
       else {
-        var dotIndex = this.#activeEditor().value.slice(lineStart, lineEnd).indexOf(".");
-        var num = parseInt(this.#activeEditor().value.slice(lineStart, lineStart + dotIndex));
+        var dotIndex = currentLine.indexOf(".");
+        var num = parseInt(activeEditor.value.slice(lineStart, lineStart + dotIndex));
         if (num) insertText = `\n${num + 1}. `
       }
     }
     else insertText = '\n';
 
     if (deleteLine) {
-      this.#activeEditor().setSelectionRange(this.#getLineStart(), this.#getLineEnd() - 1);
+      activeEditor.setSelectionRange(this.#getLineStart(), this.#getLineEnd() - 1);
       document.execCommand('delete');
     }
 
     document.execCommand('insertText', false, insertText);
-    this.#setSelectionAndFocus(this.#activeEditor().selectionStart);
+    this.#setSelectionAndFocus(activeEditor.selectionStart);
   }
 
   moveDown() {
@@ -271,21 +308,20 @@ export default class Edit {
   }
 
   createCheckbox() {
-
     var lineStart = this.#getLineStart(this.#activeEditor().selectionStart);
     var lineEnd = this.#getLineEnd(this.#activeEditor().selectionEnd) - 1;
     var endPositionAtLine = this.#activeEditor().selectionEnd - lineStart;
 
     var value = '\n' + this.#activeEditor().value.slice(lineStart, lineEnd);
-    var firstEmptyIndex = value.indexOf('\n[ ]');
-    var firstFilledIndex = value.indexOf('\n[x]');
+    var firstEmptyIndex = value.search(/^(\t*)\[ \]/gm);
+    var firstFilledIndex = value.search(/^(\t*)\[x\]/gm);
 
     if (firstEmptyIndex === -1 && firstFilledIndex === -1) {
       endPositionAtLine += 4 * ((value.slice(0, lineStart + endPositionAtLine)).split('\n').length - 1);
       if (lineStart === 0 && endPositionAtLine === 0) endPositionAtLine += 4;
       value = value.replaceAll('\n', '\n[ ] ');
-    } else if (firstEmptyIndex !== -1) value = value.replaceAll('\n[ ]', '\n[x]'); 
-    else value = value.replaceAll('\n[x]', '\n[ ]');
+    } else if (firstEmptyIndex !== -1) value = value.replace(/^(\t*)\[ \] (.*$)/gm, '$1[x] $2'); 
+    else value = value.replace(/^(\t*)\[x\] (.*$)/gm, '$1[ ] $2');
 
     value = value.slice(1);
 

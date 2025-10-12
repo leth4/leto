@@ -253,7 +253,7 @@ export default class Window {
     this.currentTheme = theme ?? 0;
     if (theme >= themes.length) this.currentTheme = 0;
     if (theme < 0) this.currentTheme = themes.length - 1;
-    invoke(this.currentTheme == 7 ? 'add_blur' : 'remove_blur', {  label: "main" });
+    invoke(this.currentTheme == 8 ? 'add_blur' : 'remove_blur', {  label: "main" });
     themeSelector.value = this.currentTheme;
     document.getElementById('theme-link').setAttribute('href', `themes/${themes[this.currentTheme]}.css`);
     if (save) leto.config.save();

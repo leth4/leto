@@ -238,6 +238,14 @@ ul {
     padding-left: 1.8em;
 }
 
+li.second {
+    margin-left: 1em;
+}
+
+li.third {
+    margin-left: 2em;
+}
+
 ::-webkit-scrollbar {
     background: transparent;
     width: 7px;
