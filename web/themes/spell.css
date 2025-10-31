@@ -1,0 +1,19 @@
+:root {
+    --editor-background-color: #1f1f21;
+    --editor-code-background-color: #171719;
+    --editor-text-color: #cfcdbe;
+    --editor-accent-color: #eda398;
+    --editor-muted-color: #4a5d5d;
+    --selection-color: #3a403b;
+
+    --canvas-card-color: #171719;
+    --canvas-inversed-card-color: #1e2021;
+
+    --sidebar-background-color:#171719;
+    --sidebar-folder-color: #eda398;
+    --sidebar-file-color: #647e77;
+    --sidebar-selection-color: #202023;
+
+    --divider-color: #171719;
+    --shadow: 0px;
+}

@@ -29,6 +29,7 @@ const themes = [
   'dart',
   'glass',
   'beetle',
+  'spell',
   'brick'
 ];
 
