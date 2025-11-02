@@ -12,7 +12,7 @@ export default class Shortcuts {
       var inInput = document.activeElement.nodeName == 'INPUT';
       var inEditor = document.activeElement.nodeName == 'TEXTAREA';
       var inCanvas = leto.directory.isFileACanvas(leto.directory.activeFile) && !inEditor && !inInput;
-      var selected = editor.selectionStart != editor.selectionEnd;
+      var selected = document.activeElement.selectionStart != document.activeElement.selectionEnd;
 
       if (e.ctrlKey && !e.shiftKey && e.code === 'KeyY' && (inCanvas || inEditor)) {
         e.preventDefault();
