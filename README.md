@@ -66,6 +66,7 @@ Shortcut | Action
 `C` | Connect selected cards
 `D` | Disconnect selected cards
 `F` | Focus on selected cards
+`Ctrl + D` | Duplicate selected cards
 `] / [` | Send to front/back
 `Plus / Minus` | Zoom in/out
 `Ctrl + F` | Reset canvas position

@@ -60,6 +60,7 @@ export default class Shortcuts {
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'KeyR') leto.lea.createRegionCard();
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'Delete') leto.lea.deleteSelectedCards();
       else if (inCanvas && !e.ctrlKey && !e.shiftKey && e.code === 'Backspace') leto.lea.deleteSelectedCards();
+      else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyD') leto.lea.duplicateSelectedCards();
       else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyX') leto.lea.cutSelectedCards();
       else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyC') leto.lea.copySelectedCards();
       else if (inCanvas && e.ctrlKey && !e.shiftKey && e.code === 'KeyA') leto.lea.selectAllCards();

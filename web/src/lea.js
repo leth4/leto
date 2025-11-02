@@ -340,6 +340,31 @@ export default class Lea {
     }
   }
 
+  duplicateSelectedCards() {
+    if (document.activeElement.nodeName == 'TEXTAREA') return;
+    if (this.#selectedCards.length == 0) return;
+
+    this.saveUndoState();
+
+    var duplicatedCards = [];
+    this.#selectedCards.forEach(selectedCard => {
+      var index = selectedCard.getAttribute('data-index');
+      var card = this.#cards[index];
+      duplicatedCards.push(card.getCopy());
+    });
+
+    const initialFirstCardPosition = duplicatedCards[0].position;
+
+    this.#deselectAllCards();
+    for (let i = 0; i < duplicatedCards.length; i++) {
+      var positionOffset = {x: duplicatedCards[i].position.x - initialFirstCardPosition.x, y: duplicatedCards[i].position.y - initialFirstCardPosition.y}
+      var cursorPosition = this.screenToCanvasSpace(this.#previousCursorPosition);
+      duplicatedCards[i].position = {x: cursorPosition.x + positionOffset.x, y: cursorPosition.y + positionOffset.y};
+      var cardElement = duplicatedCards[i].create(this.#cards);
+      this.#setSelected(cardElement);
+    }
+  }
+
   alignSelectedVertically(shiftKey) {
     this.saveUndoState();
     
