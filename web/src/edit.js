@@ -214,6 +214,11 @@ export default class Edit {
     else if (/^\t\t\[x\][\s]*$/.test(currentLine)) { deleteLine = true; insertText = '\t[x] '}
     else if (/^\t\t\[x\] /.test(currentLine) && positionInLine > 3) insertText = '\n\t\t[ ] ';
 
+    else if (/^\t\t\t\t/.test(currentLine)) insertText = '\n\t\t\t\t';
+    else if (/^\t\t\t/.test(currentLine)) insertText = '\n\t\t\t';
+    else if (/^\t\t/.test(currentLine)) insertText = '\n\t\t';
+    else if (/^\t/.test(currentLine)) insertText = '\n\t'
+
     else if (/^\d+\. /.test(currentLine)) {
       if (/^\d+\.\s*$/.test(currentLine)) deleteLine = true;
       else {
@@ -319,7 +324,7 @@ export default class Edit {
     if (firstEmptyIndex === -1 && firstFilledIndex === -1) {
       endPositionAtLine += 4 * ((value.slice(0, lineStart + endPositionAtLine)).split('\n').length - 1);
       if (lineStart === 0 && endPositionAtLine === 0) endPositionAtLine += 4;
-      value = value.replaceAll('\n', '\n[ ] ');
+      value = value.replace(/(\n)(?!\n)/g, '\n[ ] ');
     } else if (firstEmptyIndex !== -1) value = value.replace(/^(\t*)\[ \] (.*$)/gm, '$1[x] $2'); 
     else value = value.replace(/^(\t*)\[x\] (.*$)/gm, '$1[ ] $2');
 
