@@ -86,6 +86,7 @@ export default class Shortcuts {
       else if (e.key == '`' && inEditor) leto.edit.insertDoubleSymbol('`');
       else if (!e.ctrlKey && e.key == '[' && inEditor) leto.edit.handleBracket();
       else if (e.ctrlKey && !e.shiftKey && e.code === 'KeyI' && inEditor && selected) leto.edit.insertDoubleSymbol('*');
+      else if (e.ctrlKey && e.shiftKey && e.code === 'KeyC' && inEditor && selected) leto.edit.capitalize();
       else if (!e.ctrlKey && !e.shiftKey && e.code === 'Minus' && inEditor) leto.edit.handleHyphen();
       else if (e.altKey && e.shiftKey && e.code === 'ArrowUp' && inEditor) leto.edit.copyLineUp();
       else if (e.altKey && e.shiftKey && e.code === 'ArrowDown' && inEditor) leto.edit.copyLineDown();

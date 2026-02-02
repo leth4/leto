@@ -52,6 +52,7 @@ Shortcut | Action
 `Ctrl + Enter` | Create or check/uncheck a task
 `Ctrl + L` | Select the current line
 `Ctrl + X` | Cut the current line
+`Ctrl + Shift + C` | Capitalize selected text
 
 ## Lea Shortcuts
 

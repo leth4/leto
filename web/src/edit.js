@@ -175,6 +175,24 @@ export default class Edit {
     this.selectLine();
     document.execCommand(this.#activeEditor().selectionEnd - 1 === this.#activeEditor().selectionStart ? 'delete' : 'cut');
   }
+
+  capitalize() {
+    var selectionStart = this.#activeEditor().selectionStart;
+    var selectionEnd = this.#activeEditor().selectionEnd;
+
+    var text = this.#activeEditor().value.substring(selectionStart, selectionEnd);
+
+    var hasLowerCase = false;
+    for (var i = 0; i < text.length; i++) 
+      if (text[i].toUpperCase() != text[i]) hasLowerCase = true;
+    if (hasLowerCase) {
+      document.execCommand('insertText', false, text.toUpperCase());
+    } else {
+      document.execCommand('insertText', false, text.toLowerCase());
+    }
+
+    this.#setSelectionAndFocus(selectionStart, selectionEnd);
+  }
   
   handleNewLine() {
     var [lineStart, lineEnd] = this.#getLineBorders();
