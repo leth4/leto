@@ -53,15 +53,15 @@ export default class Preview {
     for (var i in chunks) {
       if (i % 2 === 0) {
         chunks[i] = chunks[i]
-          .replace(/(?<=\s|^|-|—|\()(\*)([^`\/\*[\n]+)(\*)(?=\s|$|-|,|.|:|;|—|\))/g, `<mark class='muted'>$1</mark><mark class='bold'>$2</mark><mark class='muted'>$3</mark>`)
-          .replace(/(?<=\s|^|-|—|\()(\/)([^`\*\/[\n]+)(\/)(?=\s|$|-|,|.|:|;|—|\))/g, `<mark class='muted'>$1</mark><mark class='italic'>$2</mark><mark class='muted'>$3</mark>`)
+          .replace(/(?<=\s|^|-|—|\()(\*)([^`\/\*[\n]+)(\*)(?=\s|$|-|,|\.|:|;|—|\))/g, `<mark class='muted'>$1</mark><mark class='bold'>$2</mark><mark class='muted'>$3</mark>`)
+          .replace(/(?<=\s|^|-|—|\()(\/)([^`\*\/[\n]+)(\/)(?=\s|$|-|,|\.|:|;|—|\))/g, `<mark class='muted'>$1</mark><mark class='italic'>$2</mark><mark class='muted'>$3</mark>`)
           .replace(/(?<=\s|^|-|—|\()(\|)([^`\|[\n]+)(\|)(?=\s|$|-|,|.|:|;|—|\))/g, `<mark class='muted'>$1</mark><mark class='comment'>$2</mark><mark class='muted'>$3</mark>`)
           .replace(/(@[\w\-.→]+)/g, `<mark class='italic'>$1</mark>`)
           .replace(/(^# )(.*)/gm, `<mark class='muted'>$1</mark><h1>$2</h1>`)
           .replace(/(^## )(.*)/gm, `<mark class='muted'>$1</mark><h2>$2</h2>`)
           .replace(/(^### )(.*)/gm, `<mark class='muted'>$1</mark><h3>$2</h3>`)
           .replace(/(^#### )(.*)/gm, `<mark class='muted'>$1</mark><h4>$2</h4>`)
-          .replace(/(?<=\s|^)\[\[([^[\]]+)\]\](?=\s|$|-|,|;|—)/g, `<mark class='link' data-link='$1'>[[$1]]</mark>`)
+          .replace(/(?<=\s|^)\[\[([^[\]]+)\]\](?=\s|$|-|,|\.|\)|:|;|—)/g, `<mark class='link' data-link='$1'>[[$1]]</mark>`)
           .replace(/\b((?:https?:\/\/)[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{1,6}\b(?:[-a-zA-Z0-9@:%_\+.;~#?&\/=]*))/gm, `<a target="_blank" href="$1">$1</a>`)
           .replace(/(?<=\s|^|-|—|\()(`)([^\n]*?)((?<!`)`)(?=\s|$|-|,|;|—|\))/gm, `<mark class='inline-code'><mark class='muted'>$1</mark>$2<mark class='muted'>$3</mark></mark>`);
       } else {
