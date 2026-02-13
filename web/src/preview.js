@@ -53,9 +53,9 @@ export default class Preview {
     for (var i in chunks) {
       if (i % 2 === 0) {
         chunks[i] = chunks[i]
-          .replace(/(?<=\s|^|-|—|\()(\*\*)([^`\*[\n]+)(\*\*)(?=\s|$|-|,|;|—|\))/g, `<mark class='muted'>$1</mark><mark class='bold'>$2</mark><mark class='muted'>$3</mark>`)
-          .replace(/(?<=\s|^|-|—|\()(\*)([^`\*[\n]+)(\*)(?=\s|$|-|,|;|—|\))/g, `<mark class='muted'>$1</mark><mark class='italic'>$2</mark><mark class='muted'>$3</mark>`)
-          .replace(/(?<=\s|^|-|—|\()(\|)([^`\|[\n]+)(\|)(?=\s|$|-|,|;|—|\))/g, `<mark class='muted'>$1</mark><mark class='comment'>$2</mark><mark class='muted'>$3</mark>`)
+          .replace(/(?<=\s|^|-|—|\()(\*)([^`\/\*[\n]+)(\*)(?=\s|$|-|,|.|:|;|—|\))/g, `<mark class='muted'>$1</mark><mark class='bold'>$2</mark><mark class='muted'>$3</mark>`)
+          .replace(/(?<=\s|^|-|—|\()(\/)([^`\*\/[\n]+)(\/)(?=\s|$|-|,|.|:|;|—|\))/g, `<mark class='muted'>$1</mark><mark class='italic'>$2</mark><mark class='muted'>$3</mark>`)
+          .replace(/(?<=\s|^|-|—|\()(\|)([^`\|[\n]+)(\|)(?=\s|$|-|,|.|:|;|—|\))/g, `<mark class='muted'>$1</mark><mark class='comment'>$2</mark><mark class='muted'>$3</mark>`)
           .replace(/(@[\w\-.→]+)/g, `<mark class='italic'>$1</mark>`)
           .replace(/(^# )(.*)/gm, `<mark class='muted'>$1</mark><h1>$2</h1>`)
           .replace(/(^## )(.*)/gm, `<mark class='muted'>$1</mark><h2>$2</h2>`)

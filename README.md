@@ -8,7 +8,7 @@ Visually inspired by [Left](https://github.com/hundredrabbits/Left), functionall
 
 Create a file directory to store your notes. Open the app, press `Ctrl + O` and select the directory. You can browse, open, create, pin, preview, rename, delete and move files and folders via the sidebar. Deleted files and folders are kept in a `.trash` folder in the working directory. All your changes are auto-saved.
 
-Markdown `# headers`, `*italics*`, `**bold**`, `|muted|` text, and `` `inline code` `` are highlighted. You can `[[link]]` to other files and ctrl-click to open them. There's syntax highlighting for code blocks wrapped between `` ``` `` symbols—you can specify the language in the first line, like `` ```csharp ``. Languages that support highlighting are *C#*, *C++*, *C*, *JavaScript*, *Python*, *Rust*, *Go*, *Java* and *HLSL*.
+There's highlighting for leto's flavor of markdown; `# headers`, `*bold*`, `/italics/`, `|muted|` text, `@dates`, and `` `inline code` `` are highlighted. You can `[[link]]` to other files and ctrl-click to open them. There's syntax highlighting for code blocks wrapped between `` ``` `` symbols—you can specify the language in the first line, like `` ```csharp ``. Languages that support highlighting are *C#*, *C++*, *C*, *JavaScript*, *Python*, *Rust*, *Go*, *Java* and *HLSL*.
 
 You can open a preview window for any file; task items in a preview window are clickable. Note that in leto tasks start with `[ ]`, not `- [ ]`. Press `Ctrl + O` to open the file corresponding to the active preview. Press `Ctrl + P` or right-click the title bar of the preview window to make it always stay on top. Right-click any link to open a preview window for it.
 
