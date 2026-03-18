@@ -60,15 +60,15 @@ export default class Window {
     });
     this.populateThemes();
 
-    appWindow.onResized(({ payload: size }) => {
-      if (!this.isFullscreen) {
+    appWindow.onResized(async ({ payload: size }) => {
+      if (!this.isFullscreen && !(await appWindow.isMinimized())) {
         this.windowSize = {x: size.width, y: size.height};
         leto.config.save();
       }
     });
 
-    appWindow.onMoved(({ payload: position }) => {
-      if (!this.isFullscreen) {
+    appWindow.onMoved(async ({ payload: position }) => {
+      if (!this.isFullscreen && !(await appWindow.isMinimized())) {
         this.windowPosition = {x: position.x, y: position.y};
         leto.config.save();
       }
@@ -227,11 +227,14 @@ export default class Window {
 
   applyWindowSize(size) {
     this.windowSize = size ?? {x: 1450, y: 900};
+    if (this.windowSize.x < 300 || this.windowSize.y < 200) this.resetWindowState();
     appWindow.setSize(new PhysicalSize(this.windowSize.x, this.windowSize.y));
   }
   
   applyWindowPosition(position) {
     this.windowPosition = position ?? {x: 500, y: 300};
+    if (this.windowPosition.x < 0) this.windowPosition.x = 0;
+    if (this.windowPosition.y < 0) this.windowPosition.y = 0;
     appWindow.setPosition(new PhysicalPosition(this.windowPosition.x, this.windowPosition.y));
   }
 
