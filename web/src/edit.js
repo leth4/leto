@@ -61,16 +61,6 @@ export default class Edit {
     document.execCommand('cut', false);
   }
 
-  renameLinks(oldLink, newFile) {
-    var oldLink = `\[\[${oldLink}\]\]`
-    var newLink = `[[${leto.explorer.getUniqueLink(newFile)}]]`
-    if (this.#activeEditor() == null) return;
-    while (this.#activeEditor().value.indexOf(oldLink) != -1) {
-      this.#setSelectionAndFocus(this.#activeEditor().value.indexOf(oldLink), this.#activeEditor().value.indexOf(oldLink) + oldLink.length);
-      document.execCommand('insertText', false, newLink);
-    }
-  }
-
   handleHyphen() {
     const previousSymbol = this.#activeEditor().value[this.#activeEditor().selectionStart - 1];
     const secondPreviousSymbol = this.#activeEditor().value[this.#activeEditor().selectionStart - 2];

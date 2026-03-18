@@ -304,12 +304,8 @@ export default class Directory {
     await invoke('rename', { oldPath: filePath, newPath: newFile });
     if (this.activeFile === filePath) this.activeFile = newFile;
 
-    var previousLinkToFile = leto.explorer.getUniqueLink(filePath);
-
     await this.tryDisplayActiveDirectory();
     await this.#tryOpenActiveFile();
-
-    leto.edit.renameLinks(previousLinkToFile, newFile);
   }
 
   async renameFolder(oldPath, newName) {
