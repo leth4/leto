@@ -131,34 +131,33 @@ export default class Edit {
     }
   }
 
-  handleTab() {
-    var [lineStart, lineEnd] = this.#getLineBorders();
-    var currentLine = this.#activeEditor().value.slice(lineStart, lineEnd);
+  handleTab(shift) {
+    var selectionStart = this.#activeEditor().selectionStart;
+    var selectionEnd = this.#activeEditor().selectionEnd;
+    var lineStart = this.#getLineStart(selectionStart);
+    var lineEnd = this.#getLineEnd(selectionEnd) - 1;
 
-    var nextCharacter = this.#activeEditor().value[this.#activeEditor().selectionEnd];
-    var positionInLine = this.#activeEditor().selectionEnd - lineStart;
+    var value = '\n' + this.#activeEditor().value.slice(lineStart, lineEnd);
 
-    if (this.#activeEditor().selectionEnd != this.#activeEditor().selectionStart)
-      document.execCommand('insertText', false, '\t');
-    else if (/^\t*- /.test(currentLine) && positionInLine == 2) {
-      this.#setSelectionAndFocus(this.#activeEditor().selectionEnd - 2);
-      document.execCommand('insertText', false, '\t');
-      this.#setSelectionAndFocus(this.#activeEditor().selectionEnd + 2);
-    } else if (/^\t*\[x\] /.test(currentLine) && positionInLine == 4) {
-      this.#setSelectionAndFocus(this.#activeEditor().selectionEnd - 4);
-      document.execCommand('insertText', false, '\t');
-      this.#setSelectionAndFocus(this.#activeEditor().selectionEnd + 4);
-    } else if (/^\t*\[ \] /.test(currentLine) && positionInLine == 4) {
-      this.#setSelectionAndFocus(this.#activeEditor().selectionEnd - 4);
-      document.execCommand('insertText', false, '\t');
-      this.#setSelectionAndFocus(this.#activeEditor().selectionEnd + 4);
-    } else if (nextCharacter !== '\"' && nextCharacter !== ')' && nextCharacter !== '*' && nextCharacter !== ']' && nextCharacter !== '`')
-      document.execCommand('insertText', false, '\t');
-    else if (nextCharacter === "]" && this.#activeEditor().value[this.#activeEditor().selectionEnd + 1] === "]")
-      this.#setSelectionAndFocus(this.#activeEditor().selectionEnd + 2);
-    else
-      this.#setSelectionAndFocus(this.#activeEditor().selectionEnd + 1);
-    if (this.#activeEditor == editor) leto.handleEditorInput();
+    var endPositionChange = 0;
+    var startPositionChange = 0;
+    
+    if (!shift) {
+      endPositionChange += value.split('\n').length - 1;
+      startPositionChange += value.slice(0, selectionStart - lineStart + 1).split('\n').length - 1;
+      value = value.replaceAll("\n", "\n\t")
+    } else {
+      endPositionChange -= value.split('\n\t').length - 1;
+      startPositionChange -= value.slice(0, selectionStart - lineStart + 1).split('\n\t').length - 1;
+      value = value.replaceAll("\n\t", "\n")
+    }
+
+    value = value.slice(1);
+
+    this.#activeEditor().setSelectionRange(lineStart, lineEnd);
+    document.execCommand('insertText', false, value);
+
+    this.#setSelectionAndFocus(selectionStart + startPositionChange, selectionEnd + endPositionChange);
   }
   
   cutLine() {
